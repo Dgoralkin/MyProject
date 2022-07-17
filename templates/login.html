@@ -4,16 +4,69 @@
     Log In
 {% endblock %}
 
-{% block main %}
-    <form action="/login" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" required autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
-        </div>
-        <button class="btn btn-primary" type="submit">Log In</button>
-        <p>Not a member yet?  Register now!</p>
-    </form>
-    <button class="btn btn-primary" type="button"><a href="/register">Register now</a></button>
+
+{% block header %}
 {% endblock %}
+
+
+
+{% block main %}
+
+<div class="container-fluid text-center">
+    <div class="row content">
+
+        <!-- Left side container -->
+        <div class="col-sm-2 sidenav1">
+            <p id="P1_left">You can cahnge the style of this page by clicking on the links below:</p>
+            <p id="P2_left" onclick="changePic(event)" style="color:red;">Background A:</p>
+            <p id="P3_left" onclick="changePic(event)">Background B:</p>
+            <p id="P4_left" onclick="changePic(event)">Background C:</p>
+        </div>
+
+        <!-- Main -->
+        <div class="col-sm-8 text-left">
+            <form action="/login" method="post">
+                <div class="mb-3">
+                    <input autocomplete="off" required autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
+                </div>
+                <button class="btn btn-primary" type="submit">Log In</button>
+                <p>Not a member yet?  Register now!</p>
+            </form>
+            <button class="btn btn-primary" type="button"><a href="/register">Register now</a></button>
+        </div>
+
+        <!-- Right side container -->
+
+        <div class="col-sm-2 sidenav1">
+            <div>
+                <p id="P1_right">Some Decoration...</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+
+
+<!--
+    <div class="container-fluid">
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <input autocomplete="off" required autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+            </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
+            </div>
+            <button class="btn btn-primary" type="submit">Log In</button>
+            <p>Not a member yet?  Register now!</p>
+        </form>
+        <button class="btn btn-primary" type="button"><a href="/register">Register now</a></button>
+    </div>
+-->

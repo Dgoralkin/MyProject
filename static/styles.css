@@ -1,35 +1,13 @@
-/* Size for brand */
-nav .navbar-brand
-{
-    font-size: xx-large;
-}
-
-/* Colors for brand */
-nav .navbar-brand .blue
-{
-    color: #537fbe;
-}
-nav .navbar-brand .red
-{
-    color: #ea433b;
-}
-nav .navbar-brand .yellow
-{
-    color: #f5b82e;
-}
-nav .navbar-brand .green
-{
-    color: #2e944b;
-}
 
 a
 {
-    color: white;
+    color: black;
 }
 a:hover
 {
-    color: white;
+    color: blue;
 }
+
 
 h1
 {
@@ -61,4 +39,12 @@ span
 {
     width: 70%;
     position: center;
+}
+
+.Background
+{
+    background-image: url("/static/Background.png");
+    background-color: #cccccc;
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
 }
