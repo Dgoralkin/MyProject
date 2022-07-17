@@ -37,14 +37,14 @@ span
 
 .my-table
 {
-    width: 70%;
+    width: 70%; 
     position: center;
 }
 
 .Background
 {
     background-image: url("/static/Background.png");
-    background-color: #cccccc;
+    background-color: #ffffff;
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
 }
