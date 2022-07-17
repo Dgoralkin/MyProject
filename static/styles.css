@@ -1,0 +1,64 @@
+/* Size for brand */
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+/* Colors for brand */
+nav .navbar-brand .blue
+{
+    color: #537fbe;
+}
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+nav .navbar-brand .yellow
+{
+    color: #f5b82e;
+}
+nav .navbar-brand .green
+{
+    color: #2e944b;
+}
+
+a
+{
+    color: white;
+}
+a:hover
+{
+    color: white;
+}
+
+h1
+{
+    color: #1272a8;
+}
+
+h2
+{
+    color: red;
+    text-decoration: underline;
+}
+
+span
+{
+    color: red;
+    text-decoration: underline;
+}
+
+.header
+{
+    background-color: #1272a8;
+    color: white;
+    border: 2px solid black;
+    width: 80%;
+    position: center;
+}
+
+.my-table
+{
+    width: 70%;
+    position: center;
+}

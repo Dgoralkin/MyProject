@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <header>
+        <h1 class="container-fluid py-5 text-center header">Your dashboard</span></h1>
+        <hr>
+    </header>
+    <br>
+    <main class="container-fluid py-5 text-center my-table">
+        <table class="table table-striped-columns table-hover">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Symbol</th>
+                <th scope="col">Name</th>
+                <th scope="col">Shares</th>
+                <th scope="col">Latest price</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {% for investment in investments %}
+              <tr>
+                <td></td>
+                <td>{{ investment["symbol"] }}</td>
+                <td>{{ investment["name"] }}</td>
+                <td>{{ investment["shares"] }}</td>
+                <td>{{ investment["cur_price"] }}</td>
+                <td>{{ investment["total"] }}</td>
+                <td><button style="background-color: red" title="sell_now" class="btn btn-primary" type="button"><a href="/sell">Sell now!</a></button></td>
+              </tr>
+              {% endfor %}
+
+              <tr>
+                <td colspan="4" style="visibility: hidden"></td>
+                <td>Cash</td>
+                <td>{{ cash }}</td>
+                <td><button style="background-color: yellow" title="Quote_now" class="btn btn-primary" type="button"><a href="/quote">Quote_now!</a></button></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="visibility: hidden"></td>
+                <td>TOTAL</td>
+                <td>{{ total }}</td>
+                <td><button style="background-color: green" title="Buy_now" class="btn btn-primary" type="button"><a href="/buy">Buy now!</a></button></td>
+              </tr>
+            </tbody>
+          </table>
+    </main>
+{% endblock %}
