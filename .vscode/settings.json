@@ -31,7 +31,7 @@
                 "authProtocol": "default"
             },
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "eu-cdbr-west-03.cleardb.net",
             "port": 3306,
             "driver": "MySQL",
             "name": "Heroku",

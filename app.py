@@ -23,6 +23,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
+
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
@@ -31,9 +32,12 @@ db = mysql.connector.connect(
     database="heroku_c982995c47a34c9"
 )
 
-if (not db):
+if (db):
+    print("Connection")
+else:
     print("No connection")
 crsr = db.cursor()
+
 
 # Create table "users" if doesn't exist in DB
 crsr.execute("SHOW TABLES")
@@ -75,6 +79,7 @@ def index():
 #--------------------------------------------------------------------------------- LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    
 
     #Log user in
 
