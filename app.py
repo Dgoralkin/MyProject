@@ -22,13 +22,13 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-'''
+
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
-    host="localhost",
-    user="appuser",
-    passwd="appuser123",
-    database="my_project"
+    host="eu-cdbr-west-03.cleardb.net",
+    user="ba430e02e4e6b8",
+    passwd="1fbec195",
+    database="heroku_c982995c47a34c9"
 )
 
 if (not db):
@@ -45,7 +45,7 @@ for x in read:
 if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
-'''
+
 
   
 

@@ -25,6 +25,19 @@
             "database": "my_project",
             "username": "appuser",
             "password": "appuser123"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Heroku",
+            "database": "heroku_c982995c47a34c9",
+            "username": "ba430e02e4e6b8",
+            "password": "1fbec195"
         }
     ]
 }
