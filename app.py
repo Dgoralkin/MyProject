@@ -123,7 +123,7 @@ def register():
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
-
+        '''
         # Check if forms filled.
         if not username or not password or not confirmation:
             return apology("Please fill UserName and/or password", 401)
@@ -132,7 +132,7 @@ def register():
         elif password != confirmation:
             return apology("Passwords doesn't match")
 
-        '''
+        
         # Check if username exists in db.
         users = db.execute("SELECT username FROM users")
         for user in users:
