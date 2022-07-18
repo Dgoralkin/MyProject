@@ -22,6 +22,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+'''
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host="localhost",
@@ -29,7 +30,7 @@ db = mysql.connector.connect(
     passwd="appuser123",
     database="my_project"
 )
-'''
+
 if (not db):
     print("No connection")
 crsr = db.cursor()
