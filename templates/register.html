@@ -4,17 +4,74 @@
     Register
 {% endblock %}
 
+
+{% block header %}
+<div class="col text-center">
+    <h1>Just few tiny steps to get to know you</h1>
+</div>
+
+<div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:40%"></div>
+</div>
+{% endblock %}
+
+
+
+
 {% block main %}
-    <form action="/register" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="user_register" name="username" placeholder="Username" type="text" required>
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" id="user_password1" name="password" placeholder="Password" type="password" required>
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto" id="user_password2" name="confirmation" placeholder="Retype Password" type="password" required>
-        </div>
-        <button class="btn btn-primary" type="submit">Register now</button>
-    </form>
+
+<form class="row g-3" action="/register" method="post">
+
+    <div class="col-md-4">
+        <label for="Fname" class="form-label">First name</label>
+        <input type="text" class="form-control" id="Fname" name="Fname" autocomplete="off" placeholder="First name" autofocus>
+    </div>
+    
+
+    <div class="col-md-4">
+        <label for="Lname" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="Lname" name="Lname" autocomplete="off" placeholder="Last name">
+    </div>
+
+
+    <div class="col-md-4">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="e.g. Your Email@something.com">
+    </div>
+
+
+    <div class="col-md-6">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="8 characters with numbers">
+    </div>
+
+
+    <div class="col-md-6">
+        <label for="password2" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="password2" name="password2" placeholder="Repeat password" required>
+    </div>
+
+
+    <div class="col-md-4">
+        <label for="phone" class="form-label">Phone number</label>
+        <input type="number" class="form-control" id="phone" name="phone" placeholder="+972......" required>
+    </div>
+
+
+    <div class="col-md-4">
+        <label for="city" class="form-label">City</label>
+        <input type="text" class="form-control" id="city"  name="city" placeholder="Where are you from">
+    </div>
+      
+
+    <div class="col-md-4">
+      <label for="address" class="form-label">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main St">
+    </div>
+
+    
+    <div class="col-12">
+      <button type="submit" class="btn btn-danger">Register me</button>
+    </div>
+</form>
 {% endblock %}

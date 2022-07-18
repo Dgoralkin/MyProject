@@ -41,8 +41,7 @@ for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID INT UNSIGNED NOT NULL AUTO_INCREMENT, Fname VARCHAR(45) NOT NULL, Lname VARCHAR(45) NOT NULL, Email VARCHAR(45) NOT NULL, Phone INT NOT NULL, Registered DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID),UNIQUE INDEXID_UNIQUE(ID ASC) VISIBLE)")
-
+    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
 
 
   
@@ -117,9 +116,13 @@ def register():
 
     # Register user
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        confirmation = request.form.get("confirmation")
+        FNAME = request.form.get("Fname")
+        LNAME = request.form.get("Lname")
+        PSSWD = request.form.get("password")
+        PSSWD2 = request.form.get("password2")
+        PHONE = request.form.get("phone")
+        CITY = request.form.get("city")
+        ADDRESS = request.form.get("address")
 
         # Check if forms filled.
         if not username or not password or not confirmation:
