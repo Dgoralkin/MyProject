@@ -22,7 +22,7 @@
             "port": 3306,
             "driver": "MySQL",
             "name": "appuser",
-            "database": "mydb",
+            "database": "my_project",
             "username": "appuser",
             "password": "appuser123"
         }

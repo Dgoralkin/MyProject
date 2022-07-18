@@ -31,7 +31,6 @@ db = mysql.connector.connect(
 )
 if (not db):
     print("No connection")
-
 crsr = db.cursor()
 
 # Create table "users" if doesn't exist in DB
