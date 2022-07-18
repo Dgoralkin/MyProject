@@ -51,8 +51,10 @@ if (exist == 0):
     print("Table Created")
 
 # Test INSERT INTO TABLE:
-crsr.execute('INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address) VALUES ("Dany", "Goralkin", "Goralkin@Gmail.com", "123ABC", 972555, "Yoqneam", "Stam 1254")')
-
+user_info = ('Dany', 'Goralkin', 'Goralkin@Gmail.com', '2ABC123', +972555, 'Yoqneam', 'Stam kaha 2')
+crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address) VALUES (%s, %s, %s, %s, %s, %s, %s)", user_info)
+db.commit()
+print("Data Inserted")
 
 
 
