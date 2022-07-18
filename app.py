@@ -1,4 +1,5 @@
 import os
+import mysql.connector
 
 
 from flask import Flask, flash, redirect, render_template, request, session
@@ -6,6 +7,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
+
 
 # Heroku app location: https://final-project-dany.herokuapp.com/
 
@@ -15,13 +17,36 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Configure MySql connection to DataBase For app Manager
+db = mysql.connector.connect(
+    host="localhost",
+    user="appuser",
+    passwd="appuser123",
+    database="my_project"
+)
+if (not db):
+    print("No connection")
+
+crsr = db.cursor()
+
+# Create table "users" if doesn't exist in DB
+crsr.execute("SHOW TABLES")
+read = crsr.fetchall()
+exist = 0
+for x in read:
+    if ("users" == x[0]):
+        exist += 1
+if (exist == 0):
+    crsr.execute("CREATE TABLE users (ID INT UNSIGNED NOT NULL AUTO_INCREMENT, Fname VARCHAR(45) NOT NULL, Lname VARCHAR(45) NOT NULL, Email VARCHAR(45) NOT NULL, Phone INT NOT NULL, Registered DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID),UNIQUE INDEXID_UNIQUE(ID ASC) VISIBLE)")
+
+
+
+  
 
 
 

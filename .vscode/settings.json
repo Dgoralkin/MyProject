@@ -1,0 +1,30 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "My_sql_local",
+            "username": "Dgoralkin",
+            "password": "Passat838",
+            "database": "finance"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "appuser",
+            "database": "mydb",
+            "username": "appuser",
+            "password": "appuser123"
+        }
+    ]
+}
