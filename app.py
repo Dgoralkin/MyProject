@@ -29,6 +29,7 @@ db = mysql.connector.connect(
     passwd="appuser123",
     database="my_project"
 )
+'''
 if (not db):
     print("No connection")
 crsr = db.cursor()
@@ -43,6 +44,7 @@ for x in read:
 if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
+'''
 
   
 
