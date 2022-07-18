@@ -51,7 +51,8 @@ if (exist == 0):
     print("Table Created")
 
 # Test INSERT INTO TABLE:
-crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City) VALUES (Dany, Goralkin, Goralkin@Gmail.com, 123ABC, 972555, Yoqneam)")
+crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address) VALUES ("Dany", "Goralkin", "Goralkin@Gmail.com", "123ABC", 972555, "Yoqneam", "Stam 1254");
+")
 
 
 
