@@ -1,13 +1,12 @@
 
-/*
 $(document).ready(function(){
     $("#Sub1").click(function(){
         if ($("#password").val() != $("#password2").val()){
-            alert("Passwords do not mach");
+            alert("Passwords does not match");
         }   
     });
 });
-*/
+
 
 // Show Password Function
 function showPsswrd() {
