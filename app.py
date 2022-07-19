@@ -50,11 +50,12 @@ if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
 
-# Test INSERT INTO TABLE:
+''' Test INSERT INTO TABLE:
 user_info = ('Dany', 'Goralkin', 'Goralkin@Gmail.com', '2ABC123', +972555, 'Yoqneam', 'Stam kaha 2')
 crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address) VALUES (%s, %s, %s, %s, %s, %s, %s)", user_info)
 db.commit()
 print("Data Inserted")
+'''
 
 
 
@@ -132,11 +133,15 @@ def register():
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
-        '''
+        
+        
         # Check if forms filled.
-        if not username or not password or not confirmation:
-            return apology("Please fill UserName and/or password", 401)
-
+        if not FNAME or not LNAME or not PSSWD or not PSSWD2 or not PHONE or not CITY or not ADDRESS:
+            print("Yes")
+            return render_template("register.html", response = "Please fill all forms")
+        
+        
+        '''
          # Check if passwords are identical.
         elif password != confirmation:
             return apology("Passwords doesn't match")

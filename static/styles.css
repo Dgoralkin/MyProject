@@ -50,3 +50,9 @@ span
     background-repeat: no-repeat; /* Do not repeat the image */
     background-size: cover; /* Resize the background image to cover the entire container */
 }
+
+.border
+{
+    border: 2px solid black;
+    padding: 15px;
+}
