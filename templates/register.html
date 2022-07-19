@@ -20,38 +20,31 @@
 
 {% block main %}
 
-<div class="alert alert-primary d-flex align-items-center" role="alert">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
-      <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-    </svg>
-    <div>
-      {{ response }}
-    </div>
-</div>
 
 <form class="row g-3" action="/register" method="post">
 
     <div class="col-md-4">
         <label for="Fname" class="form-label">First name</label>
-        <input type="text" class="form-control" id="Fname" name="Fname" autocomplete="off" placeholder="First name" autofocus>
+        <input type="text" class="form-control" id="Fname" name="Fname" autocomplete="off" placeholder="First name" autofocus required>
     </div>
     
 
     <div class="col-md-4">
         <label for="Lname" class="form-label">Last name</label>
-        <input type="text" class="form-control" id="Lname" name="Lname" autocomplete="off" placeholder="Last name">
+        <input type="text" class="form-control" id="Lname" name="Lname" autocomplete="off" placeholder="Last name" required>
     </div>
 
 
     <div class="col-md-4">
       <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" name="email" placeholder="e.g. Your Email@something.com">
+      <input type="email" class="form-control" id="email" name="email" placeholder="e.g. Your Email@something.com" required>
     </div>
 
 
     <div class="col-md-6">
       <label for="password" class="form-label">Password</label>
-      <input type="password" class="form-control" id="password" name="password" placeholder="8 characters with numbers">
+      <input type="password" class="form-control" id="password" name="password" placeholder="One number, one uppercase and lowercase letter, 8 or more characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+      <input type="checkbox" onclick="showPsswrd('password')">Show Passwords
     </div>
 
 
@@ -59,6 +52,9 @@
         <label for="password2" class="form-label">Confirm Password</label>
         <input type="password" class="form-control" id="password2" name="password2" placeholder="Repeat password" required>
     </div>
+
+
+    <p class="bold">{{ response }}</p>
 
 
     <div class="col-md-4">
@@ -69,13 +65,13 @@
 
     <div class="col-md-4">
         <label for="city" class="form-label">City</label>
-        <input type="text" class="form-control" id="city"  name="city" placeholder="Where are you from">
+        <input type="text" class="form-control" id="city"  name="city" placeholder="Where are you from" required>
     </div>
       
 
     <div class="col-md-4">
       <label for="address" class="form-label">Address</label>
-      <input type="text" class="form-control" id="address" value="" name="address" placeholder="1234 Main St">
+      <input type="text" class="form-control" id="address" value="" name="address" placeholder="1234 Main St" required>
     </div>
 
     
@@ -83,4 +79,6 @@
       <button id="Sub1" type="submit" class="btn btn-danger">Register me</button>
     </div>
 </form>
+
+
 {% endblock %}

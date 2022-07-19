@@ -56,3 +56,15 @@ span
     border: 2px solid black;
     padding: 15px;
 }
+
+.bold
+{
+    padding-left: 20%;
+    padding-right: 20%;
+    color: rgb(238, 255, 0);
+    background-color: #1272a8;
+    text-decoration: underline;
+    font-size: large;
+}
+
+

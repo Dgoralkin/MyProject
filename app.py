@@ -133,12 +133,14 @@ def register():
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
+        print(PSSWD, PSSWD)
         
         
         # Check if forms filled.
-        if not FNAME or not LNAME or not PSSWD or not PSSWD2 or not PHONE or not CITY or not ADDRESS:
-            print("Yes")
-            return render_template("register.html", response = "Please fill all forms")
+        if (PSSWD != PSSWD2):
+            print("Error")
+            response = "Please fill all details correctly"
+            return render_template("register.html", response = response)
         
         
         '''
@@ -160,6 +162,7 @@ def register():
 
         return greet("You are a member now!")
         '''
+        return render_template("login.html")
     return render_template("register.html")
 
 
