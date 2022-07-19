@@ -1,5 +1,4 @@
 // Validate password and send verification Email 
-
 $(document).ready(function(){
     $("#Sub1").click(function(){
         if ($("#password").val() != $("#password2").val()){
@@ -7,10 +6,11 @@ $(document).ready(function(){
         }
         else if ($("#password").val() == $("#password2").val()){
           let email = $("#email").val()
-          let name = $("#Fname").val()
+          let Fname = $("#Fname").val()
+          let Lname = $("#Lname").val()
           console.log(email);
-          sendMail(email, name)
-          alert("We are sending you an Email with verification code to use on loging.")
+          // sendMail(email, Fname, Lname)
+          // alert("We are sending you an Email with verification code to use on loging.")
         }
     });
 });
@@ -19,8 +19,7 @@ $(document).ready(function(){
 
 
 // Send Verification Email with unique code
-
-function sendMail(receiver, name){
+function sendMail(receiver, Fname, Lname){
   console.log("Sending");
   verCode = getRndInteger(1000,9999)
   Email.send({
@@ -31,23 +30,22 @@ function sendMail(receiver, name){
     To : receiver,
     From : "gbikes.customer.service@gmail.com",
     Subject : "Your 2-Step verification code just arrived",
-    Body : `This is your unique 2-step verification code to use when Loging in @ https://final-project-dany.herokuapp.com/login - ${verCode}.`
+    Body : `Hi ${Fname} ${Lname} and wellcome to the G-bikes service app.
+    This is your unique 2-step verification code to use when Loging in @ https://final-project-dany.herokuapp.com/login - ${verCode}.`
   }).then(
-    message => alert(`${name}, Please check your mailbox. We sent you an Email with your verification code. 
+    message => alert(`${Fname}, Please check your mailbox. We sent you an Email with your verification code. 
     Email sent ${message} to: ${receiver}
     You might check your SPAM folder if it taking too long.`)
   );
 }
 
 // Code generator
-
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
 
 // Show Password Function
-
 function showPsswrd() {
   var x = document.getElementById("password");
   var y = document.getElementById("password2");

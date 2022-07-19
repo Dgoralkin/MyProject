@@ -31,7 +31,7 @@
 
     <div class="col-md-4">
         <label for="Lname" class="form-label">Last name</label>
-        <input type="text" class="form-control" id="Lname" name="Lname" autocomplete="off" placeholder="Last name" required>
+        <input type="text" class="form-control" id="Lname" value="" name="Lname" autocomplete="off" placeholder="Last name" required>
     </div>
 
 
@@ -80,10 +80,11 @@
     </div>
 </form>
 
-<!--
+<br>
 <div class="col-12">
-    <input type="button" value="Send Email" onclick="sendMail()"/>
+    <p class="bold">{{ response2 }}</p>
+    <button id="recover" class="btn btn-warning" type="button"><a href="/">{{ recover }}</a></button>
 </div>
--->
+
 
 {% endblock %}

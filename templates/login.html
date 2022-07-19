@@ -31,17 +31,23 @@
                     <input class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email" type="email">
                 </div>
 
-
                 <div class="mb-3">
                     <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
                 </div>
 
-                <button class="btn btn-success" type="submit">Log In</button>
+                {% for x in user %}
+                print(x)
+                {% endfor %}
 
-                <p>Not a member yet?  Register now!</p>
+                <button class="btn btn-success" type="submit">Log In</button>
             </form>
 
+            <br><br>
+            <p>Not a member yet?  Register now!</p>
             <button class="btn btn-danger" type="button"><a href="/register">Register now</a></button>
+            <br><br>
+            <p>Forgot your password?  Recover it now!</p>
+            <button class="btn btn-warning" type="button"><a href="/">Recover password</a></button>
         </div>
 
         <!-- Right side container -->
@@ -51,7 +57,6 @@
                 <p id="P1_right">Some Decoration will be added later.</p>
             </div>
         </div>
-
     </div>
 </div>
 

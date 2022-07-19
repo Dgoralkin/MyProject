@@ -50,13 +50,6 @@ if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified TINYINT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
 
-''' Test INSERT INTO TABLE:
-user_info = ('Dany', 'Goralkin', 'Goralkin@Gmail.com', '2ABC123', +972555, 'Yoqneam', 'Stam kaha 2', 1)
-crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
-db.commit()
-print("Data Inserted")
-'''
-
 
 
 @app.after_request
@@ -128,13 +121,14 @@ def register():
     if request.method == "POST":
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
+        EMAIL = request.form.get("email")
         PSSWD = request.form.get("password")
         PSSWD2 = request.form.get("password2")
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
-        user = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}]
-        print(user)
+        VERIFIED = 0
+        USER = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"EMAIL":EMAIL}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}, {"VERIFIED":VERIFIED}]
         
         
         # Check if forms filled.
@@ -144,19 +138,21 @@ def register():
         
 
         # Check if username exists in db.
-        '''
-        users = db.execute("SELECT username FROM users")
-        for user in users:
-            #print(user["username"])
-            if username == user["username"]:
-                #print("confirmed")
-                return apology("Username exists, choose other username.")
-        '''
+        crsr.execute("SELECT Email FROM users")
+        for x in crsr:
+            # print(x[0])
+            if EMAIL.lower() == x[0].lower():
+                print("USER EXIST IN DB")
+                return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
+            
+            
         # Add username and Hashed password into db.
-        # db.execute("INSERT INTO users (username, hash) values (?, ?)", username, generate_password_hash(password))
-
+        user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
+        crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
+        db.commit()
+        print("New User Inserted")
         
-        return render_template("login.html", user=user)
+        return render_template("login.html", user=USER)
     return render_template("register.html")
 
 '''
