@@ -47,12 +47,12 @@ for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
+    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified TINYINT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
 
 ''' Test INSERT INTO TABLE:
-user_info = ('Dany', 'Goralkin', 'Goralkin@Gmail.com', '2ABC123', +972555, 'Yoqneam', 'Stam kaha 2')
-crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address) VALUES (%s, %s, %s, %s, %s, %s, %s)", user_info)
+user_info = ('Dany', 'Goralkin', 'Goralkin@Gmail.com', '2ABC123', +972555, 'Yoqneam', 'Stam kaha 2', 1)
+crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
 db.commit()
 print("Data Inserted")
 '''
@@ -142,27 +142,21 @@ def register():
             response = "Please re-enter passwords correctly"
             return render_template("register.html", response=response)
         
-        
-        '''
-         # Check if passwords are identical.
-        elif password != confirmation:
-            return apology("Passwords doesn't match")
 
-        
         # Check if username exists in db.
+        '''
         users = db.execute("SELECT username FROM users")
         for user in users:
             #print(user["username"])
             if username == user["username"]:
                 #print("confirmed")
                 return apology("Username exists, choose other username.")
-
-        # Add username and Hashed password into db.
-        db.execute("INSERT INTO users (username, hash) values (?, ?)", username, generate_password_hash(password))
-
-        return greet("You are a member now!")
         '''
-        return render_template("login.html")
+        # Add username and Hashed password into db.
+        # db.execute("INSERT INTO users (username, hash) values (?, ?)", username, generate_password_hash(password))
+
+        
+        return render_template("login.html", user=user)
     return render_template("register.html")
 
 '''

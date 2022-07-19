@@ -6,16 +6,20 @@ $(document).ready(function(){
             alert("Passwords does not match");
         }
         else if ($("#password").val() == $("#password2").val()){
-          sendMail()
-          alert("Please check your mailbox. We sent you an Email with verification code.");
+          let email = $("#email").val()
+          console.log(email);
+          sendMail(email)
+          alert("Please check your mailbox. We sent you an Email with verification code.")
         }
     });
 });
 
 
+
+
 // Send Verification Email with unique code
 
-function sendMail(){
+function sendMail(receiver){
   console.log("Sending");
   verCode = getRndInteger(1000,9999)
   Email.send({
@@ -23,12 +27,12 @@ function sendMail(){
     Host : "smtp.elasticemail.com",
     Username : "gbikes.customer.service@gmail.com",
     Password : "D360E0BFB939E840E5D18DB2BF786E980F77",
-    To : 'Goralkin@gmail.com',
+    To : receiver,
     From : "gbikes.customer.service@gmail.com",
     Subject : "We are just testing the mailbox",
     Body : `This is your unique code to use on Login: ${verCode} .`
   }).then(
-    message => alert(message)
+    message => alert(`Please check your mailbox. We sent you an Email with verification code. Email sent ${message}`)
   );
   console.log("Email sent", verCode);
 }
