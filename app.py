@@ -133,14 +133,14 @@ def register():
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
-        print(PSSWD, PSSWD)
+        user = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}]
+        print(user)
         
         
         # Check if forms filled.
         if (PSSWD != PSSWD2):
-            print("Error")
-            response = "Please fill all details correctly"
-            return render_template("register.html", response = response)
+            response = "Please re-enter passwords correctly"
+            return render_template("register.html", response=response)
         
         
         '''
@@ -164,6 +164,19 @@ def register():
         '''
         return render_template("login.html")
     return render_template("register.html")
+
+'''
+#--------------------------------------------------------------------------------- /register
+@app.route("/verification", methods=["GET", "POST"])
+def verifify():
+
+    # Register user
+    if request.method == "POST":
+        return render_template("register.html")
+
+
+    return render_template("register.html")
+'''
 
 
 #--------------------------------------------------------------------------------- LOGout
