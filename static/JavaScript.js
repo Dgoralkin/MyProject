@@ -2,12 +2,15 @@
 function showPsswrd() {
   var x = document.getElementById("password");
   var y = document.getElementById("password2");
+  var z = document.getElementById("verPasswd2");
   if (x.type === "password") {
     x.type = "text";
     y.type = "text";
+    z.type = "text";
   } else {
     x.type = "password";
     y.type = "password";
+    z.type = "password";
   }
 }
 

@@ -1,12 +1,13 @@
 import os
 import mysql.connector
-
-
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required
+import smtplib
+import random
+from email.message import EmailMessage
 
 
 # Heroku app location: https://final-project-dany.herokuapp.com/
@@ -27,8 +28,8 @@ Session(app)
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
-    user="ba430e02e4e6b8",
-    passwd="1fbec195",
+    user=os.environ.get('Myproject_user'),
+    passwd=os.environ.get('Myproject_psswd'),
     database="heroku_c982995c47a34c9"
 )
 
@@ -119,7 +120,7 @@ def register():
     
     # Register user
     if request.method == "POST":
-        crsr = db.cursor()
+        # crsr = db.cursor()
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
         EMAIL = request.form.get("email")
@@ -146,14 +147,37 @@ def register():
                 print("USER EXIST IN DB")
                 return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
             
+        
+        # Generate 2-step Psswd for Email verification
+        TWOSTEPCODE = random.randint(1000,9999)
+        
+        # Send verification Email to user
+        EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
+        EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
+        
+        msg = EmailMessage()
+        msg['Subject'] = 'This is a verification Email From G-bikes'
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = EMAIL
+        msg.set_content('Your 2-Step verification code just arrived')
+        txt = "Your code is: " + str(TWOSTEPCODE)
+
+        msg.add_alternative(txt, subtype='html')
+        
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
+            smtp.send_message(msg)
             
+        '''
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
-        print("New User Inserted")
+        print("New User Inserted into DB")
+        '''
         
-        return render_template("verification.html", user=USER)
+        
+        return render_template("verification.html", user=USER, TwoStepCode=TWOSTEPCODE)
     return render_template("register.html")
 
 
@@ -163,10 +187,15 @@ def verifify():
 
     # Register user
     if request.method == "POST":
-        return render_template("register.html")
+        VERPSSWD1 = request.form.get("verPasswd1")
+        VERPSSWD2 = request.form.get("verPasswd2")
+        print('WE ARE HERE', VERPSSWD1, VERPSSWD2)
+        if (VERPSSWD1 == VERPSSWD2):
+            print("YESSSSSSSSS")
+            return render_template("login.html")
 
 
-    return render_template("register.html")
+    return render_template("verification.html")
 
 
 

@@ -17,9 +17,24 @@
 
 
 {% block main %}
-{% for user in USER %}
-<p>{{ user }}</p>
-{% endfor %}
+
+<form class="row g-3" action="/verification" method="post">
+
+
+    <div class="col-md-6">
+      <label for="verPasswd2" class="form-label">Password</label>
+      <input type="password" id="verPasswd1" name="verPasswd1" value="{{TwoStepCode}}" hidden>
+      <input type="password" class="form-control" id="verPasswd2" name="verPasswd2" placeholder="Please enter your verification code" required>
+
+      <input type="checkbox" onclick="showPsswrd()">Show Password
+    </div>
+
+
+    
+    <div class="col-12">
+      <button id="Sub1" type="submit" class="btn btn-danger">Register me</button>
+    </div>
+</form>
 
 
 {% endblock %}
