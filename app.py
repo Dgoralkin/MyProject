@@ -28,9 +28,9 @@ Session(app)
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
-    user='ba430e02e4e6b8',
-    passwd='1fbec195',
-    database="heroku_c982995c47a34c9"
+    user='b9886f5b189f60',
+    passwd='0190bc04',
+    database="heroku_3003039de5cde26"
 )
 
 if (db):
