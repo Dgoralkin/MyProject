@@ -1,4 +1,5 @@
 // Show Password Function
+/*
 function showPsswrd(id) {
   if (id == 1){
     var x = document.getElementById("password");
@@ -23,6 +24,7 @@ function showPsswrd(id) {
 
 
 
+
 // Validate password and send verification Email 
 $(document).ready(function(){
     $("#Sub1").click(function(){
@@ -40,7 +42,6 @@ $(document).ready(function(){
           Email sent ${message} to: ${receiver}
           You might check your SPAM folder if it taking too long.`)
         }
-        */
     });
 });
 
@@ -73,7 +74,7 @@ function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-
+*/
 
 
 

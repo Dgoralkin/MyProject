@@ -196,7 +196,7 @@ def verifify():
         print('WE ARE HERE', VERPSSWD1, VERPSSWD2)
         if (VERPSSWD1 == VERPSSWD2):
             print("YESSSSSSSSS")
-            return render_template("login.html")
+            return redirect("/")
 
 
     return render_template("verification.html")
