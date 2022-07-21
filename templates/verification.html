@@ -7,12 +7,19 @@
 
 {% block header %}
 
+
+<h1>Please check your mailbox. We sent you an Email with your verification code. 
+    Email sent ${message} to: ${receiver}
+    You might check your SPAM folder if it taking too long.</h1>
 {% endblock %}
 
 
 
 
 {% block main %}
-<h1>V</h1>
+{% for user in USER %}
+<p>{{ user }}</p>
+{% endfor %}
+
 
 {% endblock %}

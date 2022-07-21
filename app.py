@@ -47,7 +47,7 @@ for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(45) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified TINYINT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
+    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(255) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified TINYINT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
 
 
@@ -116,9 +116,10 @@ def login():
 #--------------------------------------------------------------------------------- /register
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
+    
     # Register user
     if request.method == "POST":
+        crsr = db.cursor()
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
         EMAIL = request.form.get("email")
@@ -129,7 +130,7 @@ def register():
         ADDRESS = request.form.get("address")
         VERIFIED = 0
         USER = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"EMAIL":EMAIL}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}, {"VERIFIED":VERIFIED}]
-        
+        print(USER)
         
         # Check if forms filled.
         if (PSSWD != PSSWD2):
@@ -152,11 +153,11 @@ def register():
         db.commit()
         print("New User Inserted")
         
-        return render_template("login.html", user=USER)
+        return render_template("verification.html", user=USER)
     return render_template("register.html")
 
-'''
-#--------------------------------------------------------------------------------- /register
+
+#--------------------------------------------------------------------------------- /verification
 @app.route("/verification", methods=["GET", "POST"])
 def verifify():
 
@@ -166,7 +167,7 @@ def verifify():
 
 
     return render_template("register.html")
-'''
+
 
 
 #--------------------------------------------------------------------------------- LOGout

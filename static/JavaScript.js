@@ -1,17 +1,36 @@
+// Show Password Function
+function showPsswrd() {
+  var x = document.getElementById("password");
+  var y = document.getElementById("password2");
+  if (x.type === "password") {
+    x.type = "text";
+    y.type = "text";
+  } else {
+    x.type = "password";
+    y.type = "password";
+  }
+}
+
+
+
 // Validate password and send verification Email 
 $(document).ready(function(){
     $("#Sub1").click(function(){
         if ($("#password").val() != $("#password2").val()){
             alert("Passwords does not match");
         }
+        /*
         else if ($("#password").val() == $("#password2").val()){
           let email = $("#email").val()
           let Fname = $("#Fname").val()
           let Lname = $("#Lname").val()
           console.log(email);
           // sendMail(email, Fname, Lname)
-          // alert("We are sending you an Email with verification code to use on loging.")
+          alert(`${Fname}, Please check your mailbox. We sent you an Email with your verification code. 
+          Email sent ${message} to: ${receiver}
+          You might check your SPAM folder if it taking too long.`)
         }
+        */
     });
 });
 
@@ -45,18 +64,7 @@ function getRndInteger(min, max) {
 }
 
 
-// Show Password Function
-function showPsswrd() {
-  var x = document.getElementById("password");
-  var y = document.getElementById("password2");
-  if (x.type === "password") {
-    x.type = "text";
-    y.type = "text";
-  } else {
-    x.type = "password";
-    y.type = "password";
-  }
-}
+
 
 
 

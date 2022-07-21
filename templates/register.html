@@ -13,13 +13,20 @@
 <div class="progress">
     <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:40%"></div>
 </div>
+
+
+<div class="col-12">
+    <br>
+    <p class="bold">{{ response2 }}</p>
+    <button id="recover" class="btn btn-warning" type="button"><a href="/">{{ recover }}</a></button>
+</div>
+
 {% endblock %}
 
 
 
 
 {% block main %}
-
 
 <form class="row g-3" action="/register" method="post">
 
@@ -81,10 +88,7 @@
 </form>
 
 <br>
-<div class="col-12">
-    <p class="bold">{{ response2 }}</p>
-    <button id="recover" class="btn btn-warning" type="button"><a href="/">{{ recover }}</a></button>
-</div>
+
 
 
 {% endblock %}

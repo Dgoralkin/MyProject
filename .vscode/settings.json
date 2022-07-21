@@ -5,32 +5,6 @@
                 "authProtocol": "default"
             },
             "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "My_sql_local",
-            "username": "Dgoralkin",
-            "password": "Passat838",
-            "database": "finance"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default"
-            },
-            "previewLimit": 50,
-            "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "appuser",
-            "database": "my_project",
-            "username": "appuser",
-            "password": "appuser123"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default"
-            },
-            "previewLimit": 50,
             "server": "eu-cdbr-west-03.cleardb.net",
             "port": 3306,
             "driver": "MySQL",
@@ -38,6 +12,19 @@
             "database": "heroku_c982995c47a34c9",
             "username": "ba430e02e4e6b8",
             "password": "1fbec195"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "My_sql_local",
+            "username": "root",
+            "password": "Octavia67",
+            "database": "dany"
         }
     ]
 }
