@@ -67,8 +67,9 @@ def after_request(response):
 @login_required
 def index():
     
+    
 
-    return render_template("index.html")
+    return render_template("login.html")
 
 
 
@@ -80,7 +81,7 @@ def login():
     #Log user in
 
     # Forget any user_id
-    session.clear()
+    # session.clear()
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
