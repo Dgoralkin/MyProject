@@ -23,7 +23,18 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-
+def checConnection():
+    connection = mysql.connector.connect(
+        host="eu-cdbr-west-03.cleardb.net",
+        user='b9886f5b189f60',
+        passwd='0190bc04',
+        database="heroku_3003039de5cde26"
+    )
+    if (connection):
+        print("Connection Established")
+    else:
+        print("NO Connection")
+        checConnection()
 
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
@@ -141,6 +152,8 @@ def register():
         
 
         # Check if username exists in db.
+        z = checConnection()
+        print(z)
         crsr.execute("SELECT Email FROM users")
         for x in crsr:
             # print(x[0])
@@ -177,6 +190,7 @@ def register():
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
+        checConnection()
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
 
@@ -202,6 +216,7 @@ def verifify():
             
             # Update user to be verified
             email = [EMAIL]
+            checConnection()
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
 
