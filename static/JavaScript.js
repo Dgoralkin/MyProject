@@ -12,7 +12,7 @@ function showPsswrd(id) {
     }
   }
   else if (id == 2){
-    var z = document.getElementById("verPasswd2");
+    var z = document.getElementById("verPasswd");
     if (z.type === "password") {
       z.type = "text";
     } else {

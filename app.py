@@ -183,33 +183,28 @@ def verifify():
     if request.method == "POST":
         
         # Receive data from page
-        #VERPSSWD1 = request.form.get("verPasswd1")
         VERPSSWD = request.form.get("verPasswd")
         EMAIL = request.form.get("EMAIL")
         email = [EMAIL]
-        print("P2 FROM POST:", VERPSSWD, EMAIL)
         
         crsr.execute("SELECT * FROM users WHERE Email=%s", email)
     
         for x in crsr:
             USER = x
-        #print(USER)
+        
+        print(VERPSSWD, str(USER[8]))
 
-        if (VERPSSWD == USER[8]):
+        if (VERPSSWD == str(USER[8])):
             print("User Verified")
             
-            # Update user to be verified
+            # Update user to be verified in DB
             email = [EMAIL]
-            
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
             return redirect("/")
-        
-        # Verification code is incorrect
-        #return render_template("verification.html", RESPONSE="Your Verification code is incorrect!, please try again")
         return render_template("verification.html", user=USER, RESPONSE="Your Verification code is incorrect!, please try again")
     
-    # GET RESPONSE
+    # return from GET response
     return redirect("/")
 
 
