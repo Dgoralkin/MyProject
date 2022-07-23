@@ -19,6 +19,14 @@ function showPsswrd(id) {
       z.type = "password";
     }
   }
+  else if (id == 3){
+    var w = document.getElementById("verPasswd3");
+    if (w.type === "password") {
+      w.type = "text";
+    } else {
+      w.type = "password";
+    }
+  }
 }
 
 

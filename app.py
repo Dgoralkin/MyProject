@@ -23,25 +23,12 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-def checConnection():
-    connection = mysql.connector.connect(
-        host="eu-cdbr-west-03.cleardb.net",
-        user='b9886f5b189f60',
-        passwd='0190bc04',
-        database="heroku_3003039de5cde26"
-    )
-    if (connection):
-        print("Connection Established")
-    else:
-        print("NO Connection")
-        db.close()
-        checConnection()
 
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
-    host="eu-cdbr-west-03.cleardb.net",
-    user='b9886f5b189f60',
-    passwd='0190bc04',
+    host="localhost",
+    user='root',
+    passwd='Octavia67',
     database="heroku_3003039de5cde26"
 )
 
@@ -53,8 +40,6 @@ crsr = db.cursor()
 
 
 # Create table "users" if doesn't exist in DB
-
-checConnection()
 crsr.execute("SHOW TABLES")
 read = crsr.fetchall()
 exist = 0
@@ -99,7 +84,7 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-
+        '''
         # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username", 403)
@@ -107,11 +92,11 @@ def login():
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 403)
-
+        '''
+        
         '''
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
@@ -120,6 +105,20 @@ def login():
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
         '''
+        # Check if user is registered and verified
+        EMAIL = request.form.get("email").lower()
+        PSSWD = request.form.get("password")
+        USER = [EMAIL]
+        # print(USER[0])
+        
+        crsr.execute("SELECT Psswd FROM users WHERE Email=%s", USER)
+        #chech_psswd = check_password_hash(rows[0]["hash"], PSSWD)
+        for user in crsr:
+            print(user[0])
+            res =  check_password_hash(user[0], PSSWD)
+            print(res)
+            
+        
 
         # Redirect user to home page
         return redirect("/")
@@ -135,7 +134,6 @@ def register():
     
     # Register user
     if request.method == "POST":
-        # crsr = db.cursor()
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
         EMAIL = request.form.get("email")
@@ -155,9 +153,6 @@ def register():
         
 
         # Check if username exists in db.
-        db.close()
-        checConnection()
-
         crsr.execute("SELECT Email FROM users")
         for x in crsr:
             # print(x[0])
@@ -183,6 +178,7 @@ def register():
         msg.set_content('Your 2-Step verification code just arrived')
         txt = "Your code is: " + str(TWOSTEPCODE)
         
+        # TO BE DELETED !!!!!!!!!!!!!!!!!!!!!
         print("Your code is: ", str(TWOSTEPCODE))
         
 
@@ -194,8 +190,6 @@ def register():
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
-        db.close()
-        checConnection()
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
 
@@ -215,14 +209,12 @@ def verifify():
         VERPSSWD1 = request.form.get("verPasswd1")
         VERPSSWD2 = request.form.get("verPasswd2")
         EMAIL = request.form.get("EMAIL")
-        print('WE ARE HERE', VERPSSWD1, VERPSSWD2, EMAIL)
+
         if (VERPSSWD1 == VERPSSWD2):
-            print("YESSSSSSSSS")
+            print("User Verified")
             
             # Update user to be verified
             email = [EMAIL]
-            db.close()
-            checConnection()
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
 
@@ -243,14 +235,3 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
-
-
-
-
-
-
-
-
-
-
-

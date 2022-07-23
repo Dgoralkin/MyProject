@@ -28,11 +28,13 @@
             <form action="/login" method="post">
 
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-auto" id="email" name="email" placeholder="Email" type="email">
+                    <label for="email" class="form-label">Enter your login details</label>
+                    <input type="email" class="form-control mx-auto w-auto" name="email" placeholder="e.g. Your Email@something.com" required>
                 </div>
 
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
+                    <input type="password" id="verPasswd3" class="form-control mx-auto w-auto" name="password" placeholder="One number, one uppercase and lowercase letter, 8 or more characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+                    <input type="checkbox" onclick="showPsswrd('3')">Show Password
                 </div>
 
                 <button class="btn btn-success" type="submit">Log In</button>
