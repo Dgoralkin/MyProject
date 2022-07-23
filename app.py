@@ -171,7 +171,7 @@ def register():
         print("New User Inserted into DB")
         
         
-        return render_template("verification.html", user=USER, EMAIL=EMAIL, TwoStepCode=TWOSTEPCODE)
+        return render_template("verification.html", user=USER, EMAIL=EMAIL)
     return render_template("register.html")
 
 
@@ -183,19 +183,19 @@ def verifify():
     if request.method == "POST":
         
         # Receive data from page
-        VERPSSWD1 = request.form.get("verPasswd1")
-        VERPSSWD2 = request.form.get("verPasswd2")
+        #VERPSSWD1 = request.form.get("verPasswd1")
+        VERPSSWD = request.form.get("verPasswd")
         EMAIL = request.form.get("EMAIL")
         email = [EMAIL]
-        print("P2 FROM POST:", VERPSSWD1, VERPSSWD2, EMAIL)
+        print("P2 FROM POST:", VERPSSWD, EMAIL)
         
         crsr.execute("SELECT * FROM users WHERE Email=%s", email)
     
         for x in crsr:
             USER = x
-        print(USER)
+        #print(USER)
 
-        if (VERPSSWD1 == VERPSSWD2):
+        if (VERPSSWD == USER[8]):
             print("User Verified")
             
             # Update user to be verified
@@ -207,7 +207,7 @@ def verifify():
         
         # Verification code is incorrect
         #return render_template("verification.html", RESPONSE="Your Verification code is incorrect!, please try again")
-        return render_template("verification.html", user=USER, TwoStepCode=USER[8], RESPONSE="Your Verification code is incorrect!, please try again")
+        return render_template("verification.html", user=USER, RESPONSE="Your Verification code is incorrect!, please try again")
     
     # GET RESPONSE
     return redirect("/")
