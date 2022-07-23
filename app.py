@@ -47,7 +47,7 @@ for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(255) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified TINYINT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
+    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(255) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
     print("Table Created")
 
 
@@ -65,10 +65,8 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    
-    
-
-    return render_template("login.html")
+    # Filter wheter user loged in
+    return render_template("main.html")
 
 
 
@@ -80,31 +78,11 @@ def login():
     #Log user in
 
     # Forget any user_id
-    # session.clear()
+    session.clear()
 
-    # User reached route via POST (as by submitting a form via POST)
+    # User reached route via POST
     if request.method == "POST":
-        '''
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            return apology("must provide username", 403)
-
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            return apology("must provide password", 403)
-        '''
         
-        '''
-        # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
-        
-        
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-        '''
         # Check if user is registered and verified
         EMAIL = request.form.get("email").lower()
         PSSWD = request.form.get("password")
@@ -114,10 +92,10 @@ def login():
         for user in crsr:
             if check_password_hash(user[4], PSSWD)==True:
                 session["user_id"] = user[0]
-                return render_template("login.html", loginError="* You are logged")
+                return redirect("/")
             
 
-        return render_template("login.html", loginError="* Username OR Password incorrect.")
+        return render_template("login.html", loginError="* Username OR Password is incorrect.")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -140,7 +118,7 @@ def register():
         ADDRESS = request.form.get("address")
         VERIFIED = 0
         USER = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"EMAIL":EMAIL}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}, {"VERIFIED":VERIFIED}]
-        print(USER)
+        #print(USER)
         
         # Check if forms filled.
         if (PSSWD != PSSWD2):
@@ -185,7 +163,7 @@ def register():
             smtp.send_message(msg)
             
         # Add username and Hashed password into db.
-        user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
+        user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
 
@@ -199,24 +177,36 @@ def register():
 #--------------------------------------------------------------------------------- /verification
 @app.route("/verification", methods=["GET", "POST"])
 def verifify():
+    
+    VERPSSWD1 = request.form.get("verPasswd1")
+    VERPSSWD2 = request.form.get("verPasswd2")
+    EMAIL = request.form.get("EMAIL")
+    email = [EMAIL]
+    print(email)
+    '''
+    crsr.execute("SELECT Fname, Verified FROM users WHERE Email=%s", email)
+    for x in crsr:
+        print(x)
+    '''
+
+    #  user=USER, EMAIL=EMAIL.lower(), TwoStepCode=TWOSTEPCODE, 
 
     # Register user
     if request.method == "POST":
-        VERPSSWD1 = request.form.get("verPasswd1")
-        VERPSSWD2 = request.form.get("verPasswd2")
-        EMAIL = request.form.get("EMAIL")
+
+        print(VERPSSWD1, VERPSSWD2, EMAIL)
 
         if (VERPSSWD1 == VERPSSWD2):
             print("User Verified")
             
             # Update user to be verified
             email = [EMAIL]
+            
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
-
             return redirect("/")
-
-
+        
+        return render_template("verification.html", RESPONSE="Your Verification code is incorrect!, please try again")
     return render_template("verification.html")
 
 
@@ -231,3 +221,12 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
+
+
+#--------------------------------------------------------------------------------- Main Page
+@app.route("/main", methods=["GET", "POST"])
+@login_required
+def main():
+
+    # Redirect user to login form
+    return render_template("main.html")

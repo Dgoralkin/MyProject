@@ -23,10 +23,10 @@
 
 {% block main %}
 
-<form class="row g-3" action="/verification" method="post">
+<form class="col-sm-12 text-left" action="/verification" method="post">
 
 
-    <div class="col-md-6">
+    <div class="col-sm-12">
       <label for="verPasswd2" class="form-label">Password</label>
       <input type="password" id="verPasswd1" name="verPasswd1" value="{{TwoStepCode}}" hidden>
       <input type="email" name="EMAIL" value="{{EMAIL}}" hidden>
@@ -40,6 +40,7 @@
     
     <div class="col-12">
       <button id="Sub1" type="submit" class="btn btn-danger">Register me</button>
+      <p>{{ RESPONSE }}</p>
     </div>
 </form>
 
