@@ -180,6 +180,8 @@ def register():
         msg.set_content('Your 2-Step verification code just arrived')
         txt = "Your code is: " + str(TWOSTEPCODE)
         
+        print("Your code is: ", str(TWOSTEPCODE))
+        
 
         msg.add_alternative(txt, subtype='html')
         
