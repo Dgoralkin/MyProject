@@ -109,19 +109,15 @@ def login():
         EMAIL = request.form.get("email").lower()
         PSSWD = request.form.get("password")
         USER = [EMAIL]
-        # print(USER[0])
         
-        crsr.execute("SELECT Psswd FROM users WHERE Email=%s", USER)
-        #chech_psswd = check_password_hash(rows[0]["hash"], PSSWD)
+        crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
         for user in crsr:
-            print(user[0])
-            res =  check_password_hash(user[0], PSSWD)
-            print(res)
+            if check_password_hash(user[4], PSSWD)==True:
+                session["user_id"] = user[0]
+                return render_template("login.html", loginError="* You are logged")
             
-        
 
-        # Redirect user to home page
-        return redirect("/")
+        return render_template("login.html", loginError="* Username OR Password incorrect.")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
