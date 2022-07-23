@@ -52,6 +52,7 @@ crsr = db.cursor()
 
 
 # Create table "users" if doesn't exist in DB
+checConnection()
 crsr.execute("SHOW TABLES")
 read = crsr.fetchall()
 exist = 0
@@ -152,8 +153,8 @@ def register():
         
 
         # Check if username exists in db.
-        z = checConnection()
-        print(z)
+        checConnection()
+
         crsr.execute("SELECT Email FROM users")
         for x in crsr:
             # print(x[0])
@@ -178,8 +179,6 @@ def register():
         msg['To'] = EMAIL
         msg.set_content('Your 2-Step verification code just arrived')
         txt = "Your code is: " + str(TWOSTEPCODE)
-        
-        print("Your code is: ", str(TWOSTEPCODE))
         
 
         msg.add_alternative(txt, subtype='html')
