@@ -34,6 +34,7 @@ def checConnection():
         print("Connection Established")
     else:
         print("NO Connection")
+        db.close()
         checConnection()
 
 # Configure MySql connection to DataBase For app Manager
@@ -52,6 +53,7 @@ crsr = db.cursor()
 
 
 # Create table "users" if doesn't exist in DB
+
 checConnection()
 crsr.execute("SHOW TABLES")
 read = crsr.fetchall()
@@ -153,6 +155,7 @@ def register():
         
 
         # Check if username exists in db.
+        db.close()
         checConnection()
 
         crsr.execute("SELECT Email FROM users")
@@ -191,6 +194,7 @@ def register():
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
+        db.close()
         checConnection()
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
@@ -217,6 +221,7 @@ def verifify():
             
             # Update user to be verified
             email = [EMAIL]
+            db.close()
             checConnection()
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
