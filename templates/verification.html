@@ -8,9 +8,14 @@
 {% block header %}
 
 
-<h1>Please check your mailbox. We sent you an Email with your verification code. 
-    Email sent ${message} to: ${receiver}
-    You might check your SPAM folder if it taking too long.</h1>
+<h1>{{ user[0]["FNAME"] }}, Please check your mailbox.</h1>
+<br>
+
+<h2>We sent you an Email with your verification code to: <a href="{{ user[2]["EMAIL"] }}" target="_blank">{{ user[2]["EMAIL"] }}</a><h2>
+
+<span>You might check your SPAM folder if it taking too long.</span>
+
+
 {% endblock %}
 
 
@@ -24,7 +29,9 @@
     <div class="col-md-6">
       <label for="verPasswd2" class="form-label">Password</label>
       <input type="password" id="verPasswd1" name="verPasswd1" value="{{TwoStepCode}}" hidden>
-      <input type="password" class="form-control" id="verPasswd2" name="verPasswd2" placeholder="Please enter your verification code" required>
+      <input type="email" name="EMAIL" value="{{EMAIL}}" hidden>
+
+      <input type="password" class="form-control" id="verPasswd2" name="verPasswd2" placeholder="Please enter your verification code" required autofocus>
 
       <input type="checkbox" onclick="showPsswrd('2')">Show Password
     </div>

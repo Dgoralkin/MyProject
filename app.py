@@ -165,6 +165,9 @@ def register():
         msg['To'] = EMAIL
         msg.set_content('Your 2-Step verification code just arrived')
         txt = "Your code is: " + str(TWOSTEPCODE)
+        
+        print("Your code is: ", str(TWOSTEPCODE))
+        
 
         msg.add_alternative(txt, subtype='html')
         
@@ -172,16 +175,15 @@ def register():
             smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
             smtp.send_message(msg)
             
-        '''
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, VERIFIED)
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
+
         print("New User Inserted into DB")
-        '''
         
         
-        return render_template("verification.html", user=USER, TwoStepCode=TWOSTEPCODE)
+        return render_template("verification.html", user=USER, EMAIL=EMAIL.lower(), TwoStepCode=TWOSTEPCODE)
     return render_template("register.html")
 
 
@@ -193,9 +195,16 @@ def verifify():
     if request.method == "POST":
         VERPSSWD1 = request.form.get("verPasswd1")
         VERPSSWD2 = request.form.get("verPasswd2")
-        print('WE ARE HERE', VERPSSWD1, VERPSSWD2)
+        EMAIL = request.form.get("EMAIL")
+        print('WE ARE HERE', VERPSSWD1, VERPSSWD2, EMAIL)
         if (VERPSSWD1 == VERPSSWD2):
             print("YESSSSSSSSS")
+            
+            # Update user to be verified
+            email = [EMAIL]
+            crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
+            db.commit()
+
             return redirect("/")
 
 
