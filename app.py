@@ -108,16 +108,17 @@ def register():
     
     # Register user
     if request.method == "POST":
+        ID = 0
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
-        EMAIL = request.form.get("email")
+        EMAIL = request.form.get("email").lower()
         PSSWD = request.form.get("password")
         PSSWD2 = request.form.get("password2")
         PHONE = request.form.get("phone")
         CITY = request.form.get("city")
         ADDRESS = request.form.get("address")
         VERIFIED = 0
-        USER = [{"FNAME":FNAME}, {"LNAME":LNAME}, {"EMAIL":EMAIL}, {"PSSWD":PSSWD}, {"PHONE":PHONE}, {"CITY":CITY}, {"ADDRESS":ADDRESS}, {"VERIFIED":VERIFIED}]
+        USER = [ID, FNAME, LNAME, EMAIL, PSSWD, PHONE, CITY, ADDRESS, VERIFIED]
         #print(USER)
         
         # Check if forms filled.
@@ -163,14 +164,14 @@ def register():
             smtp.send_message(msg)
             
         # Add username and Hashed password into db.
-        user_info = (FNAME, LNAME, EMAIL.lower(), generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
+        user_info = (FNAME, LNAME, EMAIL, generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
 
         print("New User Inserted into DB")
         
         
-        return render_template("verification.html", user=USER, EMAIL=EMAIL.lower(), TwoStepCode=TWOSTEPCODE)
+        return render_template("verification.html", user=USER, EMAIL=EMAIL, TwoStepCode=TWOSTEPCODE)
     return render_template("register.html")
 
 
@@ -178,23 +179,21 @@ def register():
 @app.route("/verification", methods=["GET", "POST"])
 def verifify():
     
-    VERPSSWD1 = request.form.get("verPasswd1")
-    VERPSSWD2 = request.form.get("verPasswd2")
-    EMAIL = request.form.get("EMAIL")
-    email = [EMAIL]
-    print(email)
-    '''
-    crsr.execute("SELECT Fname, Verified FROM users WHERE Email=%s", email)
-    for x in crsr:
-        print(x)
-    '''
-
-    #  user=USER, EMAIL=EMAIL.lower(), TwoStepCode=TWOSTEPCODE, 
-
     # Register user
     if request.method == "POST":
-
-        print(VERPSSWD1, VERPSSWD2, EMAIL)
+        
+        # Receive data from page
+        VERPSSWD1 = request.form.get("verPasswd1")
+        VERPSSWD2 = request.form.get("verPasswd2")
+        EMAIL = request.form.get("EMAIL")
+        email = [EMAIL]
+        print("P2 FROM POST:", VERPSSWD1, VERPSSWD2, EMAIL)
+        
+        crsr.execute("SELECT * FROM users WHERE Email=%s", email)
+    
+        for x in crsr:
+            USER = x
+        print(USER)
 
         if (VERPSSWD1 == VERPSSWD2):
             print("User Verified")
@@ -206,8 +205,12 @@ def verifify():
             db.commit()
             return redirect("/")
         
-        return render_template("verification.html", RESPONSE="Your Verification code is incorrect!, please try again")
-    return render_template("verification.html")
+        # Verification code is incorrect
+        #return render_template("verification.html", RESPONSE="Your Verification code is incorrect!, please try again")
+        return render_template("verification.html", user=USER, TwoStepCode=USER[8], RESPONSE="Your Verification code is incorrect!, please try again")
+    
+    # GET RESPONSE
+    return redirect("/")
 
 
 
