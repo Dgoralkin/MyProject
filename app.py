@@ -90,7 +90,7 @@ def login():
         
         crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
         for user in crsr:
-            if check_password_hash(user[4], PSSWD)==True:
+            if check_password_hash(user[4], PSSWD)==True and user[8]==1:
                 session["user_id"] = user[0]
                 return redirect("/")
             
@@ -152,11 +152,6 @@ def register():
         msg['To'] = EMAIL
         msg.set_content('Your 2-Step verification code just arrived')
         txt = "Your code is: " + str(TWOSTEPCODE)
-        
-        # TO BE DELETED !!!!!!!!!!!!!!!!!!!!!
-        print("Your code is: ", str(TWOSTEPCODE))
-        
-
         msg.add_alternative(txt, subtype='html')
         
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
