@@ -29,8 +29,7 @@ db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
     user='b62d0c2852c752',
     passwd='047bddc0',
-    database="heroku_666bfee5e0eaef3",
-    reconnect=True
+    database="heroku_666bfee5e0eaef3"
 )
 
 if (db):
@@ -43,12 +42,16 @@ crsr = db.cursor()
 # Create table "users" if doesn't exist in DB
 crsr.execute("SHOW TABLES")
 read = crsr.fetchall()
+crsr.close()
+db.close()
 exist = 0
 for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(30) NOT NULL, Lname varchar(30) NOT NULL, Email varchar(30) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(30) NOT NULL, Address varchar(30) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
+    crsr.close()
+    db.close()
     print("Table Created")
 
 
@@ -94,6 +97,8 @@ def login():
             if check_password_hash(user[4], PSSWD)==True and user[8]==1:
                 session["user_id"] = user[0]
                 return redirect("/")
+        crsr.close()
+        db.close()
             
 
         return render_template("login.html", loginError="* Username OR Password is incorrect.")
@@ -135,7 +140,8 @@ def register():
             if EMAIL.lower() == x[0].lower():
                 print("USER EXIST IN DB")
                 return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
-            
+        crsr.close()
+        db.close()
         
         # Generate 2-step Psswd for Email verification
         TWOSTEPCODE = random.randint(1000,9999)
@@ -163,6 +169,8 @@ def register():
         user_info = (FNAME, LNAME, EMAIL, generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
+        crsr.close()
+        db.close()
 
         print("New User Inserted into DB")
         
@@ -187,6 +195,8 @@ def verifify():
     
         for x in crsr:
             USER = x
+        crsr.close()
+        db.close()
         
         print(VERPSSWD, str(USER[8]))
 
@@ -197,6 +207,8 @@ def verifify():
             email = [EMAIL]
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
+            crsr.close()
+            db.close()
             return redirect("/")
         return render_template("verification.html", user=USER, RESPONSE="Your Verification code is incorrect!, please try again")
     
