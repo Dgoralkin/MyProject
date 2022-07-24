@@ -47,7 +47,7 @@ for x in read:
     if ("users" == x[0]):
         exist += 1
 if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(45) NOT NULL, Lname varchar(45) NOT NULL, Email varchar(45) NOT NULL, Psswd varchar(255) NOT NULL, Phone int NOT NULL, City varchar(45) NOT NULL, Address varchar(45) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID), UNIQUE KEY INDEXID_UNIQUE (ID))")
+    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(30) NOT NULL, Lname varchar(30) NOT NULL, Email varchar(30) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(30) NOT NULL, Address varchar(30) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
     print("Table Created")
 
 
