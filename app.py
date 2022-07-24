@@ -29,7 +29,7 @@ db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
     user='b62d0c2852c752',
     passwd='047bddc0',
-    # database="heroku_3003039de5cde26"
+    database="heroku_666bfee5e0eaef3?reconnect=true"
 )
 
 if (db):
