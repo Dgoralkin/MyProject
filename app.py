@@ -183,6 +183,7 @@ def verifify():
 
     # Register user
     if request.method == "POST":
+        crsr.close()
         
         # Receive data from page
         VERPSSWD = request.form.get("verPasswd")
