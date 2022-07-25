@@ -31,8 +31,8 @@ db = mysql.connector.connect(
     passwd='047bddc0',
     database="heroku_666bfee5e0eaef3"
 )
-print(db)
-print(db.cursor())
+print("This is DB Print:", db)
+print("This is CURSOR Print:", db.cursor())
 
 if (db):
     print("Connection")
@@ -93,6 +93,7 @@ def login():
         PSSWD = request.form.get("password")
         USER = [EMAIL]
         
+        db.reconnect()
         crsr = db.cursor()
         crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
         for user in crsr:
@@ -134,6 +135,7 @@ def register():
         
 
         # Check if username exists in db.
+        db.reconnect()
         crsr = db.cursor()
         crsr.execute("SELECT Email FROM users")
         for x in crsr:
@@ -167,6 +169,7 @@ def register():
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL, generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
+        db.reconnect()
         crsr = db.cursor()
         crsr.execute("INSERT INTO users (Fname, Lname, Email, Psswd, Phone, City, Address, Verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", user_info)
         db.commit()
