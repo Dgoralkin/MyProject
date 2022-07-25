@@ -37,23 +37,22 @@ if (db):
 else:
     print("No connection")
     
-    
-crsr = db.cursor()
 
 
 # Create table "users" if doesn't exist in DB
+crsr = db.cursor()
 crsr.execute("SHOW TABLES")
+
 read = crsr.fetchall()
-# crsr.close()
 exist = 0
 for x in read:
     if ("users" == x[0]):
         exist += 1
+        crsr.close()
 if (exist == 0):
     crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
-    crsr.close()
     print("Table Created")
-
+    crsr.close()
 
 
 @app.after_request
