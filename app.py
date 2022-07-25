@@ -96,10 +96,9 @@ def login():
         for user in crsr:
             if check_password_hash(user[4], PSSWD)==True and user[8]==1:
                 session["user_id"] = user[0]
+                crsr.close()
                 return redirect("/")
-        crsr.close()
-            
-
+        
         return render_template("login.html", loginError="* Username OR Password is incorrect.")
 
     # User reached route via GET (as by clicking a link or via redirect)
