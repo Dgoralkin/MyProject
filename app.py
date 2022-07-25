@@ -31,6 +31,8 @@ db = mysql.connector.connect(
     passwd='047bddc0',
     database="heroku_666bfee5e0eaef3"
 )
+print(db)
+print(db.cursor())
 
 if (db):
     print("Connection")
