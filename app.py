@@ -27,8 +27,8 @@ Session(app)
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host="eu-cdbr-west-03.cleardb.net",
-    user='b62d0c2852c752',
-    passwd='047bddc0',
+    user= os.environ.get('Heroku_user'),
+    passwd=os.environ.get('Heroku_psswrd'),
     database="heroku_666bfee5e0eaef3"
 )
 print("This is DB Print:", db)
@@ -80,12 +80,10 @@ def index():
 def login():
     
 
-    #Log user in
-
-    # Forget any user_id
+    #Log user in & Forget last user_id
     session.clear()
 
-    # User reached route via POST
+    # If User reached route via POST
     if request.method == "POST":
         
         # Check if user is registered and verified
@@ -126,7 +124,6 @@ def register():
         ADDRESS = request.form.get("address")
         VERIFIED = 0
         USER = [ID, FNAME, LNAME, EMAIL, PSSWD, PHONE, CITY, ADDRESS, VERIFIED]
-        #print(USER)
         
         # Check if forms filled.
         if (PSSWD != PSSWD2):
@@ -150,10 +147,10 @@ def register():
         
         # Send verification Email to user
         
-        # EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
-        # EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
-        EMAIL_ADDRESS = 'gbikes.customer.service@gmail.com'
-        EMAIL_PSSWRD = 'llbqckvmfvshbonk'
+        EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
+        EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
+        # EMAIL_ADDRESS = 'gbikes.customer.service@gmail.com'
+        # EMAIL_PSSWRD = 'llbqckvmfvshbonk'
         
         msg = EmailMessage()
         msg['Subject'] = 'This is a verification Email From G-bikes'
@@ -176,8 +173,7 @@ def register():
         crsr.close()
 
         print("New User Inserted into DB")
-        
-        
+
         return render_template("verification.html", user=USER, EMAIL=EMAIL)
     return render_template("register.html")
 
@@ -194,14 +190,12 @@ def verifify():
         EMAIL = request.form.get("EMAIL")
         email = [EMAIL]
         
-        # Reconect added !!!!!!!
         db.reconnect()
         crsr = db.cursor()
         crsr.execute("SELECT * FROM users WHERE Email=%s", email)
     
         for x in crsr:
             USER = x
-        print(VERPSSWD, str(USER[8]))
 
         if (VERPSSWD == str(USER[8])):
             print("User Verified")
@@ -218,13 +212,10 @@ def verifify():
     return redirect("/")
 
 
-
 #--------------------------------------------------------------------------------- LOGout
 @app.route("/logout")
 def logout():
-    # Log user out
-
-    # Forget any user_id
+    # Log user out & Forget signed in user_id
     session.clear()
 
     # Redirect user to login form
