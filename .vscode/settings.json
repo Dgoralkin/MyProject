@@ -25,6 +25,19 @@
             "username": "root",
             "password": "Octavia67",
             "database": "heroku_3003039de5cde26"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "eu-cdbr-west-03.cleardb.net",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Heroku ",
+            "database": "heroku_666bfee5e0eaef3",
+            "username": "b62d0c2852c752",
+            "password": "047bddc0"
         }
     ]
 }
