@@ -180,7 +180,7 @@ def register():
 #--------------------------------------------------------------------------------- /verification
 @app.route("/verification", methods=["GET", "POST"])
 def verifify():
-    
+
     # Register user
     if request.method == "POST":
         
@@ -194,8 +194,6 @@ def verifify():
     
         for x in crsr:
             USER = x
-        crsr.close()
-        
         print(VERPSSWD, str(USER[8]))
 
         if (VERPSSWD == str(USER[8])):
@@ -203,7 +201,6 @@ def verifify():
             
             # Update user to be verified in DB
             email = [EMAIL]
-            crsr = db.cursor()
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
             crsr.close()
