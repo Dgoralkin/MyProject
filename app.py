@@ -191,6 +191,8 @@ def verifify():
         EMAIL = request.form.get("EMAIL")
         email = [EMAIL]
         
+        # Reconect added !!!!!!!
+        db.reconnect()
         crsr = db.cursor()
         crsr.execute("SELECT * FROM users WHERE Email=%s", email)
     
