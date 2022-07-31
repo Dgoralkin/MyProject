@@ -4,7 +4,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required
+from helpers import fullName, login_required, error
 import smtplib
 import random
 from email.message import EmailMessage
@@ -23,43 +23,6 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-
-# Configure MySql connection to DataBase For app Manager
-db = mysql.connector.connect(
-    host = "eu-cdbr-west-03.cleardb.net",
-    user = os.environ.get("Heroku_user"),
-    passwd = os.environ.get("Heroku_psswrd"),
-    # user="b62d0c2852c752",
-    # passwd="047bddc0",
-    database = "heroku_666bfee5e0eaef3"
-)
-
-print("This is DB Print:", db)
-print("This is CURSOR Print:", db.cursor())
-
-if (db):
-    print("Connection")
-else:
-    print("No connection")
-    
-
-
-# Create table "users" if doesn't exist in DB
-crsr = db.cursor()
-crsr.execute("SHOW TABLES")
-
-read = crsr.fetchall()
-exist = 0
-for x in read:
-    if ("users" == x[0]):
-        exist += 1
-        crsr.close()
-if (exist == 0):
-    crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
-    print("Table Created")
-    crsr.close()
-
-
 @app.after_request
 def after_request(response):
     # Ensure responses aren't cached
@@ -69,20 +32,49 @@ def after_request(response):
     return response
 
 
+try:
+    # Configure MySql connection to DataBase For app Manager
+    db = mysql.connector.connect(
+        host = "eu-cdbr-west-03.cleardb.ne",
+        user = os.environ.get("Heroku_user"),
+        passwd = os.environ.get("Heroku_psswrd"),
+        # user="b62d0c2852c752",
+        # passwd="047bddc0",
+        database = "heroku_666bfee5e0eaef3"
+    )
+    if (db):
+        print("Connection")
+        
+        # Create table "users" if doesn't exist in DB
+        crsr = db.cursor()
+        crsr.execute("SHOW TABLES")
+
+        read = crsr.fetchall()
+        exist = 0
+        for x in read:
+            if ("users" == x[0]):
+                exist += 1
+                crsr.close()
+        if (exist == 0):
+            crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
+            print("Table Created")
+            crsr.close()
+except Exception:
+    print("No DataBase Connection !!!")
+
+
 #--------------------------------------------------------------------------------- /
 @app.route("/")
 @login_required
 def index():
     # Filter wheter user loged in
-    return render_template("main.html")
-
+    return redirect("/main")
 
 
 #--------------------------------------------------------------------------------- LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
     
-
     #Log user in & Forget last user_id
     session.clear()
 
@@ -94,17 +86,21 @@ def login():
         PSSWD = request.form.get("password")
         USER = [EMAIL]
         
-        db.reconnect()
-        crsr = db.cursor()
-        crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
-        for user in crsr:
-            if check_password_hash(user[4], PSSWD)==True and user[8]==1:
-                session["user_id"] = user[0]
-                crsr.close()
-                return redirect("/")
-        
-        return render_template("login.html", loginError="* Username OR Password is incorrect.")
-
+        # Check if DataBase connected
+        try:
+            db.reconnect()
+            crsr = db.cursor()
+            crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
+            for user in crsr:
+                if check_password_hash(user[4], PSSWD)==True and user[8]==1:
+                    session["user_id"] = user[0]
+                    crsr.close()
+                    return redirect("/")
+            
+            return render_template("login.html", loginError="* Username OR Password is incorrect.")
+        except NameError:
+            return error("Cannot Connect to Database Server !!!", 500)
+            
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
@@ -134,16 +130,19 @@ def register():
             return render_template("register.html", response=response)
         
 
-        # Check if username exists in db.
-        db.reconnect()
-        crsr = db.cursor()
-        crsr.execute("SELECT Email FROM users")
-        for x in crsr:
-            # print(x[0])
-            if EMAIL.lower() == x[0].lower():
-                print("USER EXIST IN DB")
-                return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
-        crsr.close()
+        # Check if username exists in db and db is connected.
+        try:            
+            db.reconnect()
+            crsr = db.cursor()
+            crsr.execute("SELECT Email FROM users")
+            for x in crsr:
+                # print(x[0])
+                if EMAIL.lower() == x[0].lower():
+                    print("USER EXIST IN DB")
+                    return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
+            crsr.close()
+        except NameError:
+            return error("Cannot Connect to Database Server !!!", 500)
         
         # Generate 2-step Psswd for Email verification
         TWOSTEPCODE = random.randint(1000,9999)
@@ -215,7 +214,7 @@ def verifify():
     return redirect("/")
 
 
-#--------------------------------------------------------------------------------- LOGout
+#--------------------------------------------------------------------------------- Logout
 @app.route("/logout")
 def logout():
     # Log user out & Forget signed in user_id
@@ -229,6 +228,24 @@ def logout():
 @app.route("/main", methods=["GET", "POST"])
 @login_required
 def main():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+        
+
 
     # Redirect user to login form
-    return render_template("main.html")
+    return render_template("main.html", FULLNAME=FULLNAME)
+
+
+#--------------------------------------------------------------------------------- Service Page
+@app.route("/service", methods=["GET", "POST"])
+@login_required
+def service():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+
+    # Redirect user to login form
+    return render_template("service.html",  FULLNAME=FULLNAME)
+

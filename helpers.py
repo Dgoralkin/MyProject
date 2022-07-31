@@ -1,11 +1,19 @@
 import os
-# import requests
+import mysql.connector
 import urllib.parse
-
 
 from flask import redirect, render_template, request, session
 from functools import wraps
 
+# Configure MySql connection to DataBase For app Manager
+db = mysql.connector.connect(
+    host = "eu-cdbr-west-03.cleardb.net",
+    user = os.environ.get("Heroku_user"),
+    passwd = os.environ.get("Heroku_psswrd"),
+    # user="b62d0c2852c752",
+    # passwd="047bddc0",
+    database = "heroku_666bfee5e0eaef3"
+)
 
 
 def login_required(f):
@@ -23,7 +31,7 @@ def login_required(f):
 
 
 
-def apology(message, code=400):
+def error(message, code=400):
     """Render message as an apology to user."""
     def escape(s):
         """
@@ -35,9 +43,17 @@ def apology(message, code=400):
                          ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
             s = s.replace(old, new)
         return s
-    return render_template("apology.html", top=code, bottom=escape(message)), code
+    return render_template("error.html", top=code, bottom=escape(message))
 
 
+def fullName():
+    ID = [session["user_id"]]
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT Fname, Lname FROM users WHERE ID=%s", ID)
+    for x in crsr:
+        FULLNAME = x[0] + " " + x[1]
+    return FULLNAME
 
 
 '''
