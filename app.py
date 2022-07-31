@@ -27,10 +27,10 @@ Session(app)
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host = "eu-cdbr-west-03.cleardb.net",
-    # user = os.environ.get("Heroku_user"),
-    # passwd = os.environ.get("Heroku_psswrd"),
-    user="b62d0c2852c752",
-    passwd="047bddc0",
+    user = os.environ.get("Heroku_user"),
+    passwd = os.environ.get("Heroku_psswrd"),
+    # user="b62d0c2852c752",
+    # passwd="047bddc0",
     database = "heroku_666bfee5e0eaef3"
 )
 
