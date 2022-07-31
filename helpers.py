@@ -30,13 +30,11 @@ def login_required(f):
     return decorated_function
 
 
-
+# Display Error page if Exception occurs
 def error(message, code=400):
-    """Render message as an apology to user."""
     def escape(s):
         """
         Escape special characters.
-
         https://github.com/jacebrowning/memegen#special-characters
         """
         for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
@@ -46,6 +44,7 @@ def error(message, code=400):
     return render_template("error.html", top=code, bottom=escape(message))
 
 
+# Render user's fullname
 def fullName():
     ID = [session["user_id"]]
     db.reconnect()

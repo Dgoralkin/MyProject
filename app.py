@@ -33,9 +33,9 @@ def after_request(response):
 
 
 try:
-    # Configure MySql connection to DataBase For app Manager
+    # Try to Configure MySql connection to DataBase For app Manager
     db = mysql.connector.connect(
-        host = "eu-cdbr-west-03.cleardb.ne",
+        host = "eu-cdbr-west-03.cleardb.net",
         user = os.environ.get("Heroku_user"),
         passwd = os.environ.get("Heroku_psswrd"),
         # user="b62d0c2852c752",
@@ -232,8 +232,6 @@ def main():
     # Show connected User Full Name
     FULLNAME = fullName()
         
-
-
     # Redirect user to login form
     return render_template("main.html", FULLNAME=FULLNAME)
 
@@ -249,3 +247,14 @@ def service():
     # Redirect user to login form
     return render_template("service.html",  FULLNAME=FULLNAME)
 
+
+#--------------------------------------------------------------------------------- Pick_up Page
+@app.route("/pick_up", methods=["GET", "POST"])
+@login_required
+def pick():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+
+    # Redirect user to login form
+    return render_template("pick_up.html",  FULLNAME=FULLNAME)
