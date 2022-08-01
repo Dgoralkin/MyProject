@@ -19,6 +19,7 @@ li:hover
 h1
 {
     color: #1272a8;
+    text-decoration: underline;
 }
 
 h2
@@ -35,6 +36,11 @@ span
 {
     color: red;
     text-decoration: underline;
+}
+
+#DIV_bg_warning
+{
+    color: #ffffff;
 }
 
 .header
@@ -84,5 +90,13 @@ span
 .mynavbar
 {
     background-color: #1272a8;
+}
+
+.bigFont
+{
+    font-style: bold;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: xx-large;
+    color: #ffffff;
 }
 

@@ -258,3 +258,28 @@ def pick():
 
     # Redirect user to login form
     return render_template("pick_up.html",  FULLNAME=FULLNAME)
+
+
+#--------------------------------------------------------------------------------- Account
+@app.route("/account", methods=["GET", "POST"])
+@login_required
+def account():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+
+    # Redirect user to login form
+    return render_template("account.html",  FULLNAME=FULLNAME)
+
+
+#--------------------------------------------------------------------------------- Cart
+@app.route("/cart", methods=["GET", "POST"])
+@login_required
+def cart():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+
+    # Redirect user to login form
+    return render_template("cart.html",  FULLNAME=FULLNAME)
+
