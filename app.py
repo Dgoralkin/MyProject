@@ -4,7 +4,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error
+from helpers import fullName, login_required, error, create_tables
 import smtplib
 import random
 from email.message import EmailMessage
@@ -44,35 +44,9 @@ try:
     )
     if (db):
         print("Connection")
-        
-        # Check if TABLES exist in DB
-        crsr = db.cursor()
-        crsr.execute("SHOW TABLES")
-
-        tables = crsr.fetchall()
-        bikes = 0
-        user_bike = 0
-        users = 0
-        for table in tables:
-            if ("bikes" in table):
-                bikes += 1
-            if ("user_bike" in table):
-                user_bike += 1
-            if ("users" in table):
-                users += 1
-        # Create required tables if doesn't exist in DB
-        if (bikes == 0):
-            crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(55) NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
-            print("Table bikes Created")
-        if (user_bike == 0):
-            crsr.execute("CREATE TABLE user_bike (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, bike_id int NOT NULL unique,  PRIMARY KEY (ID))")
-            print("Table user_bike Created")
-        if (users == 0):
-            crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
-            print("Table users Created")
-            
-except Exception:
-    print("No DataBase Connection !!!")
+        create_tables()
+except:
+    print("Error on connection")
 
 
 #--------------------------------------------------------------------------------- /
