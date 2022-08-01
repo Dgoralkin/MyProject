@@ -273,12 +273,21 @@ def add_bike():
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
 
 
+#--------------------------------------------------------------------------------- Search bikes in DB
 @app.route("/search")
 def search():
+    
+    # Find a bike brand from a DB
     q = request.args.get("q")
     if q:
-        bikes = ['Trek', 'Scott', 'Spec']
-    print(bikes)
+        Q = ["%" + q + "%"]
+        db.reconnect()
+        crsr = db.cursor()
+        crsr.execute("SELECT brand FROM all_bikes WHERE brand LIKE %s LIMIT 10", Q)
+        bikes = []
+        for x in crsr:
+            if len(x) > 0:
+                bikes.append(x[0])
     return jsonify(bikes)
 
 
