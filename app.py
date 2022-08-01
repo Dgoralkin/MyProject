@@ -45,7 +45,7 @@ try:
     if (db):
         print("Connection")
         create_tables()
-except:
+except Exception:
     print("Error on connection")
 
 
@@ -227,11 +227,44 @@ def main():
 @login_required
 def service():
     
-    # Show connected User Full Name
-    FULLNAME = fullName()
+    FULLNAME = fullName()    
+    ID = [session["user_id"]]
+    
+    # Check if user added his bike to DB
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT bike_id FROM user_bike WHERE cust_id=%s", ID)
+    bikes = []
+    for x in crsr:
+        if len(x) > 0:
+            bikes.append(x[0])
+            
+    print(len(bikes))
+    print(bikes)
+    
+    if len(bikes) == 0:
+        return render_template("add_bike.html", FULLNAME=FULLNAME)
 
-    # Redirect user to login form
+
+    # Redirect user to service page
     return render_template("service.html",  FULLNAME=FULLNAME)
+
+
+#--------------------------------------------------------------------------------- Add_bike
+@app.route("/add_bike", methods=["GET", "POST"])
+@login_required
+def add_bike():
+    
+    FULLNAME = fullName()
+    if request.method == "POST":
+        bike = request.form.get("BIKE")
+        print(bike)
+        # xxx
+        return render_template("service.html")
+    
+    
+    # Redirect user to add_bike page
+    return render_template("add_bike.html",  FULLNAME=FULLNAME)
 
 
 #--------------------------------------------------------------------------------- Pick_up Page
@@ -242,7 +275,7 @@ def pick():
     # Show connected User Full Name
     FULLNAME = fullName()
 
-    # Redirect user to login form
+    # Redirect user to pick up page
     return render_template("pick_up.html",  FULLNAME=FULLNAME)
 
 
@@ -254,7 +287,7 @@ def account():
     # Show connected User Full Name
     FULLNAME = fullName()
 
-    # Redirect user to login form
+    # Redirect user to account page
     return render_template("account.html",  FULLNAME=FULLNAME)
 
 
@@ -266,6 +299,6 @@ def cart():
     # Show connected User Full Name
     FULLNAME = fullName()
 
-    # Redirect user to login form
+    # Redirect user to cart page
     return render_template("cart.html",  FULLNAME=FULLNAME)
 
