@@ -30,30 +30,30 @@
                 <form action="/add_bike" method="post">
 
                     <div class="mb-3">
-                      <input type="text" class="form-control" id="bike_brand" value="" name="BIKE" autocomplete="on" placeholder="Start typing your bike brand" required>
+                      <input type="text" class="form-control" id="bike_brand" value="" name="BIKE" placeholder="Start typing your bike brand" required>
                     </div>
 
+                    <!-- List of bikes from DB -->
                     <ul id="bikes_list"></ul>
 
                     <script>
-                
                         let input = document.querySelector('input');
                         input.addEventListener('input', async function() {
                             let response = await fetch('/search?q=' + input.value);
                             let bikes = await response.json();
-                            let html = '';
-                            console.log(bikes)
-                            
-                            for (let id in bikes) {
-                                console.log(bikes[id]);
-                                html += '<li>' + bikes[id] + '</li>';
+                            let html = '';                            
+                            for (let bike in bikes) {
+                                console.log(bikes[bike]);
+                                html += '<li><button type="button" class="btn btn-warning" id="brandBtn" onclick="changeValue(this.innerHTML)">' + bikes[bike] + '</button></li>';
                             }
                             document.getElementById("bikes_list").innerHTML = html;
                         });
-            
                     </script>
-
-
+                    <script>
+                        function changeValue(value) {
+                            document.getElementById("bike_brand").value = value;
+                          }
+                    </script>
 
                     <div class="mb-3">
                         <input type="text" class="form-control" id="bike_model" value="" name="MODEL" autocomplete="off" placeholder="What is your bike's model?" required>

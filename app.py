@@ -255,7 +255,7 @@ def add_bike():
     FULLNAME = fullName()
     YEARS = []
     yearnow = datetime.datetime.now()
-    for year in range(1990, yearnow.year + 1):
+    for year in range(yearnow.year, 1989, -1):
         YEARS.append(year)
 
     
@@ -267,7 +267,6 @@ def add_bike():
         print(BIKE, MODEL, YEAR)
         # xxx
         return render_template("add_bike.html")
-    
     
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)

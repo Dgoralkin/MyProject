@@ -11,7 +11,7 @@ a:hover
 
 li:hover
 {
-    color: rgb(255, 255, 255);
+    color: rgb(245, 1, 1);
     text-decoration: underline;
     font-size: large;
 }
@@ -41,6 +41,15 @@ span
 #DIV_bg_warning
 {
     color: #ffffff;
+}
+
+#bikes_list
+{
+    color: #1272a8;
+}
+#bikes_list:hover
+{
+    color: red;
 }
 
 .header
