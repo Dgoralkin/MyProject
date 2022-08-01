@@ -1,6 +1,7 @@
 import os
+import datetime
 import mysql.connector
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -238,13 +239,9 @@ def service():
     for x in crsr:
         if len(x) > 0:
             bikes.append(x[0])
-            
-    print(len(bikes))
-    print(bikes)
     
     if len(bikes) == 0:
-        return render_template("add_bike.html", FULLNAME=FULLNAME)
-
+        return redirect("/add_bike")
 
     # Redirect user to service page
     return render_template("service.html",  FULLNAME=FULLNAME)
@@ -256,15 +253,33 @@ def service():
 def add_bike():
     
     FULLNAME = fullName()
+    YEARS = []
+    yearnow = datetime.datetime.now()
+    for year in range(1990, yearnow.year + 1):
+        YEARS.append(year)
+
+    
+    # Receive data from page via "POST"
     if request.method == "POST":
-        bike = request.form.get("BIKE")
-        print(bike)
+        BIKE = request.form.get("BIKE")
+        MODEL = request.form.get("MODEL")
+        YEAR = request.form.get("YEAR")
+        print(BIKE, MODEL, YEAR)
         # xxx
-        return render_template("service.html")
+        return render_template("add_bike.html")
     
     
     # Redirect user to add_bike page
-    return render_template("add_bike.html",  FULLNAME=FULLNAME)
+    return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
+
+
+@app.route("/search")
+def search():
+    q = request.args.get("q")
+    if q:
+        bikes = ['Trek', 'Scott', 'Spec']
+    print(bikes)
+    return jsonify(bikes)
 
 
 #--------------------------------------------------------------------------------- Pick_up Page

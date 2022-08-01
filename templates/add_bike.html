@@ -4,40 +4,70 @@
     Add Your bike
 {% endblock %}
 
+
 {% block user %}
     {{ FULLNAME }}
 {% endblock %}
 
+
 {% block header %}
 <h1>Hello {{ FULLNAME }} !</h1>
+<div class="progress">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:60%"></div>
+</div>
 {% endblock %}
 
+
 {% block main %}
-<!-- <div class="container text-center text-bg-info p-2">Please choose a bike from a list</div> -->
-
-
 
 
 <div class="container text-center">
     <div class="row">
       <div class="col">
         <div class="card">
-            <div class="text-bg-success p-3 bigFont"><span id="DIV_bg_warning">Choose brand</span></div>
+            <div class="text-bg-success p-3 bigFont"><span id="DIV_bg_warning">Add your bike</span></div>
             <div class="card-body">
                 <form action="/add_bike" method="post">
+
                     <div class="mb-3">
-                      <input type="text" class="form-control" id="bike" value="" name="BIKE" autocomplete="on" placeholder="Start typing your bike brand" required>
+                      <input type="text" class="form-control" id="bike_brand" value="" name="BIKE" autocomplete="on" placeholder="Start typing your bike brand" required>
                     </div>
+
+                    <ul id="bikes_list"></ul>
+
+                    <script>
                 
-                
-                    <!--
-                    <div class="mb-3 form-check">
-                      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                        let input = document.querySelector('input');
+                        input.addEventListener('input', async function() {
+                            let response = await fetch('/search?q=' + input.value);
+                            let bikes = await response.json();
+                            let html = '';
+                            console.log(bikes)
+                            
+                            for (let id in bikes) {
+                                console.log(bikes[id]);
+                                html += '<li>' + bikes[id] + '</li>';
+                            }
+                            document.getElementById("bikes_list").innerHTML = html;
+                        });
+            
+                    </script>
+
+
+
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="bike_model" value="" name="MODEL" autocomplete="off" placeholder="What is your bike's model?" required>
                     </div>
-                    -->
-                
-                
+
+                    <div class="mb-3">
+                        <select class="form-select" aria-label="Default select example" name="YEAR">
+                            <option selected>What year is your bike?</option>
+                            {% for year in YEARS %}
+                            <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Add my bike</button>
                 </form>
             </div>
@@ -45,13 +75,4 @@
       </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
 {% endblock %}
