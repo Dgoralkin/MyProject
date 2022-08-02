@@ -37,17 +37,29 @@ def create_tables():
         if (all_bikes == 0):
             crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, PRIMARY KEY (ID))")
             print("Table all_bikes Created")
-            print("Populating table all_bikes")
+            print("Populating table all_bikes. Please wait...")
             
             # Populate TABLE all_bikes when created
-            db.reconnect()
+            populate_all_bikes_table(crsr)
+        else:
+            # Check if "CSV Bike_list File" were updated by moderator and update if required
+            crsr.execute("SELECT COUNT(brand) as count_bikes FROM all_bikes")
+            for x in crsr:
+                DB_Count = x[0]
+                print(DB_Count)
+            CSV_Count = 0
             with open('Bikes.csv', 'r') as csv_file:
                 reader = csv.reader(csv_file)
                 for line in reader:
-                    bike = [line[0].lower().capitalize()]
-                    crsr.execute("INSERT INTO all_bikes (brand) VALUES (%s)", bike)
-                    db.commit()
-            print("Table all_bikes Populated")
+                    CSV_Count += 1
+                print(CSV_Count)
+                if DB_Count == CSV_Count:
+                    print("Table all_bikes up to date")
+                else:
+                    crsr.execute("DROP TABLE all_bikes")
+                    crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, PRIMARY KEY (ID))")
+                    populate_all_bikes_table(crsr)
+                    
             
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand varchar(55) NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
@@ -56,6 +68,17 @@ def create_tables():
             crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
             print("Table users Created")
 
+
+def populate_all_bikes_table(crsr):
+    print("Populating table all_bikes. Please wait...")
+    db.reconnect()
+    with open('Bikes.csv', 'r') as csv_file:
+        reader = csv.reader(csv_file)
+        for line in reader:
+                bike = [line[0].lower().capitalize()]
+                crsr.execute("INSERT INTO all_bikes (brand) VALUES (%s)", bike)
+                db.commit()
+        print("Table all_bikes updated")
 
 
 

@@ -46,7 +46,7 @@ db = mysql.connector.connect(
 if (db):
     print("Connection")
     create_tables()
-#except:
+#except Exception:
 #    print("Error on connection")
 
 
@@ -255,7 +255,7 @@ def add_bike():
     FULLNAME = fullName()
     YEARS = []
     yearnow = datetime.datetime.now()
-    for year in range(yearnow.year, 1989, -1):
+    for year in range(yearnow.year, yearnow.year - 21, -1):
         YEARS.append(year)
 
     
