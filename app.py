@@ -234,7 +234,7 @@ def service():
     # Check if user added his bike to DB
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT bike_id FROM user_bike WHERE cust_id=%s", ID)
+    crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", ID)
     bikes = []
     for x in crsr:
         if len(x) > 0:
@@ -264,9 +264,14 @@ def add_bike():
         BIKE = request.form.get("BIKE")
         MODEL = request.form.get("MODEL")
         YEAR = request.form.get("YEAR")
-        print(BIKE, MODEL, YEAR)
-        # xxx
-        return render_template("add_bike.html")
+        BIKE_MODEL = [session["user_id"], BIKE, MODEL, YEAR]
+
+        db.reconnect()
+        crsr = db.cursor()
+        crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
+        db.commit()
+        print("Bike added to bikes Table")
+        return render_template("service.html")
     
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
@@ -277,17 +282,20 @@ def add_bike():
 def search():
     
     # Find a bike brand from a DB
-    q = request.args.get("q")
-    if q:
-        Q = ["%" + q + "%"]
-        db.reconnect()
-        crsr = db.cursor()
-        crsr.execute("SELECT brand FROM all_bikes WHERE brand LIKE %s LIMIT 10", Q)
-        bikes = []
-        for x in crsr:
-            if len(x) > 0:
-                bikes.append(x[0])
-    return jsonify(bikes)
+    try:
+        q = request.args.get("q")
+        if q:
+            Q = ["%" + q + "%"]
+            db.reconnect()
+            crsr = db.cursor()
+            crsr.execute("SELECT brand FROM all_bikes WHERE brand LIKE %s LIMIT 10", Q)
+            bikes = []
+            for x in crsr:
+                if len(x) > 0:
+                    bikes.append(x[0])
+        return jsonify(bikes)
+    except UnboundLocalError:
+        print("local variable 'bikes' referenced before assignment")
 
 
 #--------------------------------------------------------------------------------- Pick_up Page

@@ -54,7 +54,7 @@ $(document).ready(function(){
 
 
 
-
+/*
 // Send Verification Email with unique code
 function sendMail(receiver, Fname, Lname){
   console.log("Sending");
@@ -80,7 +80,7 @@ function sendMail(receiver, Fname, Lname){
 function getRndInteger(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-
+*/
 
 
 
