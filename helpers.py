@@ -1,6 +1,7 @@
 import os
 import mysql.connector
 import urllib.parse
+import csv
 
 from flask import redirect, render_template, request, session
 from functools import wraps
@@ -34,8 +35,20 @@ def create_tables():
                 
         # Create required tables if doesn't exist in DB
         if (all_bikes == 0):
-            crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, model varchar(30), model_year int, PRIMARY KEY (ID))")
+            crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, PRIMARY KEY (ID))")
             print("Table all_bikes Created")
+            print("Populating table all_bikes")
+            
+            # Populate TABLE all_bikes when created
+            db.reconnect()
+            with open('Bikes.csv', 'r') as csv_file:
+                reader = csv.reader(csv_file)
+                for line in reader:
+                    bike = [line[0].lower().capitalize()]
+                    crsr.execute("INSERT INTO all_bikes (brand) VALUES (%s)", bike)
+                    db.commit()
+            print("Table all_bikes Populated")
+            
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand varchar(55) NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
