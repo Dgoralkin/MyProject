@@ -59,7 +59,7 @@ def create_tables():
                     populate_all_bikes_table(crsr)
                     
         if (bikes == 0):
-            crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand varchar(55) NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
+            crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand int NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
         if (users == 0):
             crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
@@ -120,4 +120,10 @@ def fullName():
     return FULLNAME
 
 
-
+def add_bike_to_DB(dbtmp, crsrtmp, id, MODEL, YEAR):
+    BIKE_MODEL = [session["user_id"], id, MODEL, YEAR]
+    crsrtmp.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
+    dbtmp.commit()
+    print("Bike " + str(id) + " from DB added to bikes Table bikes")
+    bike_exist = True
+    return bike_exist

@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB
 import smtplib
 import random
 from email.message import EmailMessage
@@ -261,19 +261,29 @@ def add_bike():
     
     # Receive data from page via "POST"
     if request.method == "POST":
-        BIKE = request.form.get("BIKE")
-        MODEL = request.form.get("MODEL")
+        BIKE = request.form.get("BIKE").lower().capitalize()
+        bike = [BIKE]
+        MODEL = request.form.get("MODEL").lower().capitalize()
         YEAR = request.form.get("YEAR")
-        BIKE_MODEL = [session["user_id"], BIKE, MODEL, YEAR]
+        '''
         try:
-            db.reconnect()
-            crsr = db.cursor()
-            crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
-            db.commit()
-            print("Bike added to bikes Table")
-            return redirect("/service")
+        '''
+        
+        bike_exist = False
+        db.reconnect()
+        crsr = db.cursor()
+        crsr.execute("SELECT ID FROM all_bikes WHERE brand = %s ", bike)
+        for id in crsr:
+            if len(id) > 0:
+                bike_exist = add_bike_to_DB(db, crsr, id[0], MODEL, YEAR)
+        if not bike_exist:
+            print("Bike not in DB")
+                
+        return redirect("/service")
+        '''
         except:
             print("Connection lost on add_bike INSERT")
+        '''
     
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
