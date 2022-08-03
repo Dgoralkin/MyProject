@@ -37,8 +37,6 @@ def create_tables():
         if (all_bikes == 0):
             crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, PRIMARY KEY (ID))")
             print("Table all_bikes Created")
-            print("Populating table all_bikes. Please wait...")
-            
             # Populate TABLE all_bikes when created
             populate_all_bikes_table(crsr)
         else:
@@ -57,10 +55,11 @@ def create_tables():
                     print("Table all_bikes up to date")
                 else:
                     crsr.execute("DROP TABLE all_bikes")
+                    db.commit()
+                    print("Table all_bikes Deleted")
                     crsr.execute("CREATE TABLE all_bikes (ID int unsigned NOT NULL AUTO_INCREMENT, brand varchar(30) NOT NULL unique, PRIMARY KEY (ID))")
                     populate_all_bikes_table(crsr)
                     
-            
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand varchar(55) NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
@@ -85,9 +84,8 @@ def populate_all_bikes_table(crsr):
 
 
 def login_required(f):
+    # Decorate routes to require login.
     """
-    Decorate routes to require login.
-
     https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
     """
     @wraps(f)
@@ -101,8 +99,9 @@ def login_required(f):
 # Display Error page if Exception occurs
 def error(message, code=400):
     def escape(s):
+        
+        # Escape special characters.
         """
-        Escape special characters.
         https://github.com/jacebrowning/memegen#special-characters
         """
         for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
@@ -122,30 +121,5 @@ def fullName():
         FULLNAME = x[0] + " " + x[1]
     return FULLNAME
 
-
-'''
-def lookup(symbol):
-    """Look up quote for symbol."""
-
-    # Contact API
-    try:
-        api_key = os.environ.get("API_KEY")
-        url = f"https://cloud.iexapis.com/stable/stock/{urllib.parse.quote_plus(symbol)}/quote?token={api_key}"
-        response = requests.get(url)
-        response.raise_for_status()
-    except requests.RequestException:
-        return None
-
-    # Parse response
-    try:
-        quote = response.json()
-        return {
-            "symbol": quote["symbol"],
-            "name": quote["companyName"],
-            "price": float(quote["latestPrice"])
-        }
-    except (KeyError, TypeError, ValueError):
-        return None
-'''
 
 

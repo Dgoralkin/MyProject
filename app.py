@@ -33,21 +33,21 @@ def after_request(response):
     return response
 
 
-#try:
+try:
 # Try to Configure MySql connection to DataBase For app Manager
-db = mysql.connector.connect(
-    host = "eu-cdbr-west-03.cleardb.net",
-    user = os.environ.get("Heroku_user"),
-    passwd = os.environ.get("Heroku_psswrd"),
-    # user="b62d0c2852c752",
-    # passwd="047bddc0",
-    database = "heroku_666bfee5e0eaef3"
-)
-if (db):
-    print("Connection")
-    create_tables()
-#except Exception:
-#    print("Error on connection")
+    db = mysql.connector.connect(
+        host = "eu-cdbr-west-03.cleardb.net",
+        user = os.environ.get("Heroku_user"),
+        passwd = os.environ.get("Heroku_psswrd"),
+        # user="b62d0c2852c752",
+        # passwd="047bddc0",
+        database = "heroku_666bfee5e0eaef3"
+    )
+    if (db):
+        print("Connection")
+        create_tables()
+except:
+    print("Connection Error")
 
 
 #--------------------------------------------------------------------------------- /
@@ -255,7 +255,7 @@ def add_bike():
     FULLNAME = fullName()
     YEARS = []
     yearnow = datetime.datetime.now()
-    for year in range(yearnow.year, yearnow.year - 21, -1):
+    for year in range(yearnow.year, yearnow.year - 23, -1):
         YEARS.append(year)
 
     
@@ -265,13 +265,15 @@ def add_bike():
         MODEL = request.form.get("MODEL")
         YEAR = request.form.get("YEAR")
         BIKE_MODEL = [session["user_id"], BIKE, MODEL, YEAR]
-
-        db.reconnect()
-        crsr = db.cursor()
-        crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
-        db.commit()
-        print("Bike added to bikes Table")
-        return redirect("/service")
+        try:
+            db.reconnect()
+            crsr = db.cursor()
+            crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
+            db.commit()
+            print("Bike added to bikes Table")
+            return redirect("/service")
+        except:
+            print("Connection lost on add_bike INSERT")
     
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
@@ -286,7 +288,7 @@ def search():
         q = request.args.get("q")
         if q:
             Q = ["%" + q + "%"]
-            db.reconnect()
+            #db.reconnect()
             crsr = db.cursor()
             crsr.execute("SELECT brand FROM all_bikes WHERE brand LIKE %s LIMIT 10", Q)
             bikes = []
@@ -296,6 +298,9 @@ def search():
         return jsonify(bikes)
     except UnboundLocalError:
         print("local variable 'bikes' referenced before assignment")
+    except:
+        print("Error in search")
+        return None
 
 
 #--------------------------------------------------------------------------------- Pick_up Page
