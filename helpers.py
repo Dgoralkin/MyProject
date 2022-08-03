@@ -42,13 +42,13 @@ def create_tables():
             crsr.execute("SELECT COUNT(brand) as count_bikes FROM all_bikes")
             for x in crsr:
                 DB_Count = x[0]
-                print(DB_Count)
+                # print(DB_Count)
             CSV_Count = 0
             with open('Bikes.csv', 'r') as csv_file:
                 reader = csv.reader(csv_file)
                 for line in reader:
                     CSV_Count += 1
-                print(CSV_Count)
+                # print(CSV_Count)
                 if DB_Count == CSV_Count:
                     print("Table all_bikes up to date")
                 else:
