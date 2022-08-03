@@ -271,7 +271,7 @@ def add_bike():
         crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
         db.commit()
         print("Bike added to bikes Table")
-        return render_template("service.html")
+        return redirect("/service")
     
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
