@@ -234,17 +234,22 @@ def service():
     # Check if user added his bike to DB
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", ID)
+    crsr.execute("SELECT brand FROM bikes WHERE cust_id=%s", ID)
     bikes = []
     for x in crsr:
         if len(x) > 0:
             bikes.append(x[0])
-    
     if len(bikes) == 0:
         return redirect("/add_bike")
+    
+    # Get all user's bikes
+    USER_BIKES = []
+    crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, bikes.model_year FROM bikes INNER JOIN all_bikes ON bikes.brand=all_bikes.ID WHERE cust_id=%s", ID)
+    for bike in crsr:
+        USER_BIKES.append(bike)
 
     # Redirect user to service page
-    return render_template("service.html",  FULLNAME=FULLNAME, BIKES=bikes)
+    return render_template("service.html", FULLNAME=FULLNAME, USER_BIKES=USER_BIKES)
 
 
 #--------------------------------------------------------------------------------- Add_bike
@@ -257,7 +262,6 @@ def add_bike():
     yearnow = datetime.datetime.now()
     for year in range(yearnow.year, yearnow.year - 23, -1):
         YEARS.append(year)
-
     
     # Receive data from page via "POST"
     if request.method == "POST":
@@ -265,9 +269,6 @@ def add_bike():
         bike = [BIKE]
         MODEL = request.form.get("MODEL").lower().capitalize()
         YEAR = request.form.get("YEAR")
-        '''
-        try:
-        '''
         
         # Check if user choosed bike from DB and update bike table
         bike_exist = False
@@ -282,13 +283,8 @@ def add_bike():
         if not bike_exist:
             print("Updating all_bikes table and CSV file")
             update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR)
-                
         return redirect("/service")
-        '''
-        except:
-            print("Connection lost on /add_bike")
-        '''
-    
+
     # Redirect user to add_bike page
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
 
