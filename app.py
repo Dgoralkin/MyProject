@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table
 import smtplib
 import random
 from email.message import EmailMessage
@@ -44,7 +44,7 @@ try:
         database = "heroku_666bfee5e0eaef3"
     )
     if (db):
-        print("Connection")
+        print("Connection with server established")
         create_tables()
 except:
     print("Connection Error")
@@ -269,6 +269,7 @@ def add_bike():
         try:
         '''
         
+        # Check if user choosed bike from DB and update bike table
         bike_exist = False
         db.reconnect()
         crsr = db.cursor()
@@ -276,13 +277,16 @@ def add_bike():
         for id in crsr:
             if len(id) > 0:
                 bike_exist = add_bike_to_DB(db, crsr, id[0], MODEL, YEAR)
+                
+        # if bike not from DB, update bike table and CSV file
         if not bike_exist:
-            print("Bike not in DB")
+            print("Updating all_bikes table and CSV file")
+            update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR)
                 
         return redirect("/service")
         '''
         except:
-            print("Connection lost on add_bike INSERT")
+            print("Connection lost on /add_bike")
         '''
     
     # Redirect user to add_bike page
@@ -298,7 +302,7 @@ def search():
         q = request.args.get("q")
         if q:
             Q = ["%" + q + "%"]
-            #db.reconnect()
+            db.reconnect()
             crsr = db.cursor()
             crsr.execute("SELECT brand FROM all_bikes WHERE brand LIKE %s LIMIT 10", Q)
             bikes = []
@@ -308,9 +312,8 @@ def search():
         return jsonify(bikes)
     except UnboundLocalError:
         print("local variable 'bikes' referenced before assignment")
-    except:
+    except TypeError:
         print("Error in search")
-        return None
 
 
 #--------------------------------------------------------------------------------- Pick_up Page

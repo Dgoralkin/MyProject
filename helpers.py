@@ -14,6 +14,7 @@ db = mysql.connector.connect(
     database = "heroku_666bfee5e0eaef3"
 )
 
+
 def create_tables():
         # Check if TABLES exist in DB
         crsr = db.cursor()
@@ -75,10 +76,38 @@ def populate_all_bikes_table(crsr):
                 bike = [line[0].lower().capitalize()]
                 crsr.execute("INSERT INTO all_bikes (brand) VALUES (%s)", bike)
                 db.commit()
+        csv_file.close()
         print("Table all_bikes updated")
 
 
+# Update all_bike table and CSV file with new bike
+def update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR):
+    bike = [BIKE]
+    crsr.execute("INSERT INTO all_bikes (brand) VALUES (%s)", bike)
+    db.commit()
+    # find MAX (ID) FROM all_bikes and update table bikes
+    crsr.execute("SELECT MAX(ID) FROM all_bikes")
+    for maxID in crsr:
+        ID = maxID[0] + 10
+    add_bike_to_DB(db, crsr, ID, MODEL, YEAR)
+    
+    # Update CSV file
+    with open('Bikes.csv', 'a', newline='') as csv_file:
+        writer = csv.writer(csv_file, delimiter=',')
+        writer.writerow([BIKE])
+        csv_file.close()
+        print("CSV file updated")
+    return
 
+
+# Insert user bike into bikes table
+def add_bike_to_DB(db, crsr, id, MODEL, YEAR):
+    BIKE_MODEL = [session["user_id"], id, MODEL, YEAR]
+    crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
+    db.commit()
+    print("Bike " + str(id) + " from DB added to Table bikes")
+    bike_exist = True
+    return bike_exist
 
 
 def login_required(f):
@@ -120,10 +149,4 @@ def fullName():
     return FULLNAME
 
 
-def add_bike_to_DB(dbtmp, crsrtmp, id, MODEL, YEAR):
-    BIKE_MODEL = [session["user_id"], id, MODEL, YEAR]
-    crsrtmp.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
-    dbtmp.commit()
-    print("Bike " + str(id) + " from DB added to bikes Table bikes")
-    bike_exist = True
-    return bike_exist
+
