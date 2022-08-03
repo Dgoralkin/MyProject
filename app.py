@@ -244,7 +244,7 @@ def service():
         return redirect("/add_bike")
 
     # Redirect user to service page
-    return render_template("service.html",  FULLNAME=FULLNAME)
+    return render_template("service.html",  FULLNAME=FULLNAME, BIKES=bikes)
 
 
 #--------------------------------------------------------------------------------- Add_bike
