@@ -346,9 +346,10 @@ def account():
 @app.route("/cart", methods=["GET", "POST"])
 @login_required
 def cart():
-    
     # Show connected User Full Name
     FULLNAME = fullName()
+    if request.method == "POST":
+        return render_template("cart.html",  FULLNAME=FULLNAME)
 
     # Redirect user to cart page
     return render_template("cart.html",  FULLNAME=FULLNAME)

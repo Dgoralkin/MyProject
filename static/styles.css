@@ -59,6 +59,12 @@ span
     text-decoration: underline;
 }
 
+.service_check
+{
+    margin: auto;
+    display: none;
+ }
+
 .header
 {
     background-color: #1272a8;

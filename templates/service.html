@@ -27,21 +27,52 @@
         <div class="card">
             <!-- <img src="..." class="card-img-top" alt="Leave your bike"> -->
             <!-- <div class="text-bg-success p-3 bigFont"><span id="DIV_bg_warning">Get service</span></div> -->
+            <!-- <a href="/service" class="btn btn-primary">Choose service</a> -->
+
           
             <div class="card-body">
               <h4 class="card-title">{{ bike[1] }} {{ bike[2] }} {{ bike[3] }}<h6>Bike# {{ bike[0] }}</h6></h4>
               <!-- <p class="card-text">Here you can specify what service required for your bike.</p> -->
-              <button type="button" class="btn btn-success">Choose service</button>
-              <!-- <a href="/service" class="btn btn-primary">Choose service</a> -->
+              <button type="button" id="BTN_Choose_service" class="btn btn-success">Choose service</button>
               <button type="button" class="btn btn-dark">Remove bike</button>
+            </div>
 
+
+
+            <div class="col-md-8 service_check" id="Service_panel">
+              <form action="/cart" method="post">
+
+                <table class="table table-success table-striped-columns">
+                  <thead class="table-dark">
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col" colspan="2">Service</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Yes/No</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td colspan="2">clean-up and wheel allignment</td>
+                      <td>30$</td>
+                      <td><input class="form-check-input" type="checkbox" name="clean-up" value="clean-up" id="clean-up"></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </form>
             </div>
         </div>
       </div>
     </div>
 </div>
 
+
+
 {% endfor %}
+
+
 
 
 
