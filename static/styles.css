@@ -52,6 +52,13 @@ span
     color: red;
 }
 
+#P_Response
+{
+    color: red;
+    font-size: large;
+    text-decoration: underline;
+}
+
 .header
 {
     background-color: #1272a8;

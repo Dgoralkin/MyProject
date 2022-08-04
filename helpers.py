@@ -15,6 +15,7 @@ db = mysql.connector.connect(
 )
 
 
+# Create required tables as program starts if not exist
 def create_tables():
         # Check if TABLES exist in DB
         crsr = db.cursor()
@@ -67,6 +68,7 @@ def create_tables():
             print("Table users Created")
 
 
+# Polulate "All_Bikes" table from CSV file
 def populate_all_bikes_table(crsr):
     print("Populating table all_bikes. Please wait...")
     db.reconnect()

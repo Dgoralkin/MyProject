@@ -79,10 +79,16 @@ def login():
             crsr = db.cursor()
             crsr.execute("SELECT * FROM users WHERE Email=%s", USER)
             for user in crsr:
+                # Log user in if registered and verified 
                 if check_password_hash(user[4], PSSWD)==True and user[8]==1:
                     session["user_id"] = user[0]
                     crsr.close()
                     return redirect("/")
+                # Redirect user to reverification if registered and not verified 
+                elif check_password_hash(user[4], PSSWD)==True and user[8]!=1:
+                    USER.clear()
+                    USER = user
+                    return render_template("verification.html", user=USER)
             
             return render_template("login.html", loginError="* Username OR Password is incorrect.")
         except NameError:
@@ -195,7 +201,7 @@ def verifify():
             db.commit()
             crsr.close()
             return redirect("/")
-        return render_template("verification.html", user=USER, RESPONSE="Your Verification code is incorrect!, please try again")
+        return render_template("verification.html", user=USER, RESPONSE="* Your Verification code is incorrect! please try again")
     
     # return from GET response
     return redirect("/")
