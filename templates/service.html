@@ -26,20 +26,14 @@
       <div class="col">
         <div class="card">
             <!-- <img src="..." class="card-img-top" alt="Leave your bike"> -->
-            <!-- <div class="text-bg-success p-3 bigFont"><span id="DIV_bg_warning">Get service</span></div> -->
-            <!-- <a href="/service" class="btn btn-primary">Choose service</a> -->
 
-          
             <div class="card-body">
               <h4 class="card-title">{{ bike[1] }} {{ bike[2] }} {{ bike[3] }}<h6>Bike# {{ bike[0] }}</h6></h4>
-              <!-- <p class="card-text">Here you can specify what service required for your bike.</p> -->
-              <button type="button" id="BTN_Choose_service" class="btn btn-success">Choose service</button>
-              <button type="button" class="btn btn-dark">Remove bike</button>
+              <button type="button" id="BTN_{{ bike[1] }}" class="btn btn-success">Choose service</button>
+              <button type="button" class="btn btn-dark">Remove bike</button> <!-- To Be added later -->
             </div>
 
-
-
-            <div class="col-md-8 service_check" id="Service_panel">
+            <div class="col-md-8 service_check" id="Service_{{ bike[1] }}">
               <form action="/cart" method="post">
 
                 <table class="table table-success table-striped-columns">
@@ -60,6 +54,13 @@
                     </tr>
                   </tbody>
                 </table>
+                <script>
+                  $(document).ready(function(){
+                    $("#BTN_{{ bike[1] }}").click(function(){
+                      $("#Service_{{ bike[1] }}").slideToggle("slow");
+                    });
+                  });
+                </script>
 
               </form>
             </div>

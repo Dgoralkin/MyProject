@@ -84,9 +84,5 @@ function getRndInteger(min, max) {
 
 
 
-$(document).ready(function(){
-  $("#BTN_Choose_service").click(function(){
-    $("#Service_panel").slideToggle("slow");
-  });
-});
+
 
