@@ -39,8 +39,6 @@ try:
         host = "eu-cdbr-west-03.cleardb.net",
         user = os.environ.get("Heroku_user"),
         passwd = os.environ.get("Heroku_psswrd"),
-        # user="b62d0c2852c752",
-        # passwd="047bddc0",
         database = "heroku_666bfee5e0eaef3"
     )
     if (db):
@@ -144,8 +142,6 @@ def register():
         
         EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
         EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
-        # EMAIL_ADDRESS = 'gbikes.customer.service@gmail.com'
-        # EMAIL_PSSWRD = 'llbqckvmfvshbonk'
         
         msg = EmailMessage()
         msg['Subject'] = 'This is a verification Email From G-bikes'
