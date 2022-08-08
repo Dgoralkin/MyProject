@@ -75,7 +75,7 @@ def create_tables():
             populate_services_table(crsr)
         else:
             # Validate TABLE services with CSV file
-            validate_services_table(crsr)
+            validate_services_table(crsr, db)
             
         if (users == 0):
             crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
@@ -112,28 +112,38 @@ def populate_services_table(crsr):
         print("Table services up to date")
 
 # Validate "services" table with CSV Service file
-def validate_services_table(crsr):
+def validate_services_table(crsr, db):
     service_DB = []
     service_CSV = []
     SERVICES = load_services()
-    crsr.execute("SELECT * FROM services")
+    crsr.execute("SELECT * FROM services order by Service_ID")
     
     for service in SERVICES:
         S1 = int(service['Service_ID']), service['Service_description'], float(service['Service_price'])
-        service_DB.append(S1)
+        service_CSV.append(S1)
     #print(service_DB)
     for line in crsr:
         S2 = line[1], line[2], line[3]
-        service_CSV.append(S2)
+        service_DB.append(S2)
     #print(service_CSV)
+    print('Check services LEN: CSV vs DB', len(service_CSV), len(service_DB))
     
-    for i in range(len(service_CSV)):
-        print(service_DB[i][0], service_DB[i][1], service_DB[i][2])
-        print(service_CSV[i][0], service_CSV[i][1], service_CSV[i][2])
-        if (service_DB[i][0], service_DB[i][1], service_DB[i][2]) == (service_CSV[i][0], service_CSV[i][1], service_CSV[i][2]):
-            print("EQUAL")
-        else:
-            print("Service_ID", i + 1, "Modified")
+    # Checks if CSV file were modified  
+    if len(service_CSV) != len(service_DB):
+        crsr.execute("DROP TABLE services")
+        crsr.execute("CREATE TABLE services (ID int unsigned NOT NULL AUTO_INCREMENT, Service_ID int NOT NULL unique, Service_description varchar(65) NOT NULL, Service_price float(10, 2) NOT NULL, PRIMARY KEY (ID))")
+        populate_services_table(crsr)
+    # Checks if all parameters of CSV file and DB table are accurate    
+    else:
+        for i in range(len(service_CSV)):
+            #print(service_DB[i][0], service_DB[i][1], service_DB[i][2])
+            #print(service_CSV[i][0], service_CSV[i][1], service_CSV[i][2])
+            if (service_DB[i][0], service_DB[i][1], service_DB[i][2]) != (service_CSV[i][0], service_CSV[i][1], service_CSV[i][2]):
+                Service_ID = [service_CSV[i][1], service_CSV[i][2], service_CSV[i][0]]
+                print("Service_ID", i + 1, "Modified: ", Service_ID)
+                crsr.execute("UPDATE services SET Service_description = %s, Service_Price = %s WHERE Service_ID = %s", Service_ID)
+                db.commit()
+        print("Table services up to date")
     return None
 
 # Load "services" from CSV file
