@@ -25,6 +25,7 @@ def create_tables():
         all_bikes = 0
         bikes = 0
         users = 0
+        services = 0
         for table in tables:
             if ("all_bikes" in table):
                 all_bikes += 1
@@ -32,6 +33,8 @@ def create_tables():
                 bikes += 1
             if ("users" in table):
                 users += 1
+            if ("services" in table):
+                services += 1
                 
         # Create required tables if doesn't exist in DB
         if (all_bikes == 0):
@@ -50,6 +53,7 @@ def create_tables():
                 reader = csv.reader(csv_file)
                 for line in reader:
                     CSV_Count += 1
+                csv_file.close()
                 print('CSV_count:', CSV_Count)
                 if DB_Count == CSV_Count:
                     print("Table all_bikes up to date")
@@ -63,12 +67,22 @@ def create_tables():
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand int NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
+            
+        if (services == 0):
+            crsr.execute("CREATE TABLE services (ID int unsigned NOT NULL AUTO_INCREMENT, Service_ID int NOT NULL unique, Service_description varchar(65) NOT NULL, Service_price float(10, 2) NOT NULL, PRIMARY KEY (ID))")
+            print("Table services Created")
+            # Populate TABLE services when created
+            populate_services_table(crsr)
+        else:
+            # Validate TABLE services with CSV file
+            validate_services_table(crsr)
+            
         if (users == 0):
             crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
             print("Table users Created")
 
 
-# Polulate "All_Bikes" table from CSV file
+# Polulate "All_Bikes" table from CSV Bikes file
 def populate_all_bikes_table(crsr):
     print("Populating table all_bikes. Please wait...")
     db.reconnect()
@@ -80,6 +94,57 @@ def populate_all_bikes_table(crsr):
                 db.commit()
         csv_file.close()
         print("Table all_bikes updated")
+
+
+# Polulate "services" table from CSV Service file
+def populate_services_table(crsr):
+    
+    print("Populating table services. Please wait...")
+    
+    with open('Services.csv', 'r') as services_file:
+        reader = csv.DictReader(services_file)
+        for line in reader:
+            # print(line['Service_ID'], line['Service_description'], line['Service_price'])
+            service = [line['Service_ID'], line['Service_description'], line['Service_price']]
+            crsr.execute("INSERT INTO services (Service_ID, Service_description, Service_Price) values(%s, %s, %s)", service)
+            db.commit()
+        services_file.close()
+        print("Table services up to date")
+
+# Validate "services" table with CSV Service file
+def validate_services_table(crsr):
+    service_DB = []
+    service_CSV = []
+    SERVICES = load_services()
+    crsr.execute("SELECT * FROM services")
+    
+    for service in SERVICES:
+        S1 = int(service['Service_ID']), service['Service_description'], float(service['Service_price'])
+        service_DB.append(S1)
+    #print(service_DB)
+    for line in crsr:
+        S2 = line[1], line[2], line[3]
+        service_CSV.append(S2)
+    #print(service_CSV)
+    
+    for i in range(len(service_CSV)):
+        print(service_DB[i][0], service_DB[i][1], service_DB[i][2])
+        print(service_CSV[i][0], service_CSV[i][1], service_CSV[i][2])
+        if (service_DB[i][0], service_DB[i][1], service_DB[i][2]) == (service_CSV[i][0], service_CSV[i][1], service_CSV[i][2]):
+            print("EQUAL")
+        else:
+            print("Service_ID", i + 1, "Modified")
+    return None
+
+# Load "services" from CSV file
+def load_services():
+    SERVICES = []
+    with open('Services.csv', 'r') as services_file:
+        reader = csv.DictReader(services_file)
+        for line in reader:
+            SERVICES.append(line)
+    services_file.close()
+    return SERVICES
 
 
 # Update all_bike table and CSV file with new bike

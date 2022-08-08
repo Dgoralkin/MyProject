@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services
 import smtplib
 import random
 from email.message import EmailMessage
@@ -233,17 +233,8 @@ def service():
     FULLNAME = fullName()    
     ID = [session["user_id"]]
     
-    SERVICES = [
-        {
-        "service_id": 1,
-        "service_desc": "clean-up and wheel allignment",
-        "service_price": 30
-        },
-        {
-        "service_id": 2,
-        "service_desc": "gears set-up",
-        "service_price": 25
-        }]
+    # Load list of services from CSV file ------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!
+    SERVICES = load_services()
     
     # Check if user added his bike to DB
     db.reconnect()
