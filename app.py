@@ -233,6 +233,18 @@ def service():
     FULLNAME = fullName()    
     ID = [session["user_id"]]
     
+    SERVICES = [
+        {
+        "service_id": 1,
+        "service_desc": "clean-up and wheel allignment",
+        "service_price": 30
+        },
+        {
+        "service_id": 2,
+        "service_desc": "gears set-up",
+        "service_price": 25
+        }]
+    
     # Check if user added his bike to DB
     db.reconnect()
     crsr = db.cursor()
@@ -251,7 +263,7 @@ def service():
         USER_BIKES.append(bike)
 
     # Redirect user to service page
-    return render_template("service.html", FULLNAME=FULLNAME, USER_BIKES=USER_BIKES)
+    return render_template("service.html", FULLNAME=FULLNAME, USER_BIKES=USER_BIKES, SERVICES=SERVICES)
 
 
 #--------------------------------------------------------------------------------- Add_bike

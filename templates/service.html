@@ -17,7 +17,7 @@
 <br>
 
 <!-- <div class="container text-center text-bg-info p-2">{{ BIKES }}</div> -->
-
+<form action="/cart" method="post">
 
 {% for bike in USER_BIKES %}
 
@@ -34,9 +34,8 @@
             </div>
 
             <div class="col-md-8 service_check" id="Service_{{ bike[1] }}">
-              <form action="/cart" method="post">
-
                 <table class="table table-success table-striped-columns">
+
                   <thead class="table-dark">
                     <tr>
                       <th scope="col"></th>
@@ -45,14 +44,19 @@
                       <th scope="col">Yes/No</th>
                     </tr>
                   </thead>
+
+                  <!-- Here -->
+                  {% for service in SERVICES %}
                   <tbody>
                     <tr>
-                      <th scope="row">1</th>
-                      <td colspan="2">clean-up and wheel allignment</td>
-                      <td>30$</td>
-                      <td><input class="form-check-input" type="checkbox" name="clean-up" value="clean-up" id="clean-up"></td>
+                      <th scope="row">#{{ service.service_id }}</th>
+                      <td colspan="2">{{ service.service_desc }}</td>
+                      <td>{{ service.service_price }}$</td>
+                      <td><input class="form-check-input" type="checkbox" name="{{ service.service_id }}" value="{{ bike[0] }}"></td>
                     </tr>
                   </tbody>
+                  {% endfor %}
+
                 </table>
                 <script>
                   $(document).ready(function(){
@@ -61,19 +65,15 @@
                     });
                   });
                 </script>
-
-              </form>
             </div>
         </div>
       </div>
     </div>
 </div>
-
-
-
 {% endfor %}
 
-
+<button id="send_service" type="submit" class="btn btn-danger">Send_service</button>
+</form>
 
 
 
