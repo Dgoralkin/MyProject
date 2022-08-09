@@ -294,6 +294,22 @@ def add_bike():
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
 
 
+#--------------------------------------------------------------------------------- Remove_bike
+@app.route("/remove_bike", methods=["GET"])
+@login_required
+def Remove_bike():
+    
+    # Delete bike from bikes table
+    Q = [request.args.get("q")]
+    query = 'DELETE FROM bikes WHERE ID=%s'
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute(query, Q)
+    db.commit()
+    print("Bike", Q[0], "removed from Table bikes")
+    return render_template("service.html")
+
+
 #--------------------------------------------------------------------------------- Search bikes in DB
 @app.route("/search")
 def search():
@@ -315,6 +331,7 @@ def search():
         print("local variable 'bikes' referenced before assignment")
     except TypeError:
         print("Error in search")
+
 
 
 #--------------------------------------------------------------------------------- Pick_up Page

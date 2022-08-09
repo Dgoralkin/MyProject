@@ -16,21 +16,20 @@
 <div class="container text-center text-bg-info p-2"><h2>Please choose a bike to service:</h2></div>
 <br>
 
-<!-- <div class="container text-center text-bg-info p-2">{{ BIKES }}</div> -->
 <form action="/cart" method="post">
 
 {% for bike in USER_BIKES %}
 
-<div class="container text-center">
+<div class="container text-center" id="{{ bike[0] }}">
     <div class="row">
       <div class="col">
         <div class="card">
-            <!-- <img src="..." class="card-img-top" alt="Leave your bike"> -->
+            <!-- <img src="https://lapierre-shopware.accell.cloud/media/cf/a5/23/1606914385/Zesty%20AM%209.9%20-%20View%20(2).jpg" width="10%" height="10%" class="card-img-top" alt="Leave your bike"> -->
 
             <div class="card-body">
               <h4 class="card-title">{{ bike[1] }} {{ bike[2] }} {{ bike[3] }}<h6>Bike# {{ bike[0] }}</h6></h4>
-              <button type="button" id="BTN_{{ bike[1] }}" class="btn btn-success">Choose service</button>
-              <button type="button" class="btn btn-dark">Remove bike</button> <!-- To Be added later -->
+              <button type="button" id="BTN_{{ bike[1] }}" class="btn btn-success">Choose service for {{ bike[2] }}</button>
+              <button type="button" name="{{ bike[0] }}" class="btn btn-dark" onclick="remove_bike(this.name)">Remove {{ bike[2] }}</button>
             </div>
 
             <div class="col-md-8 service_check" id="Service_{{ bike[1] }}">
@@ -45,7 +44,6 @@
                     </tr>
                   </thead>
 
-                  <!-- Here -->
                   {% for service in SERVICES %}
                   <tbody>
                     <tr>
@@ -71,26 +69,16 @@
     </div>
 </div>
 {% endfor %}
+
 <br>
 <button id="send_service" type="submit" class="btn btn-danger">Send your service</button>
 </form>
-
-
-
-
 
 <br>
 <div class="container text-center text-bg-info p-2">
     <p>Would you like to add another bike?</p>
     <button type="button" class="btn btn-primary"><a href="/add_bike">Add another bike</a></button>
 </div>
-
-
-
-
-
-
-
 
 
 {% endblock %}
