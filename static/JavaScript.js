@@ -53,6 +53,7 @@ $(document).ready(function(){
 });
 
 
+// Hide bike from page while DB updates
 function remove_bike(bike_id) {
     fetch('/remove_bike?q=' + bike_id);
     let item = '#' + bike_id
