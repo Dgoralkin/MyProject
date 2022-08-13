@@ -9,9 +9,24 @@
 {% endblock %}
 
 {% block header %}
-<h1>Welcome To cart</h1>
+<h1>Your cart summary</h1>
 {% endblock %}
 
+
 {% block main %}
-<h2>Welcome To cart</h2>
+<h2>Please confirm your order</h2>
+
+{% for service in SERVICES %}
+
+{% if service['bike_services'] %}
+    <p>{{ service['bike_ID'] }},
+        {% for work in service['bike_services'] %}
+        {{ work }},
+        {% endfor %}
+        {{ service['bike_service_notes'] }}
+    </p>
+{% endif %}
+
+{% endfor %}
+
 {% endblock %}

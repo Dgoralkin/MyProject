@@ -367,7 +367,7 @@ def cart():
     if request.method == "POST":
         # Check what services user ordered for each bike
         USER_ID = [session["user_id"]]
-        BIKES = []
+        SERVICES = []
         crsr = db.cursor()
         crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
         counter = 0
@@ -378,16 +378,17 @@ def cart():
             SERVICE["bike_ID"] = x[0]
             SERVICE["bike_services"] = BIKE_ID
             SERVICE["bike_service_notes"] = ServiceNotes[counter]
-            BIKES.append(SERVICE)
+            SERVICES.append(SERVICE)
             counter += 1
-        for bike in BIKES:
-            print(bike['bike_ID'], bike['bike_services'], bike['bike_service_notes'])
-        
+        for bike in SERVICES:
+            if bike['bike_services']:
+                print("Service for bike:" +  str(bike['bike_ID']) + ". Service: " + str(bike['bike_services']) + ", Notes: " + bike['bike_service_notes'])
 
-        
-
-        return render_template("cart.html",  FULLNAME=FULLNAME)
-
+        return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
+    
+    # Get path:
+    
+    
     # Redirect user to cart page
-    return render_template("cart.html",  FULLNAME=FULLNAME)
+    return render_template("cart.html", FULLNAME=FULLNAME)
 
