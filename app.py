@@ -365,6 +365,24 @@ def cart():
     # Show connected User Full Name
     FULLNAME = fullName()
     if request.method == "POST":
+        # Check what services user orderd for each bike
+        USER_ID = [session["user_id"]]
+        crsr = db.cursor()
+        crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
+        counter = 0
+        TEXTAREA = request.form.getlist("ExplainServiceRequest")
+        for x in crsr:
+            
+            print("Bike ID:", x[0])
+            BIKE_ID = request.form.getlist("bike_" + str(x[0]))
+            BIKE_ID.append(TEXTAREA[counter])
+            print(BIKE_ID)
+            counter += 1
+            
+        
+
+        
+
         return render_template("cart.html",  FULLNAME=FULLNAME)
 
     # Redirect user to cart page

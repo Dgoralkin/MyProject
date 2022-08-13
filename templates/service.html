@@ -29,6 +29,7 @@
             <div class="card-body">
               <h4 class="card-title">{{ bike[1] }} {{ bike[2] }} {{ bike[3] }}<h6>Bike# {{ bike[0] }}</h6></h4>
               <button type="button" id="BTN_{{ bike[1] }}" class="btn btn-success">Choose service for {{ bike[2] }}</button>
+              <!-- Remove bike VIA 'remove_bike' function in JavaScript.js -->
               <button type="button" name="{{ bike[0] }}" class="btn btn-dark" onclick="remove_bike(this.name)">Remove {{ bike[2] }}</button>
             </div>
 
@@ -50,14 +51,14 @@
                       <th scope="row">#{{ service.Service_ID }}</th>
                       <td colspan="2">{{ service.Service_description }}</td>
                       <td>{{ service.Service_price }}$</td>
-                      <td><input class="form-check-input" type="checkbox" name="bike_{{ bike[0] }}" value="service_{{ service.Service_ID }}"></td>
+                      <td><input class="form-check-input" id="checkbox" type="checkbox" name="bike_{{ bike[0] }}" value="{{ service.Service_ID }}"></td>
                     </tr>
                   </tbody>
                   {% endfor %}
                   <tr>
-                    <td colspan="5">                  <div class="mb-3">
-                      <label for="ExplainServiceRequest" class="form-label">Explain your service request/s</label>
-                      <textarea class="form-control" id="ExplainServiceRequest" rows="3" placeholder="You can specify your claims here."></textarea>
+                    <td colspan="5"><div class="mb-3">
+                      <label for="ExplainServiceRequest" class="form-label">Explain your service request/s (*Optioanl)</label>
+                      <input class="form-control" type="textarea" id="ExplainServiceRequest" rows="3" name="ExplainServiceRequest" value="" placeholder="You can specify your claims here."></input>
                     </div></td>
                   </tr>
                 </table>
@@ -76,8 +77,21 @@
 {% endfor %}
 
 <br>
-<button id="send_service" type="submit" class="btn btn-danger">Send your service</button>
+<!--button "send_service" is @ display:none unless checkbox checked-->
+<button id="send_service" type="submit" class="btn btn-danger service_check">Send your service</button>
 </form>
+
+<!-- Script for "send_service" show/hide button -->
+<script>
+  $('input:checkbox').change(function() {
+    if ($('input:checkbox').is(':checked')) {
+      $("#send_service").show("slow");
+    } else {
+      $("#send_service").slideToggle("slow");
+    }
+  });
+</script>
+
 
 <br>
 <div class="container text-center text-bg-info p-2">
