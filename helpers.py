@@ -25,6 +25,7 @@ def create_tables():
         all_bikes = 0
         bikes = 0
         users = 0
+        service_order = 0
         services = 0
         for table in tables:
             if ("all_bikes" in table):
@@ -32,6 +33,8 @@ def create_tables():
             if ("bikes" in table):
                 bikes += 1
             if ("users" in table):
+                users += 1
+            if ("service_order" in table):
                 users += 1
             if ("services" in table):
                 services += 1
@@ -67,7 +70,11 @@ def create_tables():
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand int NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
-            
+        
+        if (service_order == 0):
+            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511),Service_price float(10, 2) NOT NULL, Service_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, Start_time datetime, End_time datetime, PRIMARY KEY (Service_ID))")
+            print("Table service_order Created")
+        
         if (services == 0):
             crsr.execute("CREATE TABLE services (ID int unsigned NOT NULL AUTO_INCREMENT, Service_ID int NOT NULL unique, Service_description varchar(65) NOT NULL, Service_price float(10, 2) NOT NULL, Service_time int NOT NULL, PRIMARY KEY (ID))")
             print("Table services Created")

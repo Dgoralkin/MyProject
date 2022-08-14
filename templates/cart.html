@@ -14,19 +14,64 @@
 
 
 {% block main %}
-<h2>Please confirm your order</h2>
+<h2>Please review your order</h2>
+    <div class="container text-center" id="Service_order0">
+        <div class="row">
+          <div class="col">
+            <div class="col-md-12" id="Service_order1">
+                <table class="table table-success table-striped-columns">
 
-{% for service in SERVICES %}
+                    <thead class="table-dark">
+                        <tr>
+                        <th scope="col">Bike name</th>
+                        <th scope="col" colspan="2">Required service</th>
+                        <th scope="col">Service price</th>
+                        <th scope="col">Service notes</th>
+                        <th scope="col">Remove/Confirm service</th>
+                        </tr>
+                    </thead>
 
-{% if service['bike_services'] %}
-    <p>{{ service['bike_ID'] }},
-        {% for work in service['bike_services'] %}
-        {{ work }},
-        {% endfor %}
-        {{ service['bike_service_notes'] }}
-    </p>
-{% endif %}
+                    {% for service in SERVICES %}
+                    {% if service['bike_services'] %}
 
-{% endfor %}
+                    <tbody>
+                        {% for work in service['bike_services'] %}
+                        <tr>
+                        <th scope="row">{{ service['bike_ID'] }}</th>
+                        <td colspan="2">{{ work }}</td>    
+                        <td>30$</td>
+                        <td>{{ service['bike_service_notes'] }}</td>
+                        <td><button type="button" class="btn btn-danger"><a href="/cart">Remove</a></button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
+                    {% endif %}
+                    {% endfor %}
+
+                    <thead class="table-dark">
+                        <tr>
+                        <th scope="col">Total bikes</th>
+                        <th scope="col" colspan="2">Total services</th>
+                        <th scope="col">Total price</th>
+                        <th scope="col">Estimated pick up time</th>
+                        <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <tr>
+                        <td>1</td>    
+                        <td colspan="2">2</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td><button type="button" class="btn btn-success"><a href="/cart">Confirm service</a></button></td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
