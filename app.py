@@ -363,11 +363,11 @@ def account():
 @login_required
 def cart():
     FULLNAME = fullName()
+    USER_ID = [session["user_id"]]
+    SERVICES = []
 
-    
     if request.method == "POST":
         # Check what services user ordered for each bike
-        USER_ID = [session["user_id"]]
         SERVICES = []
         crsr = db.cursor()
         crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
@@ -376,17 +376,19 @@ def cart():
         for x in crsr:
             SERVICE = {}
             SERVICE_ID = request.form.getlist("bike_" + str(x[0]))
+            SERVICE["user_ID"] = USER_ID[0]
             SERVICE["bike_ID"] = x[0]
             SERVICE["bike_services"] = SERVICE_ID
             SERVICE["bike_service_notes"] = ServiceNotes[counter]
             SERVICES.append(SERVICE)
             counter += 1
+        # Populate "service_order" table with user's request
         service_order(SERVICES)
-
-        return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
+        return redirect("/cart")
     
     # Get path:
-    
+    #crsr = db.cursor()
+    #crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
     
     # Redirect user to cart page
     return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
