@@ -1,4 +1,5 @@
 import os
+import queue
 import mysql.connector
 import urllib.parse
 import csv
@@ -35,7 +36,7 @@ def create_tables():
             if ("users" in table):
                 users += 1
             if ("service_order" in table):
-                users += 1
+                service_order += 1
             if ("services" in table):
                 services += 1
                 
@@ -72,7 +73,7 @@ def create_tables():
             print("Table bikes Created")
         
         if (service_order == 0):
-            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511),Service_price float(10, 2) NOT NULL, Service_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, Start_time datetime, End_time datetime, PRIMARY KEY (Service_ID))")
+            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511),	Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Service_datetime datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, Start_datetime datetime, End_datetime datetime, PRIMARY KEY (Service_ID))")
             print("Table service_order Created")
         
         if (services == 0):
@@ -236,4 +237,23 @@ def fullName():
     return FULLNAME
 
 
-
+# Update "service_order" table with customer's orders
+def service_order(SERVICES):
+    for service in SERVICES:
+        if service['bike_services']:
+            for service_procedure in service['bike_services']:                
+                ID = [service_procedure]
+                queue = 'SELECT Service_price, Service_time FROM services WHERE Service_ID = %s'
+                crsr = db.cursor()
+                crsr.execute(queue, ID)
+                for i in crsr:
+                    parameters = []
+                    parameters.append(service['bike_ID'])
+                    parameters.append(service_procedure)
+                    parameters.append(service['bike_service_notes'])
+                    parameters.append(i[0])
+                    parameters.append(i[1])
+                    crsr.execute("INSERT INTO service_order (Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time) VALUES (%s, %s, %s, %s, 3%s)", parameters)
+                    db.commit()
+                    print("Bike:" + str(service['bike_ID']) + " Procedure:" + str(service_procedure) + " added to service_order table")
+    return

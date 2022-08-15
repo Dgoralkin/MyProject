@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order
 import smtplib
 import random
 from email.message import EmailMessage
@@ -363,6 +363,7 @@ def account():
 @login_required
 def cart():
     FULLNAME = fullName()
+
     
     if request.method == "POST":
         # Check what services user ordered for each bike
@@ -374,15 +375,13 @@ def cart():
         ServiceNotes = request.form.getlist("ServiceNotes")
         for x in crsr:
             SERVICE = {}
-            BIKE_ID = request.form.getlist("bike_" + str(x[0]))
+            SERVICE_ID = request.form.getlist("bike_" + str(x[0]))
             SERVICE["bike_ID"] = x[0]
-            SERVICE["bike_services"] = BIKE_ID
+            SERVICE["bike_services"] = SERVICE_ID
             SERVICE["bike_service_notes"] = ServiceNotes[counter]
             SERVICES.append(SERVICE)
             counter += 1
-        for bike in SERVICES:
-            if bike['bike_services']:
-                print("Service for bike:" +  str(bike['bike_ID']) + ". Service: " + str(bike['bike_services']) + ", Notes: " + bike['bike_service_notes'])
+        service_order(SERVICES)
 
         return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
     
@@ -390,5 +389,5 @@ def cart():
     
     
     # Redirect user to cart page
-    return render_template("cart.html", FULLNAME=FULLNAME)
+    return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
 
