@@ -39,8 +39,7 @@ try:
         host = "eu-cdbr-west-03.cleardb.net",
         user = os.environ.get("Heroku_user"),
         passwd = os.environ.get("Heroku_psswrd"),
-        database = "heroku_666bfee5e0eaef3",
-        buffered=True
+        database = "heroku_666bfee5e0eaef3"
     )
     if (db):
         print("Connection with server established")
@@ -283,7 +282,7 @@ def add_bike():
         crsr.execute("SELECT ID FROM all_bikes WHERE brand = %s ", bike)
         for id in crsr:
             if len(id) > 0:
-                bike_exist = add_bike_to_DB(db, crsr, id[0], MODEL, YEAR)
+                bike_exist = add_bike_to_DB(id[0], MODEL, YEAR)
                 
         # if bike not from DB, update bike table and CSV file
         if not bike_exist:

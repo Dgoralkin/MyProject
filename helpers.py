@@ -178,7 +178,7 @@ def update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR):
     for maxID in crsr:
         print('maxID:', maxID)
         ID = maxID[0]
-    add_bike_to_DB(db, crsr, ID, MODEL, YEAR)
+    add_bike_to_DB(ID, MODEL, YEAR)
     
     # Update CSV file
     with open('Bikes.csv', 'a', newline='') as csv_file:
@@ -190,8 +190,9 @@ def update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR):
 
 
 # Insert user bike into bikes table
-def add_bike_to_DB(db, crsr, id, MODEL, YEAR):
+def add_bike_to_DB(id, MODEL, YEAR):
     BIKE_MODEL = [session["user_id"], id, MODEL, YEAR]
+    crsr = db.cursor()
     crsr.execute("INSERT INTO bikes (cust_id, brand, model, model_year) VALUES (%s, %s, %s, %s)", BIKE_MODEL)
     db.commit()
     print("Bike " + str(id) + " from DB added to Table bikes")
@@ -270,9 +271,13 @@ def service_order(SERVICES):
 # Service time management system FNK
 def start_end_time(User_ID, Procedure_time_MIN):
     print('User_ID, Procedure_time_MIN:', User_ID, Procedure_time_MIN)
+    User_ID = [User_ID]
     crsr = db.cursor()
-    crsr.execute('SELECT End_datetime FROM service_order order by Service_ID')
+    crsr.execute('SELECT End_datetime FROM service_order WHERE User_ID=%s order by Service_ID desc', User_ID)
     for end_time in crsr:
+        
+        print('end_time: ', end_time)
+        
         Registration_datetime = datetime.now()
         converted = DT_TS_converter(Registration_datetime, end_time[0], Procedure_time_MIN)
         return converted
