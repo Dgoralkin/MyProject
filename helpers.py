@@ -1,8 +1,9 @@
 import os
-import queue
 import mysql.connector
-import urllib.parse
 import csv
+import datetime
+from datetime import datetime
+import math
 
 from flask import redirect, render_template, request, session
 from functools import wraps
@@ -73,7 +74,7 @@ def create_tables():
             print("Table bikes Created")
         
         if (service_order == 0):
-            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511),	Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Service_datetime datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, Start_datetime datetime, End_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
+            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
             print("Table service_order Created")
         
         if (services == 0):
@@ -254,7 +255,38 @@ def service_order(SERVICES):
                     parameters.append(service['bike_service_notes'])
                     parameters.append(i[0])
                     parameters.append(i[1])
-                    crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time) VALUES (%s, %s, %s, %s, %s, 3%s)", parameters)
+                    # Calculate service start/end datetime
+                    start_end_service_time = start_end_time(service['user_ID'], i[1])
+                    parameters.append(start_end_service_time[0])
+                    parameters.append(start_end_service_time[1])
+                    parameters.append(start_end_service_time[2])
+                    crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", parameters)
                     db.commit()
-                    print("Bike:" + str(service['bike_ID']) + " Procedure:" + str(service_procedure) + " added to service_order table")
+                    print("Bike:" + str(service['bike_ID']) + " Procedure:" + str(service_procedure) + " added to service_order table queue")
     return True
+
+
+# Service time management system FNK
+def start_end_time(User_ID, Procedure_time_MIN):
+    print('User_ID, Procedure_time_MIN:', User_ID, Procedure_time_MIN)
+    crsr = db.cursor()
+    crsr.execute('SELECT End_datetime FROM service_order order by Service_ID')
+    for end_time in crsr:
+        Registration_datetime = datetime.now()
+        converted = DT_TS_converter(Registration_datetime, end_time[0], Procedure_time_MIN)
+        return converted
+        
+    # If table "service_order" empty
+    Start_datetime = datetime.now()
+    converted = DT_TS_converter(Start_datetime, Start_datetime, Procedure_time_MIN)
+    return converted
+
+
+# datetime to timestamp converter and add service time returns updated time:
+def DT_TS_converter(Registration_datetime, Start_datetime, Procedure_time_MIN):    
+    # Get datetime.now timestamp
+    timestamp_start = math.trunc(datetime.timestamp(Start_datetime))
+    timestamp_end = timestamp_start + Procedure_time_MIN * 60 # convering to SEC from MIN
+    timestamp_end_datetime = datetime.fromtimestamp(timestamp_end)
+    start_end = [Registration_datetime, Start_datetime, timestamp_end_datetime]
+    return start_end

@@ -386,11 +386,10 @@ def cart():
             counter += 1
         # Populate "service_order" table with user's request
         insert = service_order(SERVICES)
-        print(insert)
         if insert:
             return redirect("/cart")
     
-    # Get path:
+    # Get path: Collects data from DB and display customer's cart
     db.reconnect()
     crsr = db.cursor()
     crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s order by brand", USER_ID)
@@ -402,7 +401,5 @@ def cart():
         SERVICES2.append(line2)
         
     # Redirect user to cart page
-    print(SERVICES)
-    print(SERVICES2)
     return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICES2=SERVICES2)
 
