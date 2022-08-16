@@ -32,27 +32,27 @@
                     </thead>
 
                     {% for service in SERVICES %}
-                    {% if service['bike_services'] %}
+
 
                     <tbody>
-                        {% for work in service['bike_services'] %}
+
                         <tr>
-                        <th scope="row">{{ service['bike_ID'] }}</th>
-                        <td colspan="2">{{ work }}</td>    
-                        <td>30$</td>
-                        <td>{{ service['bike_service_notes'] }}</td>
+                        <th scope="row">{{ service[0] }}</th>
+                        <td colspan="2">{{ service[1] }}</td>    
+                        <td>{{ service[2] }}$</td>
+                        <td>{{ service[3] }}</td>
                         <td><button type="button" class="btn btn-danger"><a href="/cart">Remove</a></button></td>
                         </tr>
-                        {% endfor %}
+
                     </tbody>
 
-                    {% endif %}
+
                     {% endfor %}
 
                     <thead class="table-dark">
                         <tr>
                         <th scope="col">Total bikes</th>
-                        <th scope="col" colspan="2">Total services</th>
+                        <th scope="col" colspan="2">Total procedures</th>
                         <th scope="col">Total price</th>
                         <th scope="col">Estimated pick up time</th>
                         <th scope="col"></th>
@@ -61,9 +61,9 @@
                     
                     <tbody>
                         <tr>
-                        <td>1</td>    
-                        <td colspan="2">2</td>
-                        <td>3</td>
+                        <td>{{ SERVICES2[0][0] }}</td>    
+                        <td colspan="2">{{ SERVICES2[0][1] }}</td>
+                        <td>{{ SERVICES2[0][2] }}$</td>
                         <td>4</td>
                         <td><button type="button" class="btn btn-success"><a href="/cart">Confirm service</a></button></td>
                         </tr>

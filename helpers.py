@@ -254,8 +254,7 @@ def service_order(SERVICES):
                     parameters.append(service['bike_service_notes'])
                     parameters.append(i[0])
                     parameters.append(i[1])
-                    print(parameters)
                     crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time) VALUES (%s, %s, %s, %s, %s, 3%s)", parameters)
                     db.commit()
                     print("Bike:" + str(service['bike_ID']) + " Procedure:" + str(service_procedure) + " added to service_order table")
-    return
+    return True

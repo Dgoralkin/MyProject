@@ -365,10 +365,12 @@ def cart():
     FULLNAME = fullName()
     USER_ID = [session["user_id"]]
     SERVICES = []
+    SERVICES2 = []
 
     if request.method == "POST":
         # Check what services user ordered for each bike
         SERVICES = []
+        db.reconnect()
         crsr = db.cursor()
         crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
         counter = 0
@@ -383,13 +385,24 @@ def cart():
             SERVICES.append(SERVICE)
             counter += 1
         # Populate "service_order" table with user's request
-        service_order(SERVICES)
-        return redirect("/cart")
+        insert = service_order(SERVICES)
+        print(insert)
+        if insert:
+            return redirect("/cart")
     
     # Get path:
-    #crsr = db.cursor()
-    #crsr.execute("SELECT ID FROM bikes WHERE cust_id=%s", USER_ID)
-    
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s order by brand", USER_ID)
+    for line in crsr:
+        SERVICES.append(line)
+
+    crsr.execute("SELECT COUNT(DISTINCT Bike_ID) as total_bikes, COUNT(Service_procedure) as total_procedures, SUM(Service_price) as total_price FROM service_order WHERE User_ID=%s", USER_ID)
+    for line2 in crsr:
+        SERVICES2.append(line2)
+        
     # Redirect user to cart page
-    return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
+    print(SERVICES)
+    print(SERVICES2)
+    return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICES2=SERVICES2)
 
