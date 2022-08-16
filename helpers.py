@@ -260,6 +260,7 @@ def service_order(SERVICES):
                     parameters.append(start_end_service_time[0])
                     parameters.append(start_end_service_time[1])
                     parameters.append(start_end_service_time[2])
+                    db.reconnect()
                     crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", parameters)
                     db.commit()
                     print("Bike:" + str(service['bike_ID']) + " Procedure:" + str(service_procedure) + " added to service_order table queue")

@@ -39,7 +39,8 @@ try:
         host = "eu-cdbr-west-03.cleardb.net",
         user = os.environ.get("Heroku_user"),
         passwd = os.environ.get("Heroku_psswrd"),
-        database = "heroku_666bfee5e0eaef3"
+        database = "heroku_666bfee5e0eaef3",
+        buffered=True
     )
     if (db):
         print("Connection with server established")
