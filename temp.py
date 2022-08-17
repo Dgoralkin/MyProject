@@ -273,8 +273,8 @@ def start_end_time(User_ID, Procedure_time_MIN):
     User_ID = [User_ID]
     
     # Determine workshop business hours
-    open_time = ((9*60)+(0))  # DayTime to minute { Open @ 09:30am => H:(9*60) + M:(30) }
-    close_time = ((23*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
+    open_time = ((9*60)+(0))  # DayTime to DayTime_minutes { Open @ 09:30am => H:(9*60) + M:(30) }
+    close_time = ((23*60)+(0))   # DayTime to DayTime_minute { Close @ 22:30pm => H:(22*60) + M:(30) }
     
     # Set "End service time" if table "service_order" populated
     crsr = db.cursor()
@@ -282,28 +282,24 @@ def start_end_time(User_ID, Procedure_time_MIN):
     for end_time in crsr:
         Registration_datetime = datetime.now()
         
-        # If workshop's service queue is empty, start service immediately
+        # If workshop's service queue is empty, start service immediately.
         if math.trunc(datetime.timestamp(Registration_datetime)) >= math.trunc(datetime.timestamp(end_time[0])):
             
-                # Check user registration time is inside/outside business hours
+                # If service booked outside of business hours
                 Start_datetime = datetime.now()
                 hour = int(Start_datetime.strftime("%H"))
                 minute = int(Start_datetime.strftime("%M"))
                 outside_business_hour_time = ((hour*60)+minute)
                 over_time_delta = (outside_business_hour_time - close_time)*60
                 
-                # If service booked outside of business hours
-                if over_time_delta >= 0:
-                    udjusted_overtime_timestamp = math.trunc(datetime.timestamp(Start_datetime)) - over_time_delta
-                    udjusted_overtime_timestamp_datetime = datetime.fromtimestamp(udjusted_overtime_timestamp)
-                    
-                    # Send service data to schedule service/s in service queue for the next business day
-                    converted = workhours(Start_datetime, udjusted_overtime_timestamp_datetime, Procedure_time_MIN, open_time, close_time)
-                    return converted
-                else:
-                    # Send service data to schedule service/s as long as they are in same business day time time window
-                    converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
-                    return converted
+                print(over_time_delta)
+                
+                udjusted_overtime_timestamp = math.trunc(datetime.timestamp(Start_datetime)) - over_time_delta
+                udjusted_overtime_timestamp_datetime = datetime.fromtimestamp(udjusted_overtime_timestamp)
+                
+                # Send service data to schedule service/s in service queue
+                converted = workhours(Start_datetime, udjusted_overtime_timestamp_datetime, Procedure_time_MIN, open_time, close_time)
+                return converted
             
         # If workshop's service queue is busy, add service to queue
         converted = workhours(Registration_datetime, end_time[0], Procedure_time_MIN, open_time, close_time)
