@@ -275,9 +275,6 @@ def start_end_time(User_ID, Procedure_time_MIN):
     crsr = db.cursor()
     crsr.execute('SELECT End_datetime FROM service_order WHERE User_ID=%s order by Service_ID desc', User_ID)
     for end_time in crsr:
-        
-        print('end_time: ', end_time)
-        
         Registration_datetime = datetime.now()
         converted = DT_TS_converter(Registration_datetime, end_time[0], Procedure_time_MIN)
         return converted
@@ -288,11 +285,17 @@ def start_end_time(User_ID, Procedure_time_MIN):
     return converted
 
 
-# datetime to timestamp converter and add service time returns updated time:
+# datetime to timestamp converter and add service time returns updated service finish time: (considering with shop operation hours)
 def DT_TS_converter(Registration_datetime, Start_datetime, Procedure_time_MIN):    
     # Get datetime.now timestamp
     timestamp_start = math.trunc(datetime.timestamp(Start_datetime))
+    print("1", timestamp_start)
+    
     timestamp_end = timestamp_start + Procedure_time_MIN * 60 # convering to SEC from MIN
+    print("2", timestamp_end)
+    
     timestamp_end_datetime = datetime.fromtimestamp(timestamp_end)
+    print("3", timestamp_end_datetime)
+    
     start_end = [Registration_datetime, Start_datetime, timestamp_end_datetime]
     return start_end
