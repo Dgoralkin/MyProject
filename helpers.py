@@ -278,7 +278,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
     
     # Set "End service time" if table "service_order" populated
     crsr = db.cursor()
-    crsr.execute('SELECT End_datetime FROM service_order WHERE User_ID=%s order by Service_ID desc', User_ID)
+    crsr.execute('SELECT End_datetime FROM service_order order by Service_ID desc')
     for end_time in crsr:
         Registration_datetime = datetime.now()
         
