@@ -384,22 +384,29 @@ def cart():
             SERVICE["bike_service_notes"] = ServiceNotes[counter]
             SERVICES.append(SERVICE)
             counter += 1
+            
         # Populate "service_order" table with user's request
         insert = service_order(SERVICES)
+        
         if insert:
             return redirect("/cart")
     
     # Get path: Collects data from DB and display customer's cart
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s order by brand", USER_ID)
+    crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status='queued' order by brand;", USER_ID)
     for line in crsr:
         SERVICES.append(line)
 
-    crsr.execute("SELECT COUNT(DISTINCT Bike_ID) as total_bikes, COUNT(Service_procedure) as total_procedures, SUM(Service_price) as total_price FROM service_order WHERE User_ID=%s", USER_ID)
+    crsr.execute("SELECT COUNT(DISTINCT Bike_ID) as total_bikes, COUNT(Service_procedure) as total_procedures, SUM(Service_price) as total_price FROM service_order WHERE User_ID=%s and Service_status='queued'", USER_ID)
     for line2 in crsr:
         SERVICES2.append(line2)
         
+    crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s order by End_datetime desc limit 1", USER_ID)
+    for line3 in crsr:
+        datetime_STR = line3[0].strftime("%Y-%m-%d %H:%M:%S")
+        print(type(datetime_STR), datetime_STR)
+        SERVICES2.append(datetime_STR)
+    print(SERVICES2)
     # Redirect user to cart page
     return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICES2=SERVICES2)
-

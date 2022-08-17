@@ -256,8 +256,10 @@ def service_order(SERVICES):
                     parameters.append(service['bike_service_notes'])
                     parameters.append(i[0])
                     parameters.append(i[1])
+                    
                     # Calculate service start/end datetime
                     start_end_service_time = start_end_time(service['user_ID'], i[1])
+                    
                     parameters.append(start_end_service_time[0])
                     parameters.append(start_end_service_time[1])
                     parameters.append(start_end_service_time[2])
@@ -314,7 +316,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
     converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
     return converted
 
-# Determine service end time
+# Determine service end time 
 def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
    
     # Convert to datetime to timestamp
