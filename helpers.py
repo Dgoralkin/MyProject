@@ -274,7 +274,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
     
     # Determine workshop business hours
     open_time = ((9*60)+(0))  # DayTime to minute { Open @ 09:30am => H:(9*60) + M:(30) }
-    close_time = ((23*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
+    close_time = ((21*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
     
     # Set "End service time" if table "service_order" populated
     crsr = db.cursor()
