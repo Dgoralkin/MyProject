@@ -33,19 +33,19 @@ def after_request(response):
     return response
 
 
-#try:
+try:
 # Try to Configure MySql connection to DataBase For app Manager
-db = mysql.connector.connect(
-    host = "eu-cdbr-west-03.cleardb.net",
-    user = os.environ.get("Heroku_user"),
-    passwd = os.environ.get("Heroku_psswrd"),
-    database = "heroku_666bfee5e0eaef3"
-)
-if (db):
-    print("Connection with server established")
-    create_tables()
-#except:
-#    print("Connection Error")
+    db = mysql.connector.connect(
+        host = "eu-cdbr-west-03.cleardb.net",
+        user = os.environ.get("Heroku_user"),
+        passwd = os.environ.get("Heroku_psswrd"),
+        database = "heroku_666bfee5e0eaef3"
+    )
+    if (db):
+        print("Connection with server established")
+        create_tables()
+except:
+    print("Connection Error")
 
 
 #--------------------------------------------------------------------------------- /
@@ -406,7 +406,7 @@ def cart():
             line2 = tuple(list_tmp)
         SERVICES2.append(line2)
         
-    crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s order by End_datetime desc limit 1", USER_ID)
+    crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s and Service_status='queued' order by End_datetime desc limit 1", USER_ID)
     for line3 in crsr:
         datetime_STR = line3[0].strftime("%Y-%m-%d %H:%M:%S")
         SERVICES2.append(datetime_STR)
@@ -419,17 +419,13 @@ def cart():
 @login_required
 def remove_bike_cart():
     
-    # Delete bike from bikes table
+    # Delete service for selected bike from "service_order" table
     Q = [request.args.get("q")]
     Q2 = [request.args.get("q2")]
-    #print(Q[0], Q2[0])
-    
-    query = 'DELETE FROM service_order WHERE ID=%s'
+
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute(query, Q2)
+    crsr.execute("DELETE FROM service_order WHERE Service_ID=%s", Q2)
     db.commit()
-    print("Bike", Q[0], "removed from Table service_order")
-    
-    
-    return redirect("/cart")
+    print("Service for", Q[0], "removed from Table service_order")
+    return

@@ -67,6 +67,7 @@ function remove_bike_from_cart(bike_name, service) {
   fetch('/remove_bike_cart?q=' + bike_name + '&q2=' + service);  
   let item = '#' + bike_name + "_" + service
   $(item).fadeOut("slow");
+  location.reload();
   return;
 }
 

@@ -52,7 +52,6 @@ def create_tables():
             crsr.execute("SELECT COUNT(brand) as count_bikes FROM all_bikes")
             for x in crsr:
                 DB_Count = x[0]
-                # print('DB_Count:', DB_Count)
             CSV_Count = 0
             with open('Bikes.csv', 'r') as csv_file:
                 reader = csv.reader(csv_file)
@@ -75,8 +74,6 @@ def create_tables():
         
         if (service_order == 0):
             crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
-            #crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Service_status) VALUES (0, 0, 0, 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'demo')")
-            #db.commit()
             print("Table service_order Created")
         
         if (services == 0):
@@ -278,16 +275,16 @@ def start_end_time(User_ID, Procedure_time_MIN):
     
     # Determine workshop business hours
     open_time = ((9*60)+(0))  # DayTime to minute { Open @ 09:30am => H:(9*60) + M:(30) }
-    close_time = ((17*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
+    close_time = ((19*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
     
     # Set "End service time" if table "service_order" populated
     crsr = db.cursor()
     crsr.execute('SELECT End_datetime FROM service_order order by Service_ID desc')
     for end_time in crsr:
-        print(end_time)
         Registration_datetime = datetime.now()
         
         # If workshop's service queue is empty, start service immediately
+        
         if math.trunc(datetime.timestamp(Registration_datetime)) >= math.trunc(datetime.timestamp(end_time[0])):
             
                 # Check user registration time is inside/outside business hours
@@ -322,7 +319,6 @@ def start_end_time(User_ID, Procedure_time_MIN):
 
 # Determine service end time 
 def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
-    print("1-", Start_datetime)
    
     # Convert to datetime to timestamp
     input_time_timestamp = math.trunc(datetime.timestamp(Start_datetime))
