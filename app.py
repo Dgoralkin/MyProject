@@ -294,7 +294,7 @@ def add_bike():
     return render_template("add_bike.html", FULLNAME=FULLNAME, YEARS=YEARS)
 
 
-#--------------------------------------------------------------------------------- Remove_bike
+#--------------------------------------------------------------------------------- Remove_bike_from_user
 @app.route("/remove_bike", methods=["GET"])
 @login_required
 def Remove_bike():
@@ -405,8 +405,28 @@ def cart():
     crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s order by End_datetime desc limit 1", USER_ID)
     for line3 in crsr:
         datetime_STR = line3[0].strftime("%Y-%m-%d %H:%M:%S")
-        print(type(datetime_STR), datetime_STR)
         SERVICES2.append(datetime_STR)
-    print(SERVICES2)
     # Redirect user to cart page
     return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICES2=SERVICES2)
+
+
+#--------------------------------------------------------------------------------- Remove_bike_from_Cart
+@app.route("/remove_bike_cart", methods=["GET"])
+@login_required
+def remove_bike_cart():
+    
+    # Delete bike from bikes table
+    Q = [request.args.get("q")]
+    Q2 = [request.args.get("q2")]
+    print(Q[0])
+    print(Q2[0])
+    '''
+    query = 'DELETE FROM bikes WHERE ID=%s'
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute(query, Q)
+    db.commit()
+    print("Bike", Q[0], "removed from Table bikes")
+    '''
+    
+    return redirect("/cart")

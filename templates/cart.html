@@ -36,13 +36,14 @@
 
                     <tbody>
 
-                        <tr>
-                        <th scope="row">{{ service[0] }}</th>
-                        <td colspan="2">{{ service[1] }}</td>    
-                        <td>{{ service[2] }}$</td>
-                        <td>{{ service[3] }}</td>
-                        <td><button type="button" class="btn btn-danger"><a href="/cart">Remove</a></button></td>
-                        </tr>
+                            <tr>
+                            <th scope="row">{{ service[0] }}</th>
+                            <td colspan="2">{{ service[1] }}</td>    
+                            <td>{{ service[2] }}$</td>
+                            <td>{{ service[3] }}</td>
+                            <td><button type="button" class="btn btn-danger" name="{{ service[0] }}" value="{{ service[1] }}" onclick="remove_bike_from_cart(this.name, this.value)">Remove service</button></td>
+                            <!--<button type="button" class="btn btn-danger" name="{{ service[0] }}" onclick="remove_bike_from_cart(this.name)">Remove service</button> -->
+                            </tr>
 
                     </tbody>
 
