@@ -64,13 +64,9 @@ function remove_bike(bike_id) {
 
 // Hide bike from cart page while DB updates
 function remove_bike_from_cart(bike_name, service) { 
-  fetch('/remove_bike_cart?q=' + bike_name + '&q2=' + service);
-  console.log(bike_name, service);
-  /*
-  let item = '#' + bike_name
-  console.log(item);
+  fetch('/remove_bike_cart?q=' + bike_name + '&q2=' + service);  
+  let item = '#' + bike_name + "_" + service
   $(item).fadeOut("slow");
-  */
   return;
 }
 

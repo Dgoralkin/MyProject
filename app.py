@@ -33,19 +33,19 @@ def after_request(response):
     return response
 
 
-try:
+#try:
 # Try to Configure MySql connection to DataBase For app Manager
-    db = mysql.connector.connect(
-        host = "eu-cdbr-west-03.cleardb.net",
-        user = os.environ.get("Heroku_user"),
-        passwd = os.environ.get("Heroku_psswrd"),
-        database = "heroku_666bfee5e0eaef3"
-    )
-    if (db):
-        print("Connection with server established")
-        create_tables()
-except:
-    print("Connection Error")
+db = mysql.connector.connect(
+    host = "eu-cdbr-west-03.cleardb.net",
+    user = os.environ.get("Heroku_user"),
+    passwd = os.environ.get("Heroku_psswrd"),
+    database = "heroku_666bfee5e0eaef3"
+)
+if (db):
+    print("Connection with server established")
+    create_tables()
+#except:
+#    print("Connection Error")
 
 
 #--------------------------------------------------------------------------------- /
@@ -387,19 +387,23 @@ def cart():
             
         # Populate "service_order" table with user's request
         insert = service_order(SERVICES)
-        
         if insert:
             return redirect("/cart")
     
     # Get path: Collects data from DB and display customer's cart
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status='queued' order by brand;", USER_ID)
+    crsr.execute("SELECT all_bikes.brand, services.Service_description, services.Service_price, service_order.Service_notes, service_order.Service_ID FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status='queued' order by brand, Service_ID", USER_ID)
     for line in crsr:
         SERVICES.append(line)
 
     crsr.execute("SELECT COUNT(DISTINCT Bike_ID) as total_bikes, COUNT(Service_procedure) as total_procedures, SUM(Service_price) as total_price FROM service_order WHERE User_ID=%s and Service_status='queued'", USER_ID)
+
     for line2 in crsr:
+        if line2[2] == None:
+            list_tmp = list(line2)
+            list_tmp[2] = 0
+            line2 = tuple(list_tmp)
         SERVICES2.append(line2)
         
     crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s order by End_datetime desc limit 1", USER_ID)
@@ -418,15 +422,14 @@ def remove_bike_cart():
     # Delete bike from bikes table
     Q = [request.args.get("q")]
     Q2 = [request.args.get("q2")]
-    print(Q[0])
-    print(Q2[0])
-    '''
-    query = 'DELETE FROM bikes WHERE ID=%s'
+    #print(Q[0], Q2[0])
+    
+    query = 'DELETE FROM service_order WHERE ID=%s'
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute(query, Q)
+    crsr.execute(query, Q2)
     db.commit()
-    print("Bike", Q[0], "removed from Table bikes")
-    '''
+    print("Bike", Q[0], "removed from Table service_order")
+    
     
     return redirect("/cart")

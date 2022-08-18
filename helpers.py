@@ -75,6 +75,8 @@ def create_tables():
         
         if (service_order == 0):
             crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
+            #crsr.execute("INSERT INTO service_order (User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Service_status) VALUES (0, 0, 0, 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'demo')")
+            #db.commit()
             print("Table service_order Created")
         
         if (services == 0):
@@ -270,18 +272,19 @@ def service_order(SERVICES):
     return True
 
 
-# Service time management system FNK
+# Service time management system function (workshop business hours: 09:00=>17:00)
 def start_end_time(User_ID, Procedure_time_MIN):
     User_ID = [User_ID]
     
     # Determine workshop business hours
     open_time = ((9*60)+(0))  # DayTime to minute { Open @ 09:30am => H:(9*60) + M:(30) }
-    close_time = ((21*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
+    close_time = ((17*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
     
     # Set "End service time" if table "service_order" populated
     crsr = db.cursor()
     crsr.execute('SELECT End_datetime FROM service_order order by Service_ID desc')
     for end_time in crsr:
+        print(end_time)
         Registration_datetime = datetime.now()
         
         # If workshop's service queue is empty, start service immediately
@@ -293,6 +296,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
                 minute = int(Start_datetime.strftime("%M"))
                 outside_business_hour_time = ((hour*60)+minute)
                 over_time_delta = (outside_business_hour_time - close_time)*60
+                print(over_time_delta)
                 
                 # If service booked outside of business hours
                 if over_time_delta >= 0:
@@ -318,6 +322,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
 
 # Determine service end time 
 def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
+    print("1-", Start_datetime)
    
     # Convert to datetime to timestamp
     input_time_timestamp = math.trunc(datetime.timestamp(Start_datetime))
