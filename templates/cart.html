@@ -63,7 +63,11 @@
                         <td colspan="2">{{ SERVICES2[0][1] }}</td>
                         <td>{{ SERVICES2[0][2] }}$</td>
                         <td>{{ SERVICES2[1] }}</td>
-                        <td><button type="button" class="btn btn-success"><a href="/cart">Confirm service</a></button></td>
+                        <td>
+                            <form action="/main" method="post">
+                                <button type="submit" class="btn btn-success">Confirm service</button>
+                            </form>
+                        </td>
                         </tr>
                     </tbody>
 

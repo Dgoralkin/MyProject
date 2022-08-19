@@ -5,7 +5,7 @@ from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, maintain_Service_status
 import smtplib
 import random
 from email.message import EmailMessage
@@ -218,8 +218,24 @@ def logout():
 @login_required
 def main():
     
-    # Show connected User Full Name
     FULLNAME = fullName()
+    ID = [session["user_id"]]
+    
+    # User arrived from cart by confirming service/s
+    if request.method == "POST":
+        
+        # Change user's service state from "queued" to current
+        db.reconnect()
+        crsr = db.cursor()
+        crsr.execute("SELECT Service_ID, Service_status, End_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
+        to_service = []
+        for bike in crsr:
+            to_service.append(bike)
+        
+        # Send services to sort service state
+        SERVICE_STATUS = maintain_Service_status(to_service)
+        
+        render_template("main.html", FULLNAME=FULLNAME)
         
     # Redirect user to login form
     return render_template("main.html", FULLNAME=FULLNAME)
@@ -428,4 +444,4 @@ def remove_bike_cart():
     crsr.execute("DELETE FROM service_order WHERE Service_ID=%s", Q2)
     db.commit()
     print("Service for", Q[0], "removed from Table service_order")
-    return
+    return True

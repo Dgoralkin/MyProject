@@ -317,6 +317,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
     converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
     return converted
 
+
 # Determine service end time 
 def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
    
@@ -341,3 +342,32 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
         end_time_datetime = datetime.fromtimestamp(time_to_day_end)
         start_end = [Registration_datetime, Start_datetime, end_time_datetime]
         return start_end
+
+
+# Maintain "Service_status" in "service_order" table
+def maintain_Service_status(Service_ID):
+    db.reconnect()
+    crsr = db.cursor()
+    service_len = len(Service_ID)
+
+    # Service_ID[0]=Service_ID, Service_ID[1]=Service_status, Service_ID[2]=End_datetime
+    for i in range(service_len):
+        
+        # If Order ready
+        if Service_ID[i][2] < datetime.now():
+            ID = [Service_ID[i][0]]
+            crsr.execute("UPDATE service_order SET Service_status = 'ready' WHERE Service_ID=%s", ID)
+            db.commit()
+            
+        # If Order in progress
+        elif datetime.now() > Service_ID[i - 1][2] and datetime.now() <= Service_ID[i][2]:
+            ID = [Service_ID[i][0]]
+            crsr.execute("UPDATE service_order SET Service_status = 'in service' WHERE Service_ID=%s", ID)
+            db.commit()
+            
+        # If Order in waitlist
+        else:
+            ID = [Service_ID[i][0]]
+            crsr.execute("UPDATE service_order SET Service_status = 'in queue' WHERE Service_ID=%s", ID)
+            db.commit()
+    return True
