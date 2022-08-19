@@ -354,12 +354,13 @@ def maintain_Service_status(Service_ID):
     for i in range(service_len):
         
         # If Order ready
-        if Service_ID[i][2] < datetime.now():
+        if Service_ID[i][2] <= datetime.now():
             ID = [Service_ID[i][0]]
             crsr.execute("UPDATE service_order SET Service_status = 'ready' WHERE Service_ID=%s", ID)
             db.commit()
-            
+         
         # If Order in progress
+        
         elif datetime.now() > Service_ID[i - 1][2] and datetime.now() <= Service_ID[i][2]:
             ID = [Service_ID[i][0]]
             crsr.execute("UPDATE service_order SET Service_status = 'in service' WHERE Service_ID=%s", ID)

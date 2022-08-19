@@ -236,9 +236,28 @@ def main():
         SERVICE_STATUS = maintain_Service_status(to_service)
         
         render_template("main.html", FULLNAME=FULLNAME)
+    
+    # if request.method == "GET":
+    
+    # Update "Service_status" in "service_order" table
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT Service_ID, Service_status, End_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
+    sort_service = []
+    for bike in crsr:
+        sort_service.append(bike)
+    SERVICE_STATUS = maintain_Service_status(sort_service)
         
-    # Redirect user to login form
-    return render_template("main.html", FULLNAME=FULLNAME)
+    # Sends service info to main page
+    SERVICES = []
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in service' order by End_datetime, Service_ID;", ID)
+    for line in crsr:
+        SERVICES.append(line)
+
+    # Sends user to main page
+    return render_template("main.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
 
 
 #--------------------------------------------------------------------------------- Service Page

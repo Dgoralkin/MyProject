@@ -10,6 +10,45 @@
 
 {% block header %}
     <h1>Welcome To G-Bikes</h1>
+
+    <div class="container text-center" id="Serviced_now_0">
+      <div class="row">
+        <div class="col">
+          <div class="col-md-12" id="Serviced_now_1">
+              <table class="table table-success table-striped-columns">
+                <thead class="table-dark">Currently being serviced</thead>
+                  <thead class="table-dark">
+                      <tr>
+                      <th scope="col">Service #</th>
+                      <th scope="col">Bike name</th>
+                      <th scope="col">Bike model</th>
+                      <th scope="col" colspan="2">Service</th>
+                      <th scope="col">will be ready @</th>
+                      </tr>
+                  </thead>
+
+                  {% for service in SERVICES %}
+
+                      <tbody>
+
+                              <tr>
+                              <th scope="row">{{ service[0] }}</th>
+                              <th scope="row">{{ service[1] }}</th>
+                              <th scope="row">{{ service[2] }}</td>    
+                              <th scope="row" colspan="2">{{ service[3] }}</td>
+                              <th scope="row">{{ service[4] }}</td>
+                              </tr>
+
+                      </tbody>
+
+                  {% endfor %}
+
+              </table>
+          </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
 
 
@@ -62,13 +101,5 @@
       </div>    
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 {% endblock %}
