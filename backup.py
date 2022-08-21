@@ -1,9 +1,8 @@
 import os
 import mysql.connector
 import csv
-import datetime as dt
+import datetime
 from datetime import datetime
-from datetime import timedelta  
 import math
 
 from flask import redirect, render_template, request, session
@@ -258,9 +257,7 @@ def service_order(SERVICES):
                     parameters.append(i[1])
                     
                     # Calculate service start/end datetime
-                    #start_end_service_time = start_end_time(service['user_ID'], i[1])
-                    
-                    start_end_service_time = time_management(service['user_ID'], i[1])
+                    start_end_service_time = start_end_time(service['user_ID'], i[1])
                     
                     parameters.append(start_end_service_time[0])
                     parameters.append(start_end_service_time[1])
@@ -320,6 +317,7 @@ def start_end_time(User_ID, Procedure_time_MIN):
     converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
     return converted
 
+
 # Determine service end time 
 def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
    
@@ -344,6 +342,8 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
         end_time_datetime = datetime.fromtimestamp(time_to_day_end)
         start_end = [Registration_datetime, Start_datetime, end_time_datetime]
         return start_end
+
+
 # Maintain "Service_status" in "service_order" table
 def maintain_Service_status(Service_ID):
     db.reconnect()
@@ -372,110 +372,3 @@ def maintain_Service_status(Service_ID):
             crsr.execute("UPDATE service_order SET Service_status = 'in queue' WHERE Service_ID=%s", ID)
             db.commit()
     return True
-
-
-
-
-
-
-def time_management(user_ID, Procedure_time):
-    print(user_ID, Procedure_time)
-    # Determine business operation hours
-    open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-    close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
-
-    timenow = datetime.now().time()
-    datetimenow = datetime.now()
-    
-    # if service ordered in business operation hours
-    if timenow >= open_hours and timenow < close_hours:
-        print("0 - open")
-        crsr = db.cursor()
-        crsr.execute("SELECT End_datetime FROM service_order order by Service_ID desc limit 1")
-        
-        # if prior service exist in "service_order" table
-        for service in crsr:
-            check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
-            return check_end_time
-        
-        # if no service in "service_order" queue table (blank table)
-        print("1 - blank")
-        check_end_time = end_service_time(datetimenow, datetimenow, Procedure_time, open_hours, close_hours)
-        return check_end_time
-        
-    # if service ordered outside business operation hours
-    else:
-        print("2 - close")
-        crsr = db.cursor()
-        crsr.execute("SELECT End_datetime FROM service_order order by Service_ID desc limit 1")
-        
-        # if prior service exist in "service_order" table queue
-        for service in crsr:
-            check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
-            return check_end_time
-        
-        # if no service in "service_order" queue table (blank table)
-        print("3 - blank")
-        print(timenow)
-        
-        hours_now = int(timenow.strftime('%H'))
-        minutes_now = int(timenow.strftime('%M'))
-        print("hours_now, minutes_now", hours_now, minutes_now)
-        
-        hours_open = int(open_hours.strftime('%H'))
-        minutes_open = int(open_hours.strftime('%M'))
-        print("hours_open, minutes_open", hours_open, minutes_open)
-
-        hours_close = int(close_hours.strftime('%H'))
-        minutes_close = int(close_hours.strftime('%M'))
-        print("hours_close, minutes_close", hours_close, minutes_close)
-        
-        # If service booked after close hours & after midnight
-        if hours_now < hours_open:
-            hours_to_open = hours_open - hours_now - 1
-            minutes_to_open = 60 - minutes_now
-            print("3.1", hours_to_open, minutes_to_open)
-            start_service_time = datetimenow + timedelta(hours = hours_to_open, minutes = minutes_to_open)
-            check_end_time = end_service_time(datetimenow, start_service_time, Procedure_time, open_hours, close_hours)
-            return check_end_time
-        
-        # If service booked after close hours & before midnight
-        elif hours_now >= hours_close and hours_now <= 23:
-            open_hours_left = 23 - hours_now + hours_open
-            open_minutes_left = 60 - minutes_now + minutes_open
-            print("3.2", open_hours_left, open_minutes_left)
-            start_service_time = datetimenow + timedelta(hours = open_hours_left, minutes = open_minutes_left)
-            check_end_time = end_service_time(datetimenow, start_service_time, Procedure_time, open_hours, close_hours)
-            return check_end_time
-        
-    
-    
-
-
-# -------------------------------------------------------------------------------------------------------------------------------------
-def end_service_time(datetimenow, starttime, Procedure_time, open, close):
-    
-    # If service endtime before close time
-    end_service_time = starttime + timedelta(minutes=Procedure_time)
-    if end_service_time.time() < close:
-        print("4 - LESS!", end_service_time)
-        end_time = [datetimenow, starttime, end_service_time]
-        return end_time
-    
-    # If service endtime after close time
-    elif end_service_time.time() >= close:
-        print("5 - end_service_time!, close!", end_service_time, close)
-        
-        hours_open = int(open.strftime('%H'))
-        minutes_open = int(open.strftime('%M'))
-
-        hours_close = int(close.strftime('%H'))
-        minutes_close = int(close.strftime('%M'))
-
-        HOURS = 23 - hours_close + hours_open
-        MINUTES = 60 - minutes_close + minutes_open
-
-        end_time = starttime + timedelta(hours=HOURS, minutes=MINUTES + Procedure_time)
-        end_service_time = [datetimenow, starttime, end_time]
-
-    return end_service_time
