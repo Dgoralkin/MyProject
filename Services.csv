@@ -1,8 +1,11 @@
 Service_ID,Service_description,Service_price,Service_time
-1,clean-up and wheel allignment,29.99,25
-2,gears set-up,24.99,20
-3,bike wash&wax,19.99,15
-4,tube replacement,9.99,10
-5,brake adjustment,7.99,5
-6,chain lubrication,4.99,4
-7,inflate tyres,0.99,1
+1,full-bike rebuild,99.90,120
+2,platinum service, 49.90,90
+3,silver service,39.90,60
+4,clean-up and wheel allignment,29.90,30
+5,gears set-up,24.90,20
+6,bike wash&wax,19.90,15
+7,tube replacement,9.90,10
+8,brake adjustment,7.90,5
+9,chain lubrication,4.90,3
+10,inflate tyres,0.90,1
