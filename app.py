@@ -233,7 +233,7 @@ def main():
             to_service.append(bike)
         
         # Send services to sort service state
-        SERVICE_STATUS = maintain_Service_status(to_service)
+        #SERVICE_STATUS = maintain_Service_status(to_service)
         
         render_template("main.html", FULLNAME=FULLNAME)
     
