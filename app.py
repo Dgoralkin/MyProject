@@ -223,26 +223,14 @@ def main():
     
     # User arrived from cart by confirming service/s
     if request.method == "POST":
-        
-        # Change user's service state from "queued" to current
-        db.reconnect()
-        crsr = db.cursor()
-        crsr.execute("SELECT Service_ID, Service_status, End_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
-        to_service = []
-        for bike in crsr:
-            to_service.append(bike)
-        
-        # Send services to sort service state
-        #SERVICE_STATUS = maintain_Service_status(to_service)
-        
-        render_template("main.html", FULLNAME=FULLNAME)
+        redirect("/main")
     
     # if request.method == "GET":
     
     # Update "Service_status" in "service_order" table
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT Service_ID, Service_status, End_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
+    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
     sort_service = []
     for bike in crsr:
         sort_service.append(bike)

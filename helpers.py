@@ -348,8 +348,8 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 # BikeServices time management system function (workshop business hours: 09:00=>21:00)
 def time_management(Procedure_time):
     # Determine business operation hours
-    open_hours = dt.time(0, 30, 0, 0)         # 09:00:00
-    close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
+    open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
+    close_hours = dt.time(15, 00, 0, 0)       # 18:00:00
 
     timenow = datetime.now().time()
     datetimenow = datetime.now()
@@ -359,10 +359,16 @@ def time_management(Procedure_time):
         crsr = db.cursor()
         crsr.execute("SELECT End_datetime FROM service_order order by Service_ID desc limit 1")
         
-        # if prior service exist in "service_order" table
+        # If prior service exist in "service_order" table
         for service in crsr:
-            check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
-            return check_end_time
+            # If service queue is empty & no service running
+            if datetimenow >= service[0]:
+                check_end_time = end_service_time(datetimenow, datetimenow, Procedure_time, open_hours, close_hours)
+                return check_end_time
+            # If service in queue and running
+            else:
+                check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
+                return check_end_time
         
         # if no service in "service_order" queue table (blank table)
         check_end_time = end_service_time(datetimenow, datetimenow, Procedure_time, open_hours, close_hours)
@@ -432,7 +438,6 @@ def end_service_time(datetimenow, starttime, Procedure_time, open, close):
 
 # Maintain "Service_status" in "service_order" table
 def maintain_Service_status(Service_ID):
-    print(Service_ID)
     
     db.reconnect()
     crsr = db.cursor()
@@ -440,7 +445,6 @@ def maintain_Service_status(Service_ID):
 
     # Service_ID[0]=Service_ID, Service_ID[1]=Service_status, Service_ID[2]=End_datetime
     for i in range(service_len):
-        print(i)
         
         # If Order ready
         if Service_ID[i][2] <= datetime.now():
@@ -450,8 +454,12 @@ def maintain_Service_status(Service_ID):
          
         # If Order in progress
         elif datetime.now() > Service_ID[i - 1][2] and datetime.now() <= Service_ID[i][2]:
-            print(datetime.now(), Service_ID[i - 1][2])
-            print(datetime.now(), Service_ID[i][2])
+            ID = [Service_ID[i][0]]
+            crsr.execute("UPDATE service_order SET Service_status = 'in service' WHERE Service_ID=%s", ID)
+            db.commit()
+            
+        # If very first order in table
+        elif Service_ID[i][4] == Service_ID[i][3]:
             ID = [Service_ID[i][0]]
             crsr.execute("UPDATE service_order SET Service_status = 'in service' WHERE Service_ID=%s", ID)
             db.commit()
