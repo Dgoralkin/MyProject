@@ -347,7 +347,7 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 def time_management(Procedure_time):
     # Determine business operation hours
     open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-    close_hours = dt.time(19, 00, 0, 0)       # 19:00:00
+    close_hours = dt.time(23, 59, 0, 0)       # 19:00:00
 
     timenow = datetime.now().time()
     datetimenow = datetime.now()

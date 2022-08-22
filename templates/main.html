@@ -10,22 +10,23 @@
 
 {% block header %}
     <h1>Welcome To G-Bikes</h1>
-
     <div class="container text-center" id="Serviced_now_0">
       <div class="row">
         <div class="col">
           <div class="col-md-12" id="Serviced_now_1">
               <table class="table table-success table-striped-columns">
                 <thead class="table-dark"></thead>
-                  <thead class="table-dark">
-                    <tr>
-                    <th scope="col">Service #</th>
-                    <th scope="col">Bike name</th>
-                    <th scope="col">Bike model</th>
-                    <th scope="col" colspan="2">Service</th>
-                    <th scope="col">will be ready @</th>
-                    </tr>
-                  </thead>
+                  {% if SERVICE_IN_Q or SERVICE_RUNNING or SERVICE_READY %}
+                    <thead class="table-dark">
+                      <tr>
+                      <th scope="col">Service #</th>
+                      <th scope="col">Bike name</th>
+                      <th scope="col">Bike model</th>
+                      <th scope="col" colspan="2">Service</th>
+                      <th scope="col">End service time</th>
+                      </tr>
+                    </thead>
+                  {% endif %}
 
                   {% if SERVICE_READY %}
                     <tbody style="border: 2px solid green;">
@@ -89,13 +90,11 @@
                     {% endfor %}
                   </tbody>
                   {% endif %}
-
               </table>
           </div>
       </div>
     </div>
   </div>
-
 {% endblock %}
 
 

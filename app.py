@@ -229,7 +229,7 @@ def main():
     # Update "Service_status" in "service_order" table
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order WHERE User_ID=%s order by End_datetime", ID)
+    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order order by End_datetime")
     sort_service = []
     for bike in crsr:
         sort_service.append(bike)
@@ -239,19 +239,28 @@ def main():
     SERVICE_RUNNING = []
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in service' order by End_datetime, Service_ID", ID)
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in service' order by End_datetime, Service_ID")
     for line in crsr:
         SERVICE_RUNNING.append(line)
 
+    SERVICE_READY_REV = []
     SERVICE_READY = []
+    count = 0
+    counter = 0
     crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'ready' order by End_datetime desc limit 1", ID)
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'ready' order by End_datetime DESC limit 3")
     for line2 in crsr:
-        SERVICE_READY.append(line2)
+        SERVICE_READY_REV.append(line2)
+        count += 1
+    # Reverse SERVICE_READY display order
+    counter = count
+    for i in range (counter):
+        SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
+
 
     SERVICE_IN_Q = []
     crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in queue' order by End_datetime limit 1", ID)
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in queue' order by End_datetime limit 3")
     for line3 in crsr:
         SERVICE_IN_Q.append(line3)
         
