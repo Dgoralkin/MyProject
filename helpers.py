@@ -3,9 +3,7 @@ import mysql.connector
 import csv
 import datetime as dt
 from datetime import datetime
-from datetime import timedelta  
-import math
-
+from datetime import timedelta
 from flask import redirect, render_template, request, session
 from functools import wraps
 
@@ -349,7 +347,7 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 def time_management(Procedure_time):
     # Determine business operation hours
     open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-    close_hours = dt.time(15, 00, 0, 0)       # 18:00:00
+    close_hours = dt.time(19, 00, 0, 0)       # 19:00:00
 
     timenow = datetime.now().time()
     datetimenow = datetime.now()

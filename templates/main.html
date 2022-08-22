@@ -16,32 +16,79 @@
         <div class="col">
           <div class="col-md-12" id="Serviced_now_1">
               <table class="table table-success table-striped-columns">
-                <thead class="table-dark">Currently being serviced</thead>
+                <thead class="table-dark"></thead>
                   <thead class="table-dark">
-                      <tr>
-                      <th scope="col">Service #</th>
-                      <th scope="col">Bike name</th>
-                      <th scope="col">Bike model</th>
-                      <th scope="col" colspan="2">Service</th>
-                      <th scope="col">will be ready @</th>
-                      </tr>
+                    <tr>
+                    <th scope="col">Service #</th>
+                    <th scope="col">Bike name</th>
+                    <th scope="col">Bike model</th>
+                    <th scope="col" colspan="2">Service</th>
+                    <th scope="col">will be ready @</th>
+                    </tr>
                   </thead>
 
-                  {% for service in SERVICES %}
+                  {% if SERVICE_READY %}
+                    <tbody style="border: 2px solid green;">
+                      <tr>
+                        <th scope="row" colspan="6" style="background-color:green; text-shadow: 2px 2px 3px #000000; color:white;">Last finished service
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
+                          </div>
+                        </th>
+                      </tr>
+                      {% for addon in SERVICE_READY %}
+                              <tr>
+                              <th scope="row">{{ addon[0] }}</th>
+                              <th scope="row">{{ addon[1] }}</th>
+                              <th scope="row">{{ addon[2] }}</td>    
+                              <th scope="row" colspan="2">{{ addon[3] }}</td>
+                              <th scope="row">{{ addon[4] }}</td>
+                              </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
 
-                      <tbody>
-
+                  {% if SERVICE_RUNNING %}
+                    <tbody style="border: 2px solid yellow;">
+                      <tr>
+                        <th scope="row" colspan="6" style="background-color:#d9f72d; text-shadow: 2px 2px 3px #000000; color:white;"><b>Serviced now</b>
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+                          </div>
+                        </th>
+                      </tr>
+                      {% for service in SERVICE_RUNNING %}
                               <tr>
                               <th scope="row">{{ service[0] }}</th>
                               <th scope="row">{{ service[1] }}</th>
-                              <th scope="row">{{ service[2] }}</td>    
+                              <th scope="row">{{ service[2] }}</td>
                               <th scope="row" colspan="2">{{ service[3] }}</td>
                               <th scope="row">{{ service[4] }}</td>
                               </tr>
-
-                      </tbody>
-
-                  {% endfor %}
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  
+                  {% if SERVICE_IN_Q %}
+                  <tbody style="border: 2px solid red;">
+                    <tr>
+                      <th scope="row" colspan="6" style="background-color:red; text-shadow: 2px 2px 3px #000000; color:white;">Next service
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
+                        </div>
+                      </th>
+                    </tr>
+                    {% for addon in SERVICE_IN_Q %}
+                            <tr>
+                            <th scope="row">{{ addon[0] }}</th>
+                            <th scope="row">{{ addon[1] }}</th>
+                            <th scope="row">{{ addon[2] }}</td>    
+                            <th scope="row" colspan="2">{{ addon[3] }}</td>
+                            <th scope="row">{{ addon[4] }}</td>
+                            </tr>
+                    {% endfor %}
+                  </tbody>
+                  {% endif %}
 
               </table>
           </div>

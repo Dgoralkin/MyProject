@@ -3,7 +3,6 @@ import datetime
 import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
-from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, maintain_Service_status
 import smtplib
@@ -236,16 +235,28 @@ def main():
         sort_service.append(bike)
     SERVICE_STATUS = maintain_Service_status(sort_service)
         
-    # Sends service info to main page
-    SERVICES = []
+    # Sends service info to the main page
+    SERVICE_RUNNING = []
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in service' order by End_datetime, Service_ID;", ID)
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in service' order by End_datetime, Service_ID", ID)
     for line in crsr:
-        SERVICES.append(line)
+        SERVICE_RUNNING.append(line)
 
+    SERVICE_READY = []
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'ready' order by End_datetime desc limit 1", ID)
+    for line2 in crsr:
+        SERVICE_READY.append(line2)
+
+    SERVICE_IN_Q = []
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE User_ID=%s and Service_status = 'in queue' order by End_datetime limit 1", ID)
+    for line3 in crsr:
+        SERVICE_IN_Q.append(line3)
+        
     # Sends user to main page
-    return render_template("main.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
+    return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=SERVICE_RUNNING, SERVICE_READY=SERVICE_READY, SERVICE_IN_Q=SERVICE_IN_Q)
 
 
 #--------------------------------------------------------------------------------- Service Page
