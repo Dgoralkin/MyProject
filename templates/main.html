@@ -4,6 +4,10 @@
     Main page
 {% endblock %}
 
+{% block Refresh %}
+http-equiv="refresh" content="60"
+{% endblock %}
+
 {% block user %}
     {{ FULLNAME }}
 {% endblock %}
@@ -88,6 +92,19 @@
                             <th scope="row">{{ addon[4] }}</td>
                             </tr>
                     {% endfor %}
+                  </tbody>
+                  {% else %}
+                  <tbody style="border: 2px solid red;">
+                    <tr>
+                      <th scope="row" colspan="6" style="background-color:red; text-shadow: 2px 2px 3px #000000; color:white;">Next service
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
+                        </div>
+                      </th>
+                    </tr>
+                            <tr>
+                            <th scope="row" colspan="6">Our workshop is ready to get you serviced immediately &#128512;</th>
+                            </tr>
                   </tbody>
                   {% endif %}
               </table>

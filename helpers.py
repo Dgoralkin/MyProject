@@ -379,8 +379,10 @@ def time_management(Procedure_time):
         
         # if prior service exist in "service_order" table queue
         for service in crsr:
-            check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
-            return check_end_time
+            if service[0] > datetimenow:
+                check_end_time = end_service_time(datetimenow, service[0], Procedure_time, open_hours, close_hours)
+                return check_end_time
+            
         
         # if no service in "service_order" queue table (blank table)
         hours_now = int(timenow.strftime('%H'))

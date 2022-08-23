@@ -43,8 +43,11 @@ try:
     if (db):
         print("Connection with server established")
         create_tables()
-except:
-    print("Connection Error")
+except (mysql.Error, mysql.Warning) as e:
+    print(e)
+    print("mysql.Error, mysql.Warning")
+
+    
 
 
 #--------------------------------------------------------------------------------- /
@@ -252,7 +255,7 @@ def main():
     for line2 in crsr:
         SERVICE_READY_REV.append(line2)
         count += 1
-    # Reverse SERVICE_READY display order
+    # Reverse SERVICE_READY display order in main.html
     counter = count
     for i in range (counter):
         SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
@@ -266,6 +269,51 @@ def main():
         
     # Sends user to main page
     return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=SERVICE_RUNNING, SERVICE_READY=SERVICE_READY, SERVICE_IN_Q=SERVICE_IN_Q)
+
+
+#--------------------------------------------------------------------------------- iframe for login
+@app.route("/iframe", methods=["GET", "POST"])
+def iframe():
+    
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order order by End_datetime")
+    sort_service = []
+    for bike in crsr:
+        sort_service.append(bike)
+    SERVICE_STATUS = maintain_Service_status(sort_service)
+    
+        # Sends service info to the main page
+    SERVICE_RUNNING = []
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in service' order by End_datetime, Service_ID")
+    for line in crsr:
+        SERVICE_RUNNING.append(line)
+
+    SERVICE_READY_REV = []
+    SERVICE_READY = []
+    count = 0
+    counter = 0
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'ready' order by End_datetime DESC limit 3")
+    for line2 in crsr:
+        SERVICE_READY_REV.append(line2)
+        count += 1
+    # Reverse SERVICE_READY display order in main.html
+    counter = count
+    for i in range (counter):
+        SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
+
+
+    SERVICE_IN_Q = []
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in queue' order by End_datetime limit 3")
+    for line3 in crsr:
+        SERVICE_IN_Q.append(line3)
+
+    # Redirect user to account page
+    return render_template("iframe.html", SERVICE_RUNNING=SERVICE_RUNNING, SERVICE_READY=SERVICE_READY, SERVICE_IN_Q=SERVICE_IN_Q)
 
 
 #--------------------------------------------------------------------------------- Service Page

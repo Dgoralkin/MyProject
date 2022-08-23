@@ -122,3 +122,10 @@ span
     color: #ffffff;
 }
 
+iframe {
+    margin: none;
+    padding: none;
+    background: none;
+    border: 2px solid black;
+    display: block;
+}
