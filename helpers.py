@@ -346,7 +346,7 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 # BikeServices time management system function (workshop business hours: 09:00=>21:00)
 def time_management(Procedure_time):
     # Determine business operation hours
-    open_hours = dt.time(1, 00, 0, 0)         # 09:00:00
+    open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
     close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
     timenow = datetime.now().time()
