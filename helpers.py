@@ -7,6 +7,10 @@ from datetime import timedelta
 from flask import redirect, render_template, request, session
 from functools import wraps
 
+# Configure business working hours
+open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
+close_hours = dt.time(23, 00, 0, 0)       # 21:00:00
+
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
     host = "eu-cdbr-west-03.cleardb.net",
@@ -346,8 +350,6 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 # BikeServices time management system function (workshop business hours: 09:00=>21:00)
 def time_management(Procedure_time):
     # Determine business operation hours
-    open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-    close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
     timenow = datetime.now().time()
     datetimenow = datetime.now()
@@ -523,4 +525,5 @@ def display_services():
         line3_list[4] = line3_list[4].strftime("%A, %d-%b-%Y %H:%M %p")
         SERVICE_IN_Q.append(line3_list)
 
-    return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q
+    WORKING_HOURS = [open_hours, close_hours]
+    return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q, WORKING_HOURS

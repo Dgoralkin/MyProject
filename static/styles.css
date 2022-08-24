@@ -15,6 +15,9 @@ li:hover
     text-decoration: underline;
     font-size: large;
 }
+.noHover{
+    pointer-events: none;
+}
 
 h1
 {
@@ -74,11 +77,13 @@ span
     position: center;
 }
 
+
 .my-table
 {
     width: 70%; 
     position: center;
 }
+
 
 .Background
 {
@@ -128,4 +133,23 @@ iframe {
     background: none;
     border: 2px solid black;
     display: block;
+}
+
+.thStyle
+{
+    text-shadow: 2px 2px 3px #000000;
+    color:white;
+}
+
+.SERVICE_READY
+{
+    border: 2px solid green;
+}
+.SERVICE_RUNNING
+{
+    border: 2px solid orange; 
+}
+.SERVICE_IN_Q
+{
+    border: 2px solid red;  
 }

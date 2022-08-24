@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Main page
+{% endblock %}
+
+{% block Refresh %}
+http-equiv="refresh" content="60"
+{% endblock %}
+
+{% block user %}
+    {{ FULLNAME }}
+{% endblock %}
+
+{% block header %}
+    <h1>Welcome To G-Bikes</h1>
+    <div class="container text-center" id="Serviced_now_0">
+      <div class="row">
+        <div class="col">
+          <div class="col-sm-12" id="Serviced_now_1">
+              <table class="table-success table-striped-columns">
+                <thead class="table-dark"></thead>
+                  {% if SERVICE_IN_Q or SERVICE_RUNNING or SERVICE_READY %}
+                      <th scope="col">Service #</th>
+                      <th scope="col">Bike name</th>
+                      <th scope="col">Bike model</th>
+                      <th scope="col">Service</th>
+                      <th scope="col">End service time</th>
+                      </tr>
+                  {% endif %}
+                </thead>
+
+
+
+
+
+
+                  {% if SERVICE_READY %}
+                    <tbody style="border: 2px solid green;">
+                      <tr>
+                        <th scope="row" colspan="6" style="background-color:green; text-shadow: 2px 2px 3px #000000; color:white;">Last finished service
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
+                          </div>
+                        </th>
+                      </tr>
+                      {% for addon in SERVICE_READY %}
+                              <tr>
+                              <th scope="row">{{ addon[0] }}</th>
+                              <th scope="row">{{ addon[1] }}</th>
+                              <th scope="row">{{ addon[2] }}</td>    
+                              <th scope="row" colspan="2">{{ addon[3] }}</td>
+                              <th scope="row">{{ addon[4] }}</td>
+                              </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+
+                  {% if SERVICE_RUNNING %}
+                    <tbody style="border: 2px solid yellow;">
+                      <tr>
+                        <th scope="row" colspan="6" style="background-color:#d9f72d; text-shadow: 2px 2px 3px #000000; color:white;"><b>Serviced now</b>
+                          <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+                          </div>
+                        </th>
+                      </tr>
+                      {% for service in SERVICE_RUNNING %}
+                              <tr>
+                              <th scope="row">{{ service[0] }}</th>
+                              <th scope="row">{{ service[1] }}</th>
+                              <th scope="row">{{ service[2] }}</td>
+                              <th scope="row" colspan="2">{{ service[3] }}</td>
+                              <th scope="row">{{ service[4] }}</td>
+                              </tr>
+                      {% endfor %}
+                    </tbody>
+                  {% endif %}
+                  
+                  {% if SERVICE_IN_Q %}
+                  <tbody style="border: 2px solid red;">
+                    <tr>
+                      <th scope="row" colspan="6" style="background-color:red; text-shadow: 2px 2px 3px #000000; color:white;">Next service
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
+                        </div>
+                      </th>
+                    </tr>
+                    {% for addon in SERVICE_IN_Q %}
+                            <tr>
+                            <th scope="row">{{ addon[0] }}</th>
+                            <th scope="row">{{ addon[1] }}</th>
+                            <th scope="row">{{ addon[2] }}</td>    
+                            <th scope="row" colspan="2">{{ addon[3] }}</td>
+                            <th scope="row">{{ addon[4] }}</td>
+                            </tr>
+                    {% endfor %}
+                  </tbody>
+                  {% else %}
+                  <tbody style="border: 2px solid red;">
+                    <tr>
+                      <th scope="row" colspan="6" style="background-color:red; text-shadow: 2px 2px 3px #000000; color:white;">Next service
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
+                        </div>
+                      </th>
+                    </tr>
+                            <tr>
+                            <th scope="row" colspan="6">Our workshop is ready to get you serviced immediately &#128512;</th>
+                            </tr>
+                  </tbody>
+                  {% endif %}
+              </table>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
+{% block main %}
+
+<div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+            <!-- <img src="..." class="card-img-top" alt="Leave your bike"> -->
+            <div class="text-bg-success p-3 bigFont"><span id="DIV_bg_warning">Get service</span></div>
+          
+            <div class="card-body">
+              <h6 class="card-title">Leave your bike for service</h6>
+              <p class="card-text">Here you can specify what service required for your bike.</p>
+              <a href="/service" class="btn btn-primary">To service</a>
+            </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+            <!-- <img src="..." class="card-img-top" alt="Peek your bike"> -->
+            <div class="text-bg-danger p-3 bigFont"><span id="DIV_bg_warning">Pick my bike</span></div>
+          
+            <div class="card-body">
+              <h6 class="card-title">Pick up your bike from service</h6>
+              <p class="card-text">Get your serviced bike & pay the service.</p>
+              <a href="/pick_up" class="btn btn-primary">From service</a>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <br>
+        <div class="card">
+            <!-- <img src="..." class="card-img-top" alt="Peek your bike"> -->
+            <div class="text-bg-warning p-3 bigFont"><span id="DIV_bg_warning">Check your service status</span></div>
+          
+            <div class="card-body">
+              <h6 class="card-title">Your service status</h6>
+              <p class="card-text">From here, you can allways check whether your bike is ready and what has already done.</p>
+              <a href="#" class="btn btn-primary">Check status</a>
+            </div>
+        </div>
+      </div>    
+    </div>
+</div>
+
+{% endblock %}

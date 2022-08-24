@@ -232,18 +232,17 @@ def main():
     display_service_queue = display_services()
         
     # Sends user to main page
-    return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2])
+    return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2], WORKING_HOURS=display_service_queue[3])
 
 
 #--------------------------------------------------------------------------------- iframe for login page
 @app.route("/iframe", methods=["GET"])
 def iframe():
-    
     # Send data to display_services function in helpers for sorting for display
     display_service_queue = display_services()
     
     # Send info to iframe page to display data of services
-    return render_template("iframe.html", SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2])
+    return render_template("iframe.html", SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2], WORKING_HOURS=display_service_queue[3])
 
 
 #--------------------------------------------------------------------------------- Service Page
