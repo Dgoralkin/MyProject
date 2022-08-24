@@ -4,7 +4,7 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, maintain_Service_status
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, maintain_Service_status, display_services
 import smtplib
 import random
 from email.message import EmailMessage
@@ -46,10 +46,16 @@ try:
 except (mysql.Error, mysql.Warning) as e:
     print(e)
     print("mysql.Error, mysql.Warning")
+except mysql.connector.Error as e:
+    print ("Error code:", e.errno)        # error number
+    print ("SQLSTATE value:", e.sqlstate) # SQLSTATE value
+    print ("Error message:", e.msg)       # error message
+    print ("Error:", e)                   # errno, sqlstate, msg values
+    s = str(e)
+    print ("Error:", s)                   # errno, sqlstate, msg values
 
     
-
-
+    
 #--------------------------------------------------------------------------------- /
 @app.route("/")
 @login_required
@@ -216,104 +222,28 @@ def logout():
 
 
 #--------------------------------------------------------------------------------- Main Page
-@app.route("/main", methods=["GET", "POST"])
+@app.route("/main", methods=["GET"])
 @login_required
 def main():
     
     FULLNAME = fullName()
-    ID = [session["user_id"]]
     
-    # User arrived from cart by confirming service/s
-    if request.method == "POST":
-        redirect("/main")
-    
-    # if request.method == "GET":
-    
-    # Update "Service_status" in "service_order" table
-    db.reconnect()
-    crsr = db.cursor()
-    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order order by End_datetime")
-    sort_service = []
-    for bike in crsr:
-        sort_service.append(bike)
-    SERVICE_STATUS = maintain_Service_status(sort_service)
-        
-    # Sends service info to the main page
-    SERVICE_RUNNING = []
-    db.reconnect()
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in service' order by End_datetime, Service_ID")
-    for line in crsr:
-        SERVICE_RUNNING.append(line)
-
-    SERVICE_READY_REV = []
-    SERVICE_READY = []
-    count = 0
-    counter = 0
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'ready' order by End_datetime DESC limit 3")
-    for line2 in crsr:
-        SERVICE_READY_REV.append(line2)
-        count += 1
-    # Reverse SERVICE_READY display order in main.html
-    counter = count
-    for i in range (counter):
-        SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
-
-
-    SERVICE_IN_Q = []
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in queue' order by End_datetime limit 3")
-    for line3 in crsr:
-        SERVICE_IN_Q.append(line3)
+    # Send data to display_services function in helpers for sorting for display
+    display_service_queue = display_services()
         
     # Sends user to main page
-    return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=SERVICE_RUNNING, SERVICE_READY=SERVICE_READY, SERVICE_IN_Q=SERVICE_IN_Q)
+    return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2])
 
 
-#--------------------------------------------------------------------------------- iframe for login
-@app.route("/iframe", methods=["GET", "POST"])
+#--------------------------------------------------------------------------------- iframe for login page
+@app.route("/iframe", methods=["GET"])
 def iframe():
     
-    db.reconnect()
-    crsr = db.cursor()
-    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order order by End_datetime")
-    sort_service = []
-    for bike in crsr:
-        sort_service.append(bike)
-    SERVICE_STATUS = maintain_Service_status(sort_service)
+    # Send data to display_services function in helpers for sorting for display
+    display_service_queue = display_services()
     
-        # Sends service info to the main page
-    SERVICE_RUNNING = []
-    db.reconnect()
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in service' order by End_datetime, Service_ID")
-    for line in crsr:
-        SERVICE_RUNNING.append(line)
-
-    SERVICE_READY_REV = []
-    SERVICE_READY = []
-    count = 0
-    counter = 0
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'ready' order by End_datetime DESC limit 3")
-    for line2 in crsr:
-        SERVICE_READY_REV.append(line2)
-        count += 1
-    # Reverse SERVICE_READY display order in main.html
-    counter = count
-    for i in range (counter):
-        SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
-
-
-    SERVICE_IN_Q = []
-    crsr = db.cursor()
-    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in queue' order by End_datetime limit 3")
-    for line3 in crsr:
-        SERVICE_IN_Q.append(line3)
-
-    # Redirect user to account page
-    return render_template("iframe.html", SERVICE_RUNNING=SERVICE_RUNNING, SERVICE_READY=SERVICE_READY, SERVICE_IN_Q=SERVICE_IN_Q)
+    # Send info to iframe page to display data of services
+    return render_template("iframe.html", SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2])
 
 
 #--------------------------------------------------------------------------------- Service Page
@@ -324,7 +254,7 @@ def service():
     FULLNAME = fullName()    
     ID = [session["user_id"]]
     
-    # Load list of services from CSV file ------------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!
+    # Load list of services from CSV file
     SERVICES = load_services()
     
     # Check if user added his bike to DB
@@ -499,7 +429,7 @@ def cart():
         
     crsr.execute("SELECT End_datetime FROM service_order WHERE User_ID = %s and Service_status='queued' order by End_datetime desc limit 1", USER_ID)
     for line3 in crsr:
-        datetime_STR = line3[0].strftime("%Y-%m-%d %H:%M:%S")
+        datetime_STR = line3[0].strftime("%A, %d-%b-%Y %H:%M %p")
         SERVICES2.append(datetime_STR)
     # Redirect user to cart page
     return render_template("cart.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICES2=SERVICES2)

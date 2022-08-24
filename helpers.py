@@ -346,8 +346,8 @@ def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_ti
 # BikeServices time management system function (workshop business hours: 09:00=>21:00)
 def time_management(Procedure_time):
     # Determine business operation hours
-    open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-    close_hours = dt.time(23, 59, 0, 0)       # 19:00:00
+    open_hours = dt.time(1, 00, 0, 0)         # 09:00:00
+    close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
     timenow = datetime.now().time()
     datetimenow = datetime.now()
@@ -470,3 +470,57 @@ def maintain_Service_status(Service_ID):
             crsr.execute("UPDATE service_order SET Service_status = 'in queue' WHERE Service_ID=%s", ID)
             db.commit()
     return True
+
+
+# Reordering required info from "service_order" table to be ready for display
+def display_services():
+    
+    # Update status of bikes in service Queue
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT Service_ID, Service_status, End_datetime, Start_datetime, Registration_datetime FROM service_order order by End_datetime")
+    sort_service = []
+    for bike in crsr:
+        sort_service.append(bike)
+    maintain_Service_status(sort_service)
+    
+    # Get info for SERVICE_RUNNING
+    SERVICE_RUNNING = []
+    db.reconnect()
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in service' order by End_datetime, Service_ID")
+    for line in crsr:
+        # Convert datetime display method
+        line_list = list(line)
+        line_list[4] = line_list[4].strftime("%A, %d-%b-%Y %H:%M %p")
+        SERVICE_RUNNING.append(line_list)
+
+    # Get info for SERVICE_READY
+    SERVICE_READY_REV = []
+    SERVICE_READY = []
+    count = 0
+    counter = 0
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'ready' order by End_datetime DESC limit 3")
+    for line2 in crsr:
+        # Convert datetime display method
+        line_list2 = list(line2)
+        line_list2[4] = line_list2[4].strftime("%A, %d-%b-%Y %H:%M %p")
+        SERVICE_READY_REV.append(line_list2)
+        count += 1
+    # Reverse SERVICE_READY display order in main.html
+    counter = count
+    for i in range (counter):
+        SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
+
+    # Get info for SERVICE_IN_Q
+    SERVICE_IN_Q = []
+    crsr = db.cursor()
+    crsr.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Service_status = 'in queue' order by End_datetime limit 3")
+    for line3 in crsr:
+        # Convert datetime display method
+        line3_list = list(line3)
+        line3_list[4] = line3_list[4].strftime("%A, %d-%b-%Y %H:%M %p")
+        SERVICE_IN_Q.append(line3_list)
+
+    return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q
