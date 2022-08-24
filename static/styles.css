@@ -158,5 +158,18 @@ iframe {
 {
     width: 99%;
     margin: auto;
-    font-size: 80%;
+    font-size: 70%;
+}
+.alignment-center-cart
+{
+    width: 99%;
+    margin: auto;
+    font-size: 70%;
+}
+.iframe {
+    margin: none;
+    padding: none;
+    background: none;
+    border: 1px solid black;
+    display: block;
 }

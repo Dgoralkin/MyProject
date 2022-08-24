@@ -7,9 +7,9 @@ from datetime import timedelta
 from flask import redirect, render_template, request, session
 from functools import wraps
 
-# Configure business working hours
+# Configure business working hours (workshop business hours: 09:00=>21:00)
 open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-close_hours = dt.time(23, 00, 0, 0)       # 21:00:00
+close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
@@ -272,82 +272,7 @@ def service_order(SERVICES):
     return True
 
 
-'''
-# Service time management system function (workshop business hours: 09:00=>17:00)
-def start_end_time(User_ID, Procedure_time_MIN):
-    User_ID = [User_ID]
-    
-    # Determine workshop business hours
-    open_time = ((9*60)+(0))  # DayTime to minute { Open @ 09:30am => H:(9*60) + M:(30) }
-    close_time = ((19*60)+(0))   # DayTime to minute { Close @ 22:30pm => H:(22*60) + M:(30) }
-    
-    # Set "End service time" if table "service_order" populated
-    crsr = db.cursor()
-    crsr.execute('SELECT End_datetime FROM service_order order by Service_ID desc')
-    for end_time in crsr:
-        Registration_datetime = datetime.now()
-        
-        # If workshop's service queue is empty, start service immediately
-        
-        if math.trunc(datetime.timestamp(Registration_datetime)) >= math.trunc(datetime.timestamp(end_time[0])):
-            
-                # Check user registration time is inside/outside business hours
-                Start_datetime = datetime.now()
-                hour = int(Start_datetime.strftime("%H"))
-                minute = int(Start_datetime.strftime("%M"))
-                outside_business_hour_time = ((hour*60)+minute)
-                over_time_delta = (outside_business_hour_time - close_time)*60
-                print(over_time_delta)
-                
-                # If service booked outside of business hours
-                if over_time_delta >= 0:
-                    udjusted_overtime_timestamp = math.trunc(datetime.timestamp(Start_datetime)) - over_time_delta
-                    udjusted_overtime_timestamp_datetime = datetime.fromtimestamp(udjusted_overtime_timestamp)
-                    
-                    # Send service data to schedule service/s in service queue for the next business day
-                    converted = workhours(Start_datetime, udjusted_overtime_timestamp_datetime, Procedure_time_MIN, open_time, close_time)
-                    return converted
-                else:
-                    # Send service data to schedule service/s as long as they are in same business day time time window
-                    converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
-                    return converted
-            
-        # If workshop's service queue is busy, add service to queue
-        converted = workhours(Registration_datetime, end_time[0], Procedure_time_MIN, open_time, close_time)
-        return converted
-        
-    # Set "End service time" if table "service_order" empty or no services in service queue
-    Start_datetime = datetime.now()
-    converted = workhours(Start_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time)
-    return converted
-
-# Determine service end time 
-def workhours(Registration_datetime, Start_datetime, Procedure_time_MIN, open_time, close_time):
-   
-    # Convert to datetime to timestamp
-    input_time_timestamp = math.trunc(datetime.timestamp(Start_datetime))
-
-    hour = int(Start_datetime.strftime("%H"))
-    minute = int(Start_datetime.strftime("%M"))
-    time_now_day_minutes = (hour*60) + minute
-    
-    # If service finishes before end of business day return "End service time"
-    if (time_now_day_minutes + Procedure_time_MIN) <= close_time:
-        input_time_timestamp = math.trunc(datetime.timestamp(Start_datetime))
-        end_time = input_time_timestamp + (Procedure_time_MIN * 60)
-        end_time_datetime = datetime.fromtimestamp(end_time)
-        start_end = [Registration_datetime, Start_datetime, end_time_datetime]
-        return start_end
-    
-    # If service finishes after end of business day return "End service time" on the next day
-    else:
-        time_to_day_end = ((1440-close_time+open_time)*60) + input_time_timestamp + (Procedure_time_MIN*60)
-        end_time_datetime = datetime.fromtimestamp(time_to_day_end)
-        start_end = [Registration_datetime, Start_datetime, end_time_datetime]
-        return start_end
-'''
-
-# BikeServices time management system function (workshop business hours: 09:00=>21:00)
+# BikeServices time management system function
 def time_management(Procedure_time):
     # Determine business operation hours
 
@@ -525,5 +450,9 @@ def display_services():
         line3_list[4] = line3_list[4].strftime("%A, %d-%b-%Y %H:%M %p")
         SERVICE_IN_Q.append(line3_list)
 
-    WORKING_HOURS = [open_hours, close_hours]
+    # Convert datetime display method & send to display in main.html
+    open_hours_str = open_hours.strftime("%H:%M %p")
+    close_hours_str = close_hours.strftime("%H:%M %p")
+    WORKING_HOURS = [open_hours_str, close_hours_str]
+    
     return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q, WORKING_HOURS
