@@ -12,15 +12,12 @@ from pytz import timezone
 open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
 close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
-# Configure MySql connection to DataBase For app Manager
+# Udjust app's server timezone for GMT+3 (Israel)
 def time_UTC_to_IL():
     fmt = "%Y-%m-%d %H:%M:%S.%f"
     now_IL = datetime.now(timezone('Israel'))
     now_IL_str = now_IL.strftime('%Y-%m-%d %H:%M:%S.%f')
     now_IL_dt = datetime.strptime(now_IL_str, fmt)
-
-    #print("now_utc", type(datetime.now()), datetime.now())
-    #print("now_il", type(now_IL_dt), now_IL_dt)
     
     return now_IL_dt
 
