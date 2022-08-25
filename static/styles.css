@@ -166,10 +166,12 @@ iframe {
     margin: auto;
     font-size: 70%;
 }
-.iframe {
+.iframe
+{
     margin: none;
     padding: none;
     background: none;
     border: 1px solid black;
     display: block;
+    font-size: 45%;
 }

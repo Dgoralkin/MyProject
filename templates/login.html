@@ -18,16 +18,16 @@
         <div class="first-row mx-auto">
           <h2 style="text-align: center;">Now in service Queue</h2>
         </div>
-        <iframe src="/iframe" width="100%" height="100%" class="second-row"></iframe>
+        <iframe src="/iframe" width="100%" height="300px" class="second-row"></iframe>
     </div>
 
-    <div class="row align-items-start">
+    <div class="row align-items-start" style="margin-top: 7%;">
         <!-- Main -->
         <div class="col text-center">
             <form action="/login" method="post">
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Enter your login details</label>
+                    <label for="email" class="form-label"><strong><h3>Enter your login details</h3></strong></label>
                     <input type="email" class="form-control mx-auto w-auto" name="email" placeholder="e.g. Your Email@something.com" required>
                 </div>
 
@@ -35,16 +35,16 @@
                     <input type="password" id="verPasswd3" class="form-control mx-auto w-auto" name="password" placeholder="One number, one uppercase and lowercase letter, 8 or more characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
                     <input type="checkbox" onclick="showPsswrd('3')">Show Password
                 </div>
-                <p style="color:red;"><b>{{ loginError }}</b    ></p>
+                <p style="color:red;"><b>{{ loginError }}</b></p>
 
                 <button class="btn btn-success" type="submit">Log In</button>
             </form>
 
             <br>
-            <p>Not a member yet?  Register now!</p>
+            <p><h4><strong>Not a member yet?  Register now!</h4></strong></p>
             <button class="btn btn-danger" type="button"><a href="/register">Register now</a></button>
             <br><br>
-            <p>Forgot your user name or password?  Recover it now!</p>
+            <p><h4><strong>Forgot your user name or password?  Recover it now!</h4></strong></p>
             <button class="btn btn-warning" type="button"><a href="/">Recover password</a></button>
         </div>
     </div>
