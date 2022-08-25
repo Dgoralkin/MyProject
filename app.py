@@ -8,7 +8,6 @@ from helpers import fullName, login_required, error, create_tables, add_bike_to_
 import smtplib
 import random
 from email.message import EmailMessage
-from pytz import timezone
 
 
 
