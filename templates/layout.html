@@ -85,9 +85,9 @@
     function myClock() {         
       setTimeout(function() {   
         const date = new Date();
-        const timeS = date.toLocaleTimeString();
-        const dateS = date.toLocaleDateString()
-        document.getElementById("clock2").innerHTML = dateS + " " + timeS; 
+        const dateString = date.toGMTString();
+        console.log(dateString);
+        document.getElementById("clock2").innerHTML = dateString; 
         myClock();             
       }, 1000)
     }
