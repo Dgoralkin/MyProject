@@ -4,10 +4,12 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, maintain_Service_status, display_services
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services
 import smtplib
 import random
 from email.message import EmailMessage
+from pytz import timezone
+
 
 
 # Heroku app location: https://final-project-dany.herokuapp.com/
@@ -275,7 +277,7 @@ def add_bike():
     
     FULLNAME = fullName()
     YEARS = []
-    yearnow = datetime.datetime.now()
+    yearnow = time_UTC_to_IL()
     for year in range(yearnow.year, yearnow.year - 23, -1):
         YEARS.append(year)
     

@@ -6,10 +6,24 @@ from datetime import datetime
 from datetime import timedelta
 from flask import redirect, render_template, request, session
 from functools import wraps
+from pytz import timezone
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
 open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
+close_hours = dt.time(23, 59, 0, 0)       # 21:00:00
+
+# Configure MySql connection to DataBase For app Manager
+def time_UTC_to_IL():
+    fmt = "%Y-%m-%d %H:%M:%S.%f"
+    now_IL = datetime.now(timezone('Israel'))
+    now_IL_str = now_IL.strftime('%Y-%m-%d %H:%M:%S.%f')
+    now_IL_dt = datetime.strptime(now_IL_str, fmt)
+
+    #print("now_utc", type(datetime.now()), datetime.now())
+    #print("now_il", type(now_IL_dt), now_IL_dt)
+    
+    return now_IL_dt
+
 
 # Configure MySql connection to DataBase For app Manager
 db = mysql.connector.connect(
@@ -276,8 +290,8 @@ def service_order(SERVICES):
 def time_management(Procedure_time):
     # Determine business operation hours
 
-    timenow = datetime.now().time()
-    datetimenow = datetime.now()
+    timenow = time_UTC_to_IL().time()
+    datetimenow = time_UTC_to_IL()
     
     # if service ordered in business operation hours
     if timenow >= open_hours and timenow < close_hours:
@@ -374,13 +388,13 @@ def maintain_Service_status(Service_ID):
     for i in range(service_len):
         
         # If Order ready
-        if Service_ID[i][2] <= datetime.now():
+        if Service_ID[i][2] <= time_UTC_to_IL():
             ID = [Service_ID[i][0]]
             crsr.execute("UPDATE service_order SET Service_status = 'ready' WHERE Service_ID=%s", ID)
             db.commit()
          
         # If Order in progress
-        elif datetime.now() > Service_ID[i - 1][2] and datetime.now() <= Service_ID[i][2]:
+        elif time_UTC_to_IL() > Service_ID[i - 1][2] and time_UTC_to_IL() <= Service_ID[i][2]:
             ID = [Service_ID[i][0]]
             crsr.execute("UPDATE service_order SET Service_status = 'in service' WHERE Service_ID=%s", ID)
             db.commit()
