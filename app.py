@@ -43,9 +43,8 @@ try:
     if (db):
         print("Connection with server established")
         create_tables()
-except mysql.connector.Error as err:
-  print("Something went wrong: {}".format(err))
-
+except mysql.connector.errors.InterfaceError as err:
+    print("Something went wrong: {}".format(err))
     
     
 #--------------------------------------------------------------------------------- /

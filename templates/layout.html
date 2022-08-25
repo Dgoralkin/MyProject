@@ -21,6 +21,11 @@
         <nav class="bg-light navbar navbar-expand-md navbar-light mynavbar">
             <div class="container-fluid mynavbar">
                 <a class="navbar-brand" title="Home page" href="/"><img src="/static/logo G.png" width="100" height="60" alt="Logo"></a>
+
+                <ul class="navbar-nav me-auto mt-2">
+                    <li class="nav-item noHover" id="clock2" style="margin-right:3rem;">Get service</li>
+                </ul>
+
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -74,3 +79,17 @@
         </footer>
     </body>
 </html>
+
+
+<script>
+    function myClock() {         
+      setTimeout(function() {   
+        const date = new Date();
+        const timeS = date.toLocaleTimeString();
+        const dateS = date.toLocaleDateString()
+        document.getElementById("clock2").innerHTML = dateS + " " + timeS; 
+        myClock();             
+      }, 1000)
+    }
+    myClock();
+</script>
