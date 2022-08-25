@@ -43,16 +43,8 @@ try:
     if (db):
         print("Connection with server established")
         create_tables()
-except (mysql.Error, mysql.Warning) as e:
-    print(e)
-    print("mysql.Error, mysql.Warning")
-except mysql.connector.Error as e:
-    print ("Error code:", e.errno)        # error number
-    print ("SQLSTATE value:", e.sqlstate) # SQLSTATE value
-    print ("Error message:", e.msg)       # error message
-    print ("Error:", e)                   # errno, sqlstate, msg values
-    s = str(e)
-    print ("Error:", s)                   # errno, sqlstate, msg values
+except mysql.connector.Error as err:
+  print("Something went wrong: {}".format(err))
 
     
     
