@@ -48,15 +48,14 @@
             </th>
           </tr>
 
-          {% for addon in SERVICE_READY %}
+          {% set last_item = SERVICE_READY|count %}
           <tr class="SERVICE_READY">
-              <th scope="row">{{ addon[0] }}</th>
-              <td>{{ addon[1] }}</td>
-              <td>{{ addon[2] }}</td>
-              <td>{{ addon[3] }}</td>
-              <td>{{ addon[4] }}</td>
+              <th scope="row">{{ SERVICE_READY[last_item - 1][0] }}</th>
+              <td>{{ SERVICE_READY[last_item - 1][1] }}</td>
+              <td>{{ SERVICE_READY[last_item - 1][2] }}</td>
+              <td>{{ SERVICE_READY[last_item - 1][3] }}</td>
+              <td>{{ SERVICE_READY[last_item - 1][4] }}</td>
           </tr>
-          {% endfor %}
 
         </div>
         {% endif %}
@@ -79,15 +78,13 @@
             </th>
           </tr>
 
-          {% for service in SERVICE_RUNNING %}
           <tr class="SERVICE_RUNNING">
-              <th scope="row">{{ service[0] }}</th>
-              <td>{{ service[1] }}</td>
-              <td>{{ service[2] }}</td>
-              <td>{{ service[3] }}</td>
-              <td>{{ service[4] }}</td>
+              <th scope="row">{{ SERVICE_RUNNING[0][0] }}</th>
+              <td>{{ SERVICE_RUNNING[0][1] }}</td>
+              <td>{{ SERVICE_RUNNING[0][2] }}</td>
+              <td>{{ SERVICE_RUNNING[0][3] }}</td>
+              <td>{{ SERVICE_RUNNING[0][4] }}</td>
           </tr>
-          {% endfor %}
 
         </div>
         {% endif %}
@@ -98,7 +95,7 @@
 
           <tr class="SERVICE_IN_Q noHover">
             <th scope="row" class="thStyle" colspan="6" style="background-color:red;">
-              Next service
+              Farest service
             </th>
           </tr>
 
@@ -110,21 +107,21 @@
             </th>
           </tr>
 
-          {% for addon in SERVICE_IN_Q %}
+          {% set farest_item = SERVICE_IN_Q|count %}
           <tr class="SERVICE_IN_Q">
-              <th scope="row">{{ addon[0] }}</th>
-              <td>{{ addon[1] }}</td>
-              <td>{{ addon[2] }}</td>
-              <td>{{ addon[3] }}</td>
-              <td>{{ addon[4] }}</td>
+              <th scope="row">{{ SERVICE_IN_Q[farest_item - 1][0] }}</th>
+              <td>{{ SERVICE_IN_Q[farest_item - 1][1] }}</td>
+              <td>{{ SERVICE_IN_Q[farest_item - 1][2] }}</td>
+              <td>{{ SERVICE_IN_Q[farest_item - 1][3] }}</td>
+              <td>{{ SERVICE_IN_Q[farest_item - 1][4] }}</td>
           </tr>
-          {% endfor %}
+
           {% else %}
           <div id="NO_SERVICE_IN_Q">
 
             <tr class="SERVICE_READY noHover">
               <th scope="row" class="thStyle" colspan="6" style="background-color:green;">
-                Considering workshop's business hours: ({{ WORKING_HOURS[0] }}->{{ WORKING_HOURS[1] }}) Our workshop is ready to get you serviced immediately &#128512;
+                Considering workshop's business hours: ({{ WORKING_HOURS[0] }}->{{ WORKING_HOURS[1] }}) Our workshop is ready to get you serviced next &#128512;
               </th>
             </tr>
     

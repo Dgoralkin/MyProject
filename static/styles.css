@@ -15,7 +15,8 @@ li:hover
     text-decoration: underline;
     font-size: large;
 }
-.noHover{
+.noHover
+{
     pointer-events: none;
 }
 

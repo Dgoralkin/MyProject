@@ -10,7 +10,7 @@ from pytz import timezone
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
 open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
-close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
+close_hours = dt.time(23, 00, 0, 0)       # 21:00:00
 
 # Udjust app's server timezone for GMT+3 (Israel)
 def time_UTC_to_IL():
