@@ -16,7 +16,7 @@
   </head>
 
   <body>
-  <div class="alignment-center alignment-center-cart">
+  <div class="iframe">
     <table class="table table-success table-striped-columns table-hover">
       <thead class="table-dark" style="border: 2px solid black;">
         {% if SERVICE_IN_Q or SERVICE_RUNNING or SERVICE_READY %}
@@ -30,7 +30,7 @@
         {% endif %}
       </thead>
 
-      <tbody class="iframe">
+      <tbody>
         {% if SERVICE_READY %}
         <div id="SERVICE_READY">
 
@@ -54,7 +54,7 @@
               <td>{{ SERVICE_READY[last_item - 1][1] }}</td>
               <td>{{ SERVICE_READY[last_item - 1][2] }}</td>
               <td>{{ SERVICE_READY[last_item - 1][3] }}</td>
-              <td>{{ SERVICE_READY[last_item - 1][4] }}</td>
+              <td style="font-size: 70%;">{{ SERVICE_READY[last_item - 1][4] }}</td>
           </tr>
 
         </div>
@@ -83,7 +83,7 @@
               <td>{{ SERVICE_RUNNING[0][1] }}</td>
               <td>{{ SERVICE_RUNNING[0][2] }}</td>
               <td>{{ SERVICE_RUNNING[0][3] }}</td>
-              <td>{{ SERVICE_RUNNING[0][4] }}</td>
+              <td style="font-size: 70%;">{{ SERVICE_RUNNING[0][4] }}</td>
           </tr>
 
         </div>
@@ -113,7 +113,7 @@
               <td>{{ SERVICE_IN_Q[farest_item - 1][1] }}</td>
               <td>{{ SERVICE_IN_Q[farest_item - 1][2] }}</td>
               <td>{{ SERVICE_IN_Q[farest_item - 1][3] }}</td>
-              <td>{{ SERVICE_IN_Q[farest_item - 1][4] }}</td>
+              <td style="font-size: 70%;">{{ SERVICE_IN_Q[farest_item - 1][4] }}</td>
           </tr>
 
           {% else %}
