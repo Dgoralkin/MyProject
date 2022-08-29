@@ -467,3 +467,12 @@ def display_services():
     WORKING_HOURS = [open_hours_str, close_hours_str]
     
     return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q, WORKING_HOURS
+
+
+
+
+
+# gathering required info from "service_order" table to be ready for display in pick_up.html
+def display_user_service_status(USER_ID):
+    print("Hi!", USER_ID)
+    return

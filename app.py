@@ -4,7 +4,7 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status
 import smtplib
 import random
 from email.message import EmailMessage
@@ -353,9 +353,15 @@ def pick():
     
     # Show connected User Full Name
     FULLNAME = fullName()
+    USER_ID = [session["user_id"]]
 
-    # Redirect user to pick up page
-    return render_template("pick_up.html",  FULLNAME=FULLNAME)
+    
+    # Send data to display_services function in helpers for sorting for display
+    user_service_status = display_user_service_status(USER_ID)
+        
+    # Sends user to main page
+    return render_template("pick_up.html", FULLNAME=FULLNAME)
+
 
 
 #--------------------------------------------------------------------------------- Account
