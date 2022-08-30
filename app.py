@@ -284,7 +284,7 @@ def add_bike():
     if request.method == "POST":
         BIKE = request.form.get("BIKE").lower().capitalize()
         bike = [BIKE]
-        MODEL = request.form.get("MODEL").lower().capitalize()
+        MODEL = request.form.get("MODEL").lower().capitalize()        
         YEAR = request.form.get("YEAR")
         
         # Check if user choosed bike from DB and update bike table

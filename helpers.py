@@ -498,7 +498,7 @@ def display_user_service_status(USER_ID):
             crsr2.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime, service_order.Service_status FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES[i])
             for line2 in crsr2:
                 #print("3-", line2)
-                #print("4-", line2[5], line[2])
+                print("4-", line2[5], line[2])
                 if line2[5] == line[2]:
                     counter += 1
         if counter == line[1]:
