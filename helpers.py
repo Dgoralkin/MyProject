@@ -499,7 +499,7 @@ def display_user_service_status(USER_ID):
             for line2 in crsr2:
                 #print("3-", line2)
                 print("4-", line2[5], line[2])
-                if line2[5] == line[2]:
+                if line2[5] == line[2] and line[2] == 'ready':
                     counter += 1
         if counter == line[1]:
             BIKES_READY.append(BIKES[i])

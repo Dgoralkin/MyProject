@@ -19,6 +19,7 @@
 <form action="/cart" method="post">
 
 {% for bike in USER_BIKES %}
+{% set bikename = bike[1].replace(' ', '') %}
 
 <div class="container text-center" id="{{ bike[0] }}">
     <div class="row">
@@ -28,12 +29,13 @@
 
             <div class="card-body">
               <h4 class="card-title">{{ bike[1] }} {{ bike[2] }} {{ bike[3] }}<h6>Bike# {{ bike[0] }}</h6></h4>
-              <button type="button" id="BTN_{{ bike[1] }}{{ bike[0] }}" class="btn btn-success">Choose service for {{ bike[2] }}</button>
+
+              <button type="button" id="BTN_{{ bikename }}{{ bike[0] }}" class="btn btn-success">Choose service for {{ bike[2] }}</button>
               <!-- Remove bike VIA 'remove_bike' function in JavaScript.js -->
               <button type="button" name="{{ bike[0] }}" class="btn btn-dark" onclick="remove_bike(this.name)">Remove {{ bike[2] }}</button>
             </div>
 
-            <div class="col-md-8 service_check" id="Service_{{ bike[1] }}{{ bike[0] }}">
+            <div class="col-md-8 service_check" id="Service_{{ bikename }}{{ bike[0] }}">
                 <table class="table table-success table-striped-columns">
 
                   <thead class="table-dark">
@@ -64,8 +66,8 @@
                 </table>
                 <script>
                   $(document).ready(function(){
-                    $("#BTN_{{ bike[1] }}{{ bike[0] }}").click(function(){
-                      $("#Service_{{ bike[1] }}{{ bike[0] }}").slideToggle("slow");
+                    $("#BTN_{{ bikename }}{{ bike[0] }}").click(function(){
+                      $("#Service_{{ bikename }}{{ bike[0] }}").slideToggle("slow");
                     });
                   });
                 </script>
