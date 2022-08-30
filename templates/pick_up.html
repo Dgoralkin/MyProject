@@ -6,9 +6,9 @@
 
 
 {% block Refresh %}
-
+http-equiv="refresh" content="120"
 {% endblock %}
-<!-- http-equiv="refresh" content="120" -->>
+<!--  -->>
 
 
 {% block user %}
@@ -86,8 +86,13 @@
               <tr class="SERVICE_IN_Q">
                 <th scope="row">{{ procedure[0] }}</th>
                 <td>{{ procedure[1] }}</td>
+                {% if procedure[3] == 0 %}
+                  <td>&#x2611;</td>
+                  <td>{{ procedure[2] }}$</td>
+                {% else %}
                 <td>{{ procedure[3] }}</td>
                 <td>{{ procedure[2] }}$</td>
+                {% endif %}
               </tr>
             {% endfor %}
 

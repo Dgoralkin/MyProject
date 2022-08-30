@@ -539,14 +539,14 @@ def display_user_service_status(USER_ID):
         
         crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_INSERVICE[i])
         for line in crsr:
+            if line[3] < time_UTC_to_IL():
+                line_tmp = list(line)
+                line_tmp[3] = 0
+                line = (line_tmp)
             BIKES_INSERVICE_DICT["SERVICES"].append(line)
         
         BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
 
         
-    
-    #print(BIKES_READY)
-    #print()
-    #print(BIKES_INSERVICE)
     
     return BIKES_READY, BIKES_INSERVICE

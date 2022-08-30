@@ -32,40 +32,117 @@ http-equiv="refresh" content="60"
 
       <tbody>
         {% if SERVICE_READY %}
-          <div id="SERVICE_READY">
+        <div id="SERVICE_READY">
+
+          <tr class="SERVICE_READY noHover">
+            <th scope="row" class="thStyle" colspan="6" style="background-color:green;">
+                Last finished service/s
+            </th>
+          </tr>
+
+          <tr class="SERVICE_READY noHover">
+            <th colspan="6">
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
+              </div>
+            </th>
+          </tr>
+
+          {% for addon in SERVICE_READY %}
+          <tr class="SERVICE_READY">
+              <th scope="row">{{ addon[0] }}</th>
+              <td>{{ addon[1] }}</td>
+              <td>{{ addon[2] }}</td>
+              <td>{{ addon[3] }}</td>
+              <td>{{ addon[4] }}</td>
+          </tr>
+          {% endfor %}
+
+        </div>
+        {% endif %}
+
+        <!-- SERVICE_RUNNING -->
+        {% if SERVICE_RUNNING %}
+        <div id="SERVICE_RUNNING">
+
+          <tr class="SERVICE_RUNNING noHover">
+            <th scope="row" class="thStyle" colspan="6" style="background-color:orange;">
+              Serviced now
+            </th>
+          </tr>
+
+          <tr class="SERVICE_RUNNING noHover">
+            <th colspan="6">
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+              </div>
+            </th>
+          </tr>
+
+          {% for service in SERVICE_RUNNING %}
+          <tr class="SERVICE_RUNNING">
+              <th scope="row">{{ service[0] }}</th>
+              <td>{{ service[1] }}</td>
+              <td>{{ service[2] }}</td>
+              <td>{{ service[3] }}</td>
+              <td>{{ service[4] }}</td>
+          </tr>
+          {% endfor %}
+
+        </div>
+        {% endif %}
+
+        <!-- SERVICE_IN_Q -->
+        {% if SERVICE_IN_Q %}
+        <div id="SERVICE_IN_Q">
+
+          <tr class="SERVICE_IN_Q noHover">
+            <th scope="row" class="thStyle" colspan="6" style="background-color:red;">
+              Next service/s
+            </th>
+          </tr>
+
+          <tr class="SERVICE_IN_Q noHover">
+            <th colspan="6">
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
+              </div>
+            </th>
+          </tr>
+
+          {% for addon in SERVICE_IN_Q %}
+          <tr class="SERVICE_IN_Q">
+              <th scope="row">{{ addon[0] }}</th>
+              <td>{{ addon[1] }}</td>
+              <td>{{ addon[2] }}</td>
+              <td>{{ addon[3] }}</td>
+              <td>{{ addon[4] }}</td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <div id="NO_SERVICE_IN_Q">
 
             <tr class="SERVICE_READY noHover">
               <th scope="row" class="thStyle" colspan="6" style="background-color:green;">
-                  Last finished service/s
+                Considering workshop's business hours: ({{ WORKING_HOURS[0] }}->{{ WORKING_HOURS[1] }}) Our workshop is ready to get you serviced next &#128512;
               </th>
             </tr>
-
+    
             <tr class="SERVICE_READY noHover">
               <th colspan="6">
                 <div class="progress">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
+                  <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
                 </div>
               </th>
             </tr>
-
-            {% for addon in SERVICE_READY %}
-            <tr class="SERVICE_READY">
-                <th scope="row">{{ addon[0] }}</th>
-                <td>{{ addon[1] }}</td>
-                <td>{{ addon[2] }}</td>
-                <td>{{ addon[3] }}</td>
-                <td>{{ addon[4] }}</td>
-            </tr>
-            {% endfor %}
-
-          </div>
+        </div>
         {% endif %}
+
 
       </tbody>
     </table>
   </div>
 {% endblock %}
-
 
 
 {% block main %}
@@ -89,7 +166,7 @@ http-equiv="refresh" content="60"
             <!-- <img src="..." class="card-img-top" alt="Peek your bike"> -->
             <div class="text-bg-danger p-3 bigFont"><span id="DIV_bg_warning">Pick your bike</span></div>
             <div class="card-body">
-              <h6 class="card-title">Check your service status and pick up your bike from service</h6>
+              <h6 class="card-title">Check your service status and pick your bike from service</h6>
               <p class="card-text">Get your serviced bike & pay the service.</p>
               <a href="/pick_up" class="btn btn-primary">From service</a>
             </div>

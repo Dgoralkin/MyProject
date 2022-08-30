@@ -355,6 +355,8 @@ def pick():
     FULLNAME = fullName()
     USER_ID = [session["user_id"]]
 
+    # Refresh page date
+    REFRESH = display_services()
     
     # Send data to display_services function in helpers for sorting for display
     SERVICES = display_user_service_status(USER_ID)
