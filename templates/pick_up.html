@@ -6,8 +6,9 @@
 
 
 {% block Refresh %}
-http-equiv="refresh" content="120"
+
 {% endblock %}
+<!-- http-equiv="refresh" content="120" -->>
 
 
 {% block user %}
@@ -19,110 +20,96 @@ http-equiv="refresh" content="120"
   <div class="alignment-center">
     <table class="table table-success table-striped-columns table-hover">
       <thead class="table-dark" style="border: 2px solid black;">
-        {% if SERVICE_IN_Q or SERVICE_RUNNING or SERVICE_READY %}
+        {% if SERVICES[0] %}
           <tr>
             <th scope="col">Service #</th>
             <th scope="col">Service</th>
             <th scope="col">Status</th>
-            <th scope="col">End service time</th>
+            <th scope="col">Service price</th>
           </tr>
-        {% endif %}
       </thead>
 
       <tbody>
-        {% if SERVICE_READY %}
-        <div id="SERVICE_READY">
 
-          {% for addon in SERVICE_READY %}
+          <div id="SERVICES">
+            {% for service in SERVICES[0] %}
 
-          <tr class="SERVICE_READY noHover">
-            <th scope="row" class="thStyle" colspan="4" style="background-color:green;">
-              {{ addon[1] }}, {{ addon[2] }}
-            </th>
-          </tr>
-          <!-- <tr class="SERVICE_READY noHover">
-            <th colspan="6">
-              <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
-              </div>
-            </th>
-          </tr> -->
-          <tr class="SERVICE_READY">
-              <th scope="row">{{ addon[0] }}</th>
-              <td>{{ addon[3] }}</td>
-              <td>Status</td>
-              <td>{{ addon[4] }}</td>
-          </tr>
-          {% endfor %}
+            <tr class="SERVICE_READY noHover">
+              <th scope="row" class="thStyle" colspan="4" style="background-color:green;">
+                Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
+              </th>
+            </tr>
 
-        </div>
+            {% for procedure in service["SERVICES"] %}
+              <tr class="SERVICE_READY">
+                <th scope="row">{{ procedure[0] }}</th>
+                <td>{{ procedure[1] }}</td>
+                <td>&#x2611;</td>
+                <td>{{ procedure[2] }}$</td>
+              </tr>
+            {% endfor %}
+
+            <tr class="SERVICE_READY">
+                <td style="visibility:hidden;"></td>
+                <td style="visibility:hidden;"></td>
+                <td style="visibility:hidden;"></td>
+                <td class="td_sum" style="border: 2px solid green;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
+              </tr>
+            {% endfor %}
+
+          </div>
         {% endif %}
-
-        <!-- SERVICE_RUNNING -->
-        {% if SERVICE_RUNNING %}
-        <div id="SERVICE_RUNNING">
-
-          <tr class="SERVICE_RUNNING noHover">
-            <th scope="row" class="thStyle" colspan="6" style="background-color:orange;">
-              Serviced now
-            </th>
-          </tr>
-
-          <tr class="SERVICE_RUNNING noHover">
-            <th colspan="6">
-              <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
-              </div>
-            </th>
-          </tr>
-
-          {% for service in SERVICE_RUNNING %}
-          <tr class="SERVICE_RUNNING">
-              <th scope="row">{{ service[0] }}</th>
-              <td>{{ service[1] }}</td>
-              <td>{{ service[2] }}</td>
-              <td>{{ service[3] }}</td>
-              <td>{{ service[4] }}</td>
-          </tr>
-          {% endfor %}
-
-        </div>
-        {% endif %}
-
-        <!-- SERVICE_IN_Q -->
-        {% if SERVICE_IN_Q %}
-        <div id="SERVICE_IN_Q">
-
-          <tr class="SERVICE_IN_Q noHover">
-            <th scope="row" class="thStyle" colspan="6" style="background-color:red;">
-              Next service/s
-            </th>
-          </tr>
-
-          <tr class="SERVICE_IN_Q noHover">
-            <th colspan="6">
-              <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
-              </div>
-            </th>
-          </tr>
-
-          {% for addon in SERVICE_IN_Q %}
-          <tr class="SERVICE_IN_Q">
-            <th scope="row">{{ addon[0] }}</th>
-            <td>{{ addon[1] }}</td>
-            <td>{{ addon[2] }}</td>
-            <td>{{ addon[3] }}</td>
-            <td>{{ addon[4] }}</td>
-          </tr>
-          {% endfor %}
-        {% endif %}
-
-
       </tbody>
+
+      <thead class="table-dark" style="border: 2px solid black;">
+        {% if SERVICES[1] %}
+          <tr>
+            <th scope="col">Service #</th>
+            <th scope="col">Service</th>
+            <th scope="col">Status</th>
+            <th scope="col">Service price</th>
+          </tr>
+      </thead>
+
+      <tbody>
+
+          <div id="SERVICES">
+            {% for service in SERVICES[1] %}
+
+            <tr class="SERVICE_IN_Q noHover">
+              <th scope="row" class="thStyle" colspan="4" style="background-color:red;">
+                Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
+              </th>
+            </tr>
+
+            {% for procedure in service["SERVICES"] %}
+              <tr class="SERVICE_IN_Q">
+                <th scope="row">{{ procedure[0] }}</th>
+                <td>{{ procedure[1] }}</td>
+                <td>{{ procedure[3] }}</td>
+                <td>{{ procedure[2] }}$</td>
+              </tr>
+            {% endfor %}
+
+            <tr class="SERVICE_IN_Q">
+                <td style="visibility:hidden;"></td>
+                <td style="visibility:hidden;"></td>
+                <td style="visibility:hidden;"></td>
+                <td class="td_sum" style="border: 2px solid red;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
+              </tr>
+            {% endfor %}
+            
+          </div>
+        {% endif %}
+      </tbody>
+
     </table>
   </div>
 {% endblock %}
+
+
+
+
 
 
 {% block main %}

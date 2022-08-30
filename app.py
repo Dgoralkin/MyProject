@@ -357,10 +357,11 @@ def pick():
 
     
     # Send data to display_services function in helpers for sorting for display
-    user_service_status = display_user_service_status(USER_ID)
+    SERVICES = display_user_service_status(USER_ID)
+    #   print("SERVICES: \n", SERVICES)
         
     # Sends user to main page
-    return render_template("pick_up.html", FULLNAME=FULLNAME)
+    return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
 
 
 

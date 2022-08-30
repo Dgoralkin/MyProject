@@ -12,6 +12,7 @@ from pytz import timezone
 open_hours = dt.time(9, 00, 0, 0)         # 09:00:00
 close_hours = dt.time(23, 00, 0, 0)       # 21:00:00
 
+
 # Udjust app's server timezone for GMT+3 (Israel)
 def time_UTC_to_IL():
     fmt = "%Y-%m-%d %H:%M:%S.%f"
@@ -474,5 +475,78 @@ def display_services():
 
 # gathering required info from "service_order" table to be ready for display in pick_up.html
 def display_user_service_status(USER_ID):
-    print("Hi!", USER_ID)
-    return
+    db.reconnect()
+    BIKES = []
+    BIKES_READY = []
+    BIKES_INSERVICE = []
+    
+    
+    # Find all distinct bikes per user in service_order
+    crsr = db.cursor()
+    crsr2 = db.cursor()
+    crsr.execute("SELECT distinct Bike_ID FROM service_order WHERE User_ID = %s", USER_ID)
+    for Bike in crsr:
+        BIKES.append(Bike)
+    #print("1-", BIKES, len(BIKES))
+    
+    # Sort fully ready serviced bikes
+    for i in range(len(BIKES)):
+        counter = 0
+        crsr.execute("SELECT Bike_ID, count(Service_status), Service_status FROM service_order WHERE Bike_ID = %s", BIKES[i])
+        for line in crsr:
+            #print("2-", line)
+            crsr2.execute("SELECT service_order.Service_ID, all_bikes.brand, bikes.model, services.Service_description, service_order.End_datetime, service_order.Service_status FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES[i])
+            for line2 in crsr2:
+                #print("3-", line2)
+                #print("4-", line2[5], line[2])
+                if line2[5] == line[2]:
+                    counter += 1
+        if counter == line[1]:
+            BIKES_READY.append(BIKES[i])
+        else:
+            BIKES_INSERVICE.append(BIKES[i])
+    
+    crsr2.close()
+    
+    # Gather summarized info for every ready for pick-up bike from "service_order" table 
+    
+    # print("5-", len(BIKES_READY), BIKES_READY, len(BIKES_INSERVICE), BIKES_INSERVICE)
+    
+    for i in range(len(BIKES_READY)):
+        BIKES_READY_DICT = {}
+        crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(service_order.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s", BIKES_READY[i])
+        for line in crsr:
+            BIKES_READY_DICT["BIKE_ID"] = line[0]
+            BIKES_READY_DICT["BIKE_NAME"] = line[1] + " " + line[2]
+            BIKES_READY_DICT["TOTAL_PRICE"] = line[3]
+            BIKES_READY_DICT["SERVICES"] = []
+        
+        crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_READY[i])
+        for line in crsr:
+            BIKES_READY_DICT["SERVICES"].append(line)
+           
+        BIKES_READY[i] = BIKES_READY_DICT
+    
+    # Gather summarized info for every unready bike from "service_order" table 
+    for i in range(len(BIKES_INSERVICE)):
+        BIKES_INSERVICE_DICT = {}
+        crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(service_order.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s", BIKES_INSERVICE[i])
+        for line in crsr:
+            BIKES_INSERVICE_DICT["BIKE_ID"] = line[0]
+            BIKES_INSERVICE_DICT["BIKE_NAME"] = line[1] + " " + line[2]
+            BIKES_INSERVICE_DICT["TOTAL_PRICE"] = line[3]
+            BIKES_INSERVICE_DICT["SERVICES"] = []
+        
+        crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_INSERVICE[i])
+        for line in crsr:
+            BIKES_INSERVICE_DICT["SERVICES"].append(line)
+        
+        BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
+
+        
+    
+    #print(BIKES_READY)
+    #print()
+    #print(BIKES_INSERVICE)
+    
+    return BIKES_READY, BIKES_INSERVICE

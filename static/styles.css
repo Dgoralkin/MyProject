@@ -178,3 +178,11 @@ iframe {
     display: block;
     font-size: 30%;
 }
+
+
+.td_sum
+{
+    font-weight: bold;
+    font-size: 100%;
+    text-decoration: underline;
+}
