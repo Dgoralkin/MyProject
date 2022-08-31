@@ -20,7 +20,7 @@
 
   <div class="iframe">
     <table class="table table-success table-striped-columns table-hover"  style="font-size: 85%;">
-      <thead class="table-dark" style="border: 2px solid black; text-align: center;">
+      <thead class="table-dark" style="text-align: center;">
         {% if SERVICE_IN_Q or SERVICE_RUNNING or SERVICE_READY %}
           <tr>
             <th scope="col">Service #</th>
@@ -36,13 +36,13 @@
         {% if SERVICE_READY %}
         <div id="SERVICE_READY">
 
-          <tr class="SERVICE_READY noHover">
+          <tr class="SERVICE_READY" style="pointer-events: none;">
             <th scope="row" class="thStyle" colspan="6" style="background-color:green;">
                 Last finished service
             </th>
           </tr>
 
-          <tr class="SERVICE_READY noHover">
+          <tr class="SERVICE_READY" style="pointer-events: none;">
             <th colspan="6">
               <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:100%"></div>
@@ -66,13 +66,13 @@
         {% if SERVICE_RUNNING %}
         <div id="SERVICE_RUNNING">
 
-          <tr class="SERVICE_RUNNING noHover">
+          <tr class="SERVICE_RUNNING" style="pointer-events: none;">
             <th scope="row" class="thStyle" colspan="6" style="background-color:orange;">
               Serviced now
             </th>
           </tr>
 
-          <tr class="SERVICE_RUNNING noHover">
+          <tr class="SERVICE_RUNNING" style="pointer-events: none;">
             <th colspan="6">
               <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
@@ -95,13 +95,13 @@
         {% if SERVICE_IN_Q %}
         <div id="SERVICE_IN_Q">
 
-          <tr class="SERVICE_IN_Q noHover">
+          <tr class="SERVICE_IN_Q" style="pointer-events: none;">
             <th scope="row" class="thStyle" colspan="6" style="background-color:red;">
               Farest service
             </th>
           </tr>
 
-          <tr class="SERVICE_IN_Q noHover">
+          <tr class="SERVICE_IN_Q" style="pointer-events: none;">
             <th colspan="6">
               <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>
@@ -121,13 +121,13 @@
           {% else %}
           <div id="NO_SERVICE_IN_Q">
 
-            <tr class="SERVICE_READY noHover">
+            <tr class="SERVICE_READY" style="pointer-events: none;">
               <th scope="row" class="thStyle" colspan="6" style="background-color:green;">
                 Considering workshop's business hours: ({{ WORKING_HOURS[0] }}->{{ WORKING_HOURS[1] }}) Our workshop is ready to get you serviced next &#128512;
               </th>
             </tr>
     
-            <tr class="SERVICE_READY noHover">
+            <tr class="SERVICE_READY" style="pointer-events: none;">
               <th colspan="6">
                 <div class="progress">
                   <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:5%"></div>

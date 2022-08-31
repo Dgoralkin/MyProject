@@ -174,7 +174,7 @@ iframe {
     margin: none;
     padding: none;
     background: none;
-    border: 1px solid black;
+    border: none;
     display: block;
     font-size: 30%;
 }

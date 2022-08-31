@@ -470,9 +470,6 @@ def display_services():
     return SERVICE_RUNNING, SERVICE_READY, SERVICE_IN_Q, WORKING_HOURS
 
 
-
-
-
 # gathering required info from "service_order" table to be ready for display in pick_up.html
 def display_user_service_status(USER_ID):
     db.reconnect()

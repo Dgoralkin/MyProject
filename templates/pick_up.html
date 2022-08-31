@@ -76,31 +76,31 @@ http-equiv="refresh" content="120"
           <div id="SERVICES">
             {% for service in SERVICES[1] %}
 
-            <tr class="SERVICE_IN_Q noHover">
-              <th scope="row" class="thStyle" colspan="4" style="background-color:red;">
-                Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
-              </th>
-            </tr>
-
-            {% for procedure in service["SERVICES"] %}
-              <tr class="SERVICE_IN_Q">
-                <th scope="row">{{ procedure[0] }}</th>
-                <td>{{ procedure[1] }}</td>
-                {% if procedure[3] == 0 %}
-                  <td>&#x2611;</td>
-                  <td>{{ procedure[2] }}$</td>
-                {% else %}
-                <td>{{ procedure[3] }}</td>
-                <td>{{ procedure[2] }}$</td>
-                {% endif %}
+              <tr class="SERVICE_IN_Q noHover">
+                <th scope="row" class="thStyle" colspan="4" style="background-color:red;">
+                  Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
+                </th>
               </tr>
-            {% endfor %}
 
-            <tr class="SERVICE_IN_Q">
-                <td style="visibility:hidden;"></td>
-                <td style="visibility:hidden;"></td>
-                <td style="visibility:hidden;"></td>
-                <td class="td_sum" style="border: 2px solid red;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
+              {% for procedure in service["SERVICES"] %}
+                <tr class="SERVICE_IN_Q">
+                  <th scope="row">{{ procedure[0] }}</th>
+                  <td>{{ procedure[1] }}</td>
+                  {% if procedure[3] == 0 %}
+                    <td>&#x2611;</td>
+                    <td>{{ procedure[2] }}$</td>
+                  {% else %}
+                  <td>&#10006;</td>
+                  <td>{{ procedure[2] }}$</td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+
+              {% set BIKE_READY_TIME = service["SERVICES"]|count %}
+              <tr class="SERVICE_IN_Q">
+                  <!--<td style="visibility:hidden;"></td>-->
+                  <td class="td_sum" colspan="3">This service will be ready on: {{ service["SERVICES"][BIKE_READY_TIME-1][3] }}</td>
+                  <td class="td_sum" style="border: 2px solid red;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
               </tr>
             {% endfor %}
             
