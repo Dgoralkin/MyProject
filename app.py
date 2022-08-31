@@ -366,6 +366,17 @@ def pick():
     return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
 
 
+#--------------------------------------------------------------------------------- Payment Page
+@app.route("/payment", methods=["GET", "POST"])
+@login_required
+def payment():
+    
+    # Show connected User Full Name
+    FULLNAME = fullName()
+    USER_ID = [session["user_id"]]
+
+    return render_template("payment.html", FULLNAME=FULLNAME)
+
 
 #--------------------------------------------------------------------------------- Account
 @app.route("/account", methods=["GET", "POST"])

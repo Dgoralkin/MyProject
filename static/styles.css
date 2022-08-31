@@ -185,4 +185,10 @@ iframe {
     font-weight: bold;
     font-size: 100%;
     text-decoration: underline;
+    text-align: center;
+}
+
+.table_space_top
+{
+    margin-top: 100px;
 }
