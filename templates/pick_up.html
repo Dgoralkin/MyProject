@@ -6,9 +6,9 @@
 
 
 {% block Refresh %}
-http-equiv="refresh" content="120"
+
 {% endblock %}
-<!--  -->>
+<!-- http-equiv="refresh" content="120" -->>
 
 
 {% block user %}
@@ -22,7 +22,9 @@ http-equiv="refresh" content="120"
       <table class="table table-success table-striped-columns table-hover">
 
         <!-- Table for bikes that ready for pick up  -->
+        {% set serviceReady = 0 %}
         {% if SERVICES[0] %}
+        {% set serviceReady = 1 %}
           <thead class="table-dark" style="border: 2px solid black;">
             
               <tr>
@@ -74,7 +76,9 @@ http-equiv="refresh" content="120"
 
 
         <!-- Table for bikes that still in service  -->
+        {% set inService = 0 %}
         {% if SERVICES[1] %}
+        {% set inService = 1 %}
 
           <thead class="table-dark" style="border: 2px solid black;">
             <tr>
@@ -160,29 +164,38 @@ http-equiv="refresh" content="120"
     {
       form.submit();
     } else {
-      alert("Please choose a bike to pick from service")
+      alert("Please choose a bike to pick-up from service")
     }
   });
 
 // Script for service contdown //
-var x = setInterval(function() {
-  let readyTime = document.getElementById("countdown_read").innerHTML;
-  var countDownDate = new Date(readyTime).getTime();
-  var now = new Date().getTime();
-  var distance = countDownDate - now;
-  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    
-  document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
-  + minutes + "m " + seconds + "s ";
-    
-  if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("countdown").innerHTML = "Your bike is ready for pick up";
-  }
-}, 1000);
+if ({{inService}} === 1) {
+  var x = setInterval(function() {
+    let readyTime = document.getElementById("countdown_read").innerHTML;
+    var countDownDate = new Date(readyTime).getTime();
+    var now = new Date().getTime();
+    var distance = countDownDate - now;
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    document.getElementById("countdown").innerHTML = " " + days + "d " + hours + "h "
+    + minutes + "m " + seconds + "s ";
+
+    // If service ended - reload page //
+    if (distance < 0) {
+      clearInterval(x);
+      document.getElementById("countdown").innerHTML = " This service ended";
+      location.reload();
+    }
+  }, 1000);
+}
+
+// Script to hide submit button //
+if ({{serviceReady}} === 0) {
+  document.getElementById("pay_form_button").style.display = "none";
+}
+
 </script>
 
 {% endblock %}
