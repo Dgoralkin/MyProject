@@ -128,16 +128,6 @@ span
     color: #ffffff;
 }
 
-/*
-iframe {
-    margin: none;
-    padding: none;
-    background: none;
-    border: 2px solid black;
-    display: block;
-}
-*/
-
 .thStyle
 {
     text-shadow: 2px 2px 3px #000000;
@@ -163,12 +153,14 @@ iframe {
     margin: auto;
     font-size: 70%;
 }
+
 .alignment-center-cart
 {
     width: 99%;
     margin: auto;
     font-size: 70%;
 }
+
 .iframe
 {
     margin: none;
@@ -179,7 +171,6 @@ iframe {
     font-size: 30%;
 }
 
-
 .td_sum
 {
     font-weight: bold;
@@ -188,7 +179,7 @@ iframe {
     text-align: center;
 }
 
-.table_space_top
+.table_space_bottom
 {
-    margin-top: 100px;
+    padding-bottom: 100px;
 }

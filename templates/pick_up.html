@@ -34,43 +34,41 @@ http-equiv="refresh" content="120"
           </thead>
 
           <tbody>
+            <div id="SERVICES">
+              {% for service in SERVICES[0] %}
 
-              <div id="SERVICES">
-                {% for service in SERVICES[0] %}
+                <tr class="SERVICE_READY noHover">
+                  <th scope="row" class="thStyle" colspan="4" style="background-color:green;">
+                    Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
+                  </th>
+                </tr>
 
-                  <tr class="SERVICE_READY noHover">
-                    <th scope="row" class="thStyle" colspan="4" style="background-color:green;">
-                      Bike# {{ service["BIKE_ID"] }} - {{ service["BIKE_NAME"] }}
-                    </th>
-                  </tr>
-
-                  {% for procedure in service["SERVICES"] %}
-                    <tr class="SERVICE_READY">
-                      <th scope="row">{{ procedure[0] }}</th>
-                      <td>{{ procedure[1] }}</td>
-                      <td>&#x2611;</td>
-                      <td>{{ procedure[2] }}$</td>
-                    </tr>
-                  {% endfor %}
+                {% for procedure in service["SERVICES"] %}
 
                   <tr class="SERVICE_READY">
-                    <td style="visibility:hidden;"></td>
-                    <td style="visibility:hidden;"></td>
-                    <td style="visibility:hidden;"></td>
-
-                    <td style="border: 2px solid green;">
-                      <div class="form-check td_sum" style="text-align: left;">
-                        Total service price: {{ service["TOTAL_PRICE"] }}$
-                        <hr>
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onClick="checkboxes();">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Pick this bike</label>
-                      </div>
-                    </td>
-
-                    <!--<td class="td_sum" style="border: 2px solid green;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>-->
+                    <th scope="row">{{ procedure[0] }}</th>
+                    <td>{{ procedure[1] }}</td>
+                    <td>&#x2611;</td>
+                    <td>{{ procedure[2] }}$</td>
                   </tr>
+
                 {% endfor %}
-              </div>
+
+                <tr class="SERVICE_READY">
+                  <td colspan="3" style="visibility:hidden;"></td>
+
+                  <td style="border: 2px solid green;">
+                    <div class="form-check td_sum" style="text-align: left;">
+                      Total service price: {{ service["TOTAL_PRICE"] }}$
+                      <hr>
+                      <input class="form-check-input" type="checkbox" id="bike_{{ service["BIKE_ID"] }}" name="pay" value="{{ service["BIKE_ID"] }}" onClick="checkboxes();">
+                      <label class="form-check-label" for="bike_{{ service["BIKE_ID"] }}">Pick {{ service["BIKE_NAME"] }}</label>
+                    </div>
+                  </td>
+
+                </tr>
+              {% endfor %}
+            </div>
           </tbody>
         {% endif %}
 
@@ -99,6 +97,7 @@ http-equiv="refresh" content="120"
                   </tr>
 
                   {% for procedure in service["SERVICES"] %}
+
                     <tr class="SERVICE_IN_Q">
                       <th scope="row">{{ procedure[0] }}</th>
                       <td>{{ procedure[1] }}</td>
@@ -110,14 +109,17 @@ http-equiv="refresh" content="120"
                       <td>{{ procedure[2] }}$</td>
                       {% endif %}
                     </tr>
+
                   {% endfor %}
 
                   {% set BIKE_READY_TIME = service["SERVICES"]|count %}
+                  {% set BIKE_READY_TIME2 = service["SERVICES"][BIKE_READY_TIME-1][3] %}
                   <tr class="SERVICE_IN_Q">
-                      <!--<td style="visibility:hidden;"></td>-->
-                      <td class="td_sum" colspan="3">This service will be ready on: {{ service["SERVICES"][BIKE_READY_TIME-1][3] }}</td>
+                      <td style="display:none;" id="countdown_read">{{ BIKE_READY_TIME2 }}</td>
+                      <td class="td_sum" colspan="3">This service ends on: {{ BIKE_READY_TIME2 }}  -  EET: <span id="countdown"></span></td>
                       <td class="td_sum" style="border: 2px solid red;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
                   </tr>
+
                 {% endfor %}
               </div>
           </tbody>
@@ -125,32 +127,62 @@ http-equiv="refresh" content="120"
       </table>
     </div>
 
-    <button type="button" class="btn btn-info" id="pay_form_button"> Pick N' Pay for <span class="badge text-bg-secondary" id="count_checkboxes">0</span> bike/s
+    <button type="button" class="btn btn-info" id="pay_form_button"> Pick N' Pay for 
+      <span class="badge text-bg-secondary" id="count_checkboxes">0</span> bike/s
     </button>
-
   </form>
 
-<!-- Script for updating checked checkboxes on button-->
-<!-- Script for sending form from button-->
+<!-- Scripts -->
 <script>
+// Script for updating checked checkboxes on button //
   function checkboxes()
   {
-    var inputElems = document.getElementsByTagName("input"),
+    var inputElems = document.getElementsByTagName("input");
     count = 0;
     for (var i=0; i<inputElems.length; i++) {
       if (inputElems[i].type == "checkbox" && inputElems[i].checked == true)
       {
         count++;
         const elem = document.getElementById('count_checkboxes');
-        elem.innerHTML = count;
       }
-  }}
+    }
+    const elem = document.getElementById('count_checkboxes');
+    elem.innerHTML = count;
+    return count;
+  }
 
-
+// Script for sending form from button //
   var form = document.getElementById("pay_form");
   document.getElementById("pay_form_button").addEventListener("click", function () {
-    form.submit();
+    var count = checkboxes();
+    console.log(count);
+    if (count > 0)
+    {
+      form.submit();
+    } else {
+      alert("Please choose a bike to pick from service")
+    }
   });
+
+// Script for service contdown //
+var x = setInterval(function() {
+  let readyTime = document.getElementById("countdown_read").innerHTML;
+  var countDownDate = new Date(readyTime).getTime();
+  var now = new Date().getTime();
+  var distance = countDownDate - now;
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+  document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
+  + minutes + "m " + seconds + "s ";
+    
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("countdown").innerHTML = "Your bike is ready for pick up";
+  }
+}, 1000);
 </script>
 
 {% endblock %}
@@ -163,6 +195,5 @@ http-equiv="refresh" content="120"
 {% block main %}
 
 <h2>Your Service history</h2>
-
 
 {% endblock %}

@@ -374,8 +374,14 @@ def payment():
     # Show connected User Full Name
     FULLNAME = fullName()
     USER_ID = [session["user_id"]]
+    
+    if request.method == "POST":
+        Bike_ID = request.form.getlist("pay")
+        print(Bike_ID)
+        return render_template("payment.html", FULLNAME=FULLNAME, PAY=Bike_ID)
 
-    return render_template("payment.html", FULLNAME=FULLNAME)
+
+    return redirect("/pick_up")
 
 
 #--------------------------------------------------------------------------------- Account
