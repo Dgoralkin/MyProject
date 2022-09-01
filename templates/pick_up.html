@@ -1,18 +1,18 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Pick up
+Pick up
 {% endblock %}
 
 
 {% block Refresh %}
-
+http-equiv="refresh" content="120"
 {% endblock %}
 <!-- http-equiv="refresh" content="120" -->
 
 
 {% block user %}
-    {{ FULLNAME }}
+{{ FULLNAME }}
 {% endblock %}
 
 {% block header %}
@@ -147,8 +147,10 @@
                     You can do so from the button below &#8659;
                   </th>
                 </tr>
-                <tr>
-                  <td><a id="toService_btm" href="/service" class="btn btn-primary">To service</a></td>
+                <tr class="SERVICE_READY">
+                  <td>
+                    <a id="toService_btm" href="/service" class="btn btn-primary">To service</a>
+                  </td>
                 </tr>
               </div>
             </tbody>
@@ -231,9 +233,9 @@ if ({{serviceReady}} === 0) {
 
 {% block main %}
 
-  {% if SERVICE_HISTORY %}
+  {% if SERVICES[2] %}
     <h1>Your Service History</h1>
-    <h2>{{SERVICE_HISTORY}}</h2>
+    <h2>{{ SERVICES[2] }}</h2>
   {% endif %}
 
 {% endblock %}

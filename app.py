@@ -363,7 +363,7 @@ def pick():
     SERVICES = display_user_service_status(USER_ID)
         
     # Sends user to main page
-    return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICE_HISTORY=SERVICE_HISTORY)
+    return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
 
 
 #--------------------------------------------------------------------------------- Payment Page
