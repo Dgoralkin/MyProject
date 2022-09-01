@@ -8,7 +8,7 @@
 {% block Refresh %}
 
 {% endblock %}
-<!-- http-equiv="refresh" content="120" -->>
+<!-- http-equiv="refresh" content="120" -->
 
 
 {% block user %}
@@ -22,11 +22,10 @@
       <table class="table table-success table-striped-columns table-hover">
 
         <!-- Table for bikes that ready for pick up  -->
-        {% set serviceReady = 0 %}
+          {% set serviceReady = 0 %}
         {% if SERVICES[0] %}
-        {% set serviceReady = 1 %}
+          {% set serviceReady = 1 %}
           <thead class="table-dark" style="border: 2px solid black;">
-            
               <tr>
                 <th scope="col">Service #</th>
                 <th scope="col">Service</th>
@@ -57,17 +56,19 @@
                 {% endfor %}
 
                 <tr class="SERVICE_READY">
-                  <td colspan="3" style="visibility:hidden;"></td>
+                  <td colspan="3" style="background-color: transparent;margin:0 auto; text-align: center; pointer-events: none;">
+                    <button type="button" class="btn btn-success" style="width: 100%; margin-top: 16px;">Bike is ready</button>
+                  </td>
+
 
                   <td style="border: 2px solid green;">
                     <div class="form-check td_sum" style="text-align: left;">
                       Total service price: {{ service["TOTAL_PRICE"] }}$
                       <hr>
                       <input class="form-check-input" type="checkbox" id="bike_{{ service["BIKE_ID"] }}" name="pay" value="{{ service["BIKE_ID"] }}" onClick="checkboxes();">
-                      <label class="form-check-label" for="bike_{{ service["BIKE_ID"] }}">Pick {{ service["BIKE_NAME"] }}</label>
+                      <label class="form-check-label" style="font-size: small;" for="bike_{{ service["BIKE_ID"] }}">Pick {{ service["BIKE_NAME"] }}</label>
                     </div>
                   </td>
-
                 </tr>
               {% endfor %}
             </div>
@@ -76,9 +77,9 @@
 
 
         <!-- Table for bikes that still in service  -->
-        {% set inService = 0 %}
+          {% set inService = 0 %}
         {% if SERVICES[1] %}
-        {% set inService = 1 %}
+          {% set inService = 1 %}
 
           <thead class="table-dark" style="border: 2px solid black;">
             <tr>
@@ -120,14 +121,38 @@
                   {% set BIKE_READY_TIME2 = service["SERVICES"][BIKE_READY_TIME-1][3] %}
                   <tr class="SERVICE_IN_Q">
                       <td style="display:none;" id="countdown_read">{{ BIKE_READY_TIME2 }}</td>
-                      <td class="td_sum" colspan="3">This service ends on: {{ BIKE_READY_TIME2 }}  -  EET: <span id="countdown"></span></td>
+                      <td class="td_sum" colspan="3">This service ends on: &nbsp {{ BIKE_READY_TIME2 }} &nbsp &#x2192; &nbsp EET: &nbsp <span id="countdown"></span></td>
                       <td class="td_sum" style="border: 2px solid red;">Total service price: {{ service["TOTAL_PRICE"] }}$</td>
                   </tr>
 
                 {% endfor %}
               </div>
           </tbody>
-        {% endif %}
+
+          {% elif (inService == 0) and (serviceReady == 0) %}
+            <thead class="table-dark" style="border: 2px solid black; font-size: small;">
+              <tr>
+                <th colspan="4" scope="col">
+                  Ooooppssss....<br>
+                  <br>Seems like there are no bikes ready fot pick-up yet.
+                  <br>You should book a new srvice appointment first!
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <div id="SERVICES" style="font-size: small;">
+                <tr class="SERVICE_READY noHover">
+                  <th scope="row" class="thStyle" colspan="4" style="background-color:green; font-size: small;">
+                    You can do so from the button below &#8659;
+                  </th>
+                </tr>
+                <tr>
+                  <td><a id="toService_btm" href="/service" class="btn btn-primary">To service</a></td>
+                </tr>
+              </div>
+            </tbody>
+          {% endif %}
       </table>
     </div>
 
@@ -180,7 +205,7 @@ if ({{inService}} === 1) {
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
     document.getElementById("countdown").innerHTML = " " + days + "d " + hours + "h "
-    + minutes + "m " + seconds + "s ";
+    + minutes + "m " + seconds + "s ";    
 
     // If service ended - reload page //
     if (distance < 0) {
@@ -195,7 +220,6 @@ if ({{inService}} === 1) {
 if ({{serviceReady}} === 0) {
   document.getElementById("pay_form_button").style.display = "none";
 }
-
 </script>
 
 {% endblock %}
@@ -207,6 +231,9 @@ if ({{serviceReady}} === 0) {
 
 {% block main %}
 
-<h2>Your Service history</h2>
+  {% if SERVICE_HISTORY %}
+    <h1>Your Service History</h1>
+    <h2>{{SERVICE_HISTORY}}</h2>
+  {% endif %}
 
 {% endblock %}

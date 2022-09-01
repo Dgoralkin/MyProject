@@ -354,6 +354,7 @@ def pick():
     # Show connected User Full Name
     FULLNAME = fullName()
     USER_ID = [session["user_id"]]
+    SERVICE_HISTORY = []
 
     # Refresh page date
     REFRESH = display_services()
@@ -362,7 +363,7 @@ def pick():
     SERVICES = display_user_service_status(USER_ID)
         
     # Sends user to main page
-    return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES)
+    return render_template("pick_up.html", FULLNAME=FULLNAME, SERVICES=SERVICES, SERVICE_HISTORY=SERVICE_HISTORY)
 
 
 #--------------------------------------------------------------------------------- Payment Page
