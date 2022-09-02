@@ -9,8 +9,8 @@ from functools import wraps
 from pytz import timezone
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
-open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
-close_hours = dt.time(23, 59, 0, 0)       # 21:00:00
+open_hours = dt.time(4, 00, 0, 0)         # 09:00:00
+close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
 
 
 # Udjust app's server timezone for GMT+3 (Israel)
@@ -88,7 +88,7 @@ def create_tables():
             print("Table bikes Created")
         
         if (service_order == 0):
-            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Complited_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
+            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Completed_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
             print("Table service_order Created")
         
         if (services == 0):
@@ -420,7 +420,6 @@ def display_services():
     sort_service = []
     for bike in crsr:
         if bike[1] != "completed":
-            print("Bike:", bike)
             sort_service.append(bike)
     maintain_Service_status(sort_service)
     
@@ -477,7 +476,7 @@ def display_user_service_status(USER_ID):
     BIKES = []
     BIKES_READY = []
     BIKES_INSERVICE = []
-    BIKES_COMPLITED = []
+    BIKES_COMPLETED = []
     
     # Find all distinct bikes per user in service_order
     crsr = db.cursor()
@@ -499,10 +498,9 @@ def display_user_service_status(USER_ID):
             BIKES_READY.append(BIKES[i])
         else:
             if line[2] == 'completed':
-                BIKES_COMPLITED.append(BIKES[i])
+                BIKES_COMPLETED.append(BIKES[i])
             else:
                 BIKES_INSERVICE.append(BIKES[i])
-
     crsr2.close()
     
     # Gather summarized info for every ready for pick-up bike from "service_order" table     
@@ -538,21 +536,38 @@ def display_user_service_status(USER_ID):
                 line = (line_tmp)
             BIKES_INSERVICE_DICT["SERVICES"].append(line)
         BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
-# ----------------------------------------------------------------------------------------------------------
-    # Gather summarized info for every completed bike from "service_order" table     
-    for i in range(len(BIKES_COMPLITED)):
-        BIKES_COMPLITED_DICT = {}
-        crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(service_order.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s", BIKES_COMPLITED[i])
-        for line in crsr:
-            BIKES_COMPLITED_DICT["BIKE_ID"] = line[0]
-            BIKES_COMPLITED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
-            BIKES_COMPLITED_DICT["TOTAL_PRICE"] = line[3]
-            BIKES_COMPLITED_DICT["SERVICES"] = []
         
-        crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_COMPLITED[i])
+    # Gather summarized info for every completed bike from "service_order" table     
+    for i in range(len(BIKES_COMPLETED)):
+        BIKES_COMPLETED_DICT = {}
+        crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(service_order.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s", BIKES_COMPLETED[i])
         for line in crsr:
-            BIKES_COMPLITED_DICT["SERVICES"].append(line)
-        BIKES_COMPLITED[i] = BIKES_COMPLITED_DICT
+            BIKES_COMPLETED_DICT["BIKE_ID"] = line[0]
+            BIKES_COMPLETED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
+            BIKES_COMPLETED_DICT["TOTAL_PRICE"] = line[3]
+            BIKES_COMPLETED_DICT["SERVICES"] = []
+        
+        crsr.execute("SELECT max(End_datetime), min(Start_datetime), Registration_datetime, Completed_datetime FROM service_order WHERE Bike_ID=%s", BIKES_COMPLETED[i])
+        for time in crsr:
+            time_spent = time[0] - time[1]
+            BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
+            BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
+        
+        crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_COMPLETED[i])
+        for line in crsr:
+            BIKES_COMPLETED_DICT["SERVICES"].append(line)
+        BIKES_COMPLETED[i] = BIKES_COMPLETED_DICT
+    return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
 
 
-    return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLITED
+# Update service status to "Completed" for paied service
+def update_completed(BIKE_ID):
+    
+    DT_LOCAL = time_UTC_to_IL()
+    DATA = [DT_LOCAL]    
+    crsr = db.cursor()
+    for i in BIKE_ID:
+        DATA.append(i)
+        crsr.execute("UPDATE service_order SET Service_status = 'completed', Completed_datetime=%s WHERE Bike_ID=%s", DATA)
+        db.commit()
+    return

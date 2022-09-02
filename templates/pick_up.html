@@ -134,7 +134,7 @@ http-equiv="refresh" content="120"
               <tr>
                 <th colspan="4" scope="col">
                   Ooooppssss....<br>
-                  <br>Seems like there are no bikes ready fot pick-up yet.
+                  <br>Seems like there are no bikes ready fot pick-up today.
                   <br>You should book a new srvice appointment first!
                 </th>
               </tr>
@@ -235,7 +235,24 @@ if ({{serviceReady}} === 0) {
 
   {% if SERVICES[2] %}
     <h1>Your Service History</h1>
-    <h2>{{ SERVICES[2] }}</h2>
+    <hr>
+    {% for bike in SERVICES[2] %}
+
+    <p>Bike# {{ bike.BIKE_ID }}</p>
+    <p>Bike Name: {{ bike.BIKE_NAME }}</p>
+    {% for service in bike.SERVICES %}
+    <p>Service #{{ service[0] }}: {{ service[1] }}. Service price: {{ service[2] }}$. Finished on: {{ service[3] }}</p>
+    {% endfor %}
+    <p>Total Service Price: {{ bike.TOTAL_PRICE }}$. Total Service Time: {{ bike.TOTAL_TIME }}(H:M:S)</p>
+    <p>Entered: {{ bike.IN_OUT_TIME[0] }}, Picked: {{ bike.IN_OUT_TIME[1] }}</p>
+    <hr>
+    
+    {% endfor %}
+
+
+  {% else %}
+  <h1>New User?</h1>
   {% endif %}
+
 
 {% endblock %}

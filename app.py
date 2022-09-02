@@ -4,7 +4,7 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed
 import smtplib
 import random
 from email.message import EmailMessage
@@ -354,7 +354,6 @@ def pick():
     # Show connected User Full Name
     FULLNAME = fullName()
     USER_ID = [session["user_id"]]
-    SERVICE_HISTORY = []
 
     # Refresh page date
     REFRESH = display_services()
@@ -376,12 +375,14 @@ def payment():
     USER_ID = [session["user_id"]]
     
     if request.method == "POST":
+        
+        # Send list of "Paied services" to status update
         Bike_ID = request.form.getlist("pay")
-        print(Bike_ID)
-        return render_template("payment.html", FULLNAME=FULLNAME, PAY=Bike_ID)
+        COMPLETED = update_completed(Bike_ID)     
+        return redirect("/pick_up")
 
 
-    return redirect("/pick_up")
+    return render_template("payment.html", FULLNAME=FULLNAME)
 
 
 #--------------------------------------------------------------------------------- Account
