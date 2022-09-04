@@ -183,3 +183,10 @@ span
 {
     padding-bottom: 100px;
 }
+
+.center
+{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}

@@ -133,7 +133,6 @@ http-equiv="refresh" content="120"
             <thead class="table-dark" style="border: 2px solid black; font-size: small;">
               <tr>
                 <th colspan="4" scope="col">
-                  Ooooppssss....<br>
                   <br>Seems like there are no bikes ready fot pick-up today.
                   <br>You should book a new srvice appointment first!
                 </th>
@@ -234,25 +233,81 @@ if ({{serviceReady}} === 0) {
 {% block main %}
 
   {% if SERVICES[2] %}
+
     <h1>Your Service History</h1>
     <hr>
     {% for bike in SERVICES[2] %}
+      <div class="accordion accordion-flush" style="font-size: small;" id="accordionFlushExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" style="text-decoration: none;" id="flush-heading_{{loop.index}}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_{{loop.index}}" aria-expanded="false" aria-controls="flush-collapseOne">
+            <strong>{{ bike.BIKE_NAME }}</strong> &nbsp &nbsp Service Date: {{ bike.IN_OUT_TIME[0] }}
+            </button>
+          </h2>
 
-    <p>Bike# {{ bike.BIKE_ID }}</p>
-    <p>Bike Name: {{ bike.BIKE_NAME }}</p>
-    {% for service in bike.SERVICES %}
-    <p>Service #{{ service[0] }}: {{ service[1] }}. Service price: {{ service[2] }}$. Finished on: {{ service[3] }}</p>
+          <div id="flush-collapse_{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+            <div class="accordion-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Bike #</th>
+                    <th scope="col">Service #</th>
+                    <th scope="col">Service</th>
+                    <th scope="col">Service end date</th>
+                    <th scope="col">Price</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for service in bike.SERVICES %}
+                    <tr>
+                      <th scope="row">{{loop.index}}</th>
+                      <td>{{ bike.BIKE_ID }}</td>
+                      <td>{{ service[0] }}</td>
+                      <td>{{ service[1] }}</td>
+                      <td>{{ service[3] }}</td>
+                      <td>{{ service[2] }}$</td>
+                    </tr>
+                  {% endfor %}
+
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
+                      <th scope="col">Total Service Time: (H:M:S)</th>
+                      <th scope="col">Pick up date</th>
+                      <th scope="col">Total Service Price</th>
+                    </tr>
+
+                    <tr>
+                      <th scope="row"></th>
+                      <th scope="row"></th>
+                      <th scope="row"></th>
+                      <th scope="row">{{ bike.TOTAL_TIME }}</th>
+                      <th scope="row">{{ bike.IN_OUT_TIME[1] }}</th>
+                      <th scope="row">{{ bike.TOTAL_PRICE }}$</th>
+                    </tr>
+                  </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-    <p>Total Service Price: {{ bike.TOTAL_PRICE }}$. Total Service Time: {{ bike.TOTAL_TIME }}(H:M:S)</p>
-    <p>Entered: {{ bike.IN_OUT_TIME[0] }}, Picked: {{ bike.IN_OUT_TIME[1] }}</p>
-    <hr>
-    
-    {% endfor %}
+
+
+
+
 
 
   {% else %}
-  <h1>New User?</h1>
+
+  <div class="container-fluid center header">
+    <strong>Looks like it's your first time in our workshop.</strong> <br> On your next visit, your service history will be shown here.
+  </div>
+
+
   {% endif %}
-
-
 {% endblock %}
