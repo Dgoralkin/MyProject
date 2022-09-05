@@ -571,21 +571,22 @@ def display_user_service_status(USER_ID):
 def update_completed(BIKE_ID):
     
     DT_LOCAL = time_UTC_to_IL()
-    
-    # Chech "Service_batch" position in "orders_history" Table
+    INFO = []
     crsr_service_order = db.cursor()
     crsr_orders_history = db.cursor()
     
-    crsr_orders_history.execute("SELECT COUNT(Service_batch) FROM orders_history")
+    # Chech "Service_batch" position in "orders_history" Table
+    crsr_orders_history.execute("Select MAX(Service_batch) FROM orders_history")
     read_batch = crsr_orders_history.fetchone()
+    if read_batch[0] == None:
+        BATCH_ID = 1
+    else:
+        BATCH_ID = read_batch[0] + 1
     crsr_orders_history.close()
-    BATCH_ID = read_batch[0] + 1
-    INFO = []
     
-    # Read and update data from "service_order"
+    # Read and update data from "service_order" & delete completed service from "service_order" table
     for i in BIKE_ID:
         BIKE_ID = [i]
-        print(BIKE_ID)
         crsr_service_order.execute("Select * FROM service_order WHERE Bike_ID=%s AND Service_status = 'ready' ORDER BY Bike_ID", BIKE_ID)
         for service in crsr_service_order:
             service_list = list(service)
@@ -602,5 +603,4 @@ def update_completed(BIKE_ID):
         crsr.execute("INSERT INTO orders_history (Service_ID, Service_batch, User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Completed_datetime, Service_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", INFO[i])
         db.commit()
         
-
     return
