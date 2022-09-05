@@ -6,7 +6,6 @@ Pick up
 
 
 {% block Refresh %}
-http-equiv="refresh" content="120"
 {% endblock %}
 <!-- http-equiv="refresh" content="120" -->
 
@@ -222,12 +221,7 @@ if ({{serviceReady}} === 0) {
   document.getElementById("pay_form_button").style.display = "none";
 }
 </script>
-
 {% endblock %}
-
-
-
-
 
 
 {% block main %}
@@ -297,17 +291,10 @@ if ({{serviceReady}} === 0) {
       </div>
     {% endfor %}
 
-
-
-
-
-
   {% else %}
-
   <div class="container-fluid center header">
     <strong>Looks like it's your first time in our workshop.</strong> <br> On your next visit, your service history will be shown here.
   </div>
-
-
   {% endif %}
+
 {% endblock %}

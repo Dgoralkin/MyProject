@@ -9,8 +9,8 @@ from functools import wraps
 from pytz import timezone
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
-open_hours = dt.time(4, 00, 0, 0)         # 09:00:00
-close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
+open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
+close_hours = dt.time(23, 59, 0, 0)       # 21:00:00
 
 
 # Udjust app's server timezone for GMT+3 (Israel)
@@ -42,6 +42,7 @@ def create_tables():
         all_bikes = 0
         bikes = 0
         users = 0
+        orders_history = 0
         service_order = 0
         services = 0
         for table in tables:
@@ -49,6 +50,8 @@ def create_tables():
                 all_bikes += 1
             if ("bikes" in table):
                 bikes += 1
+            if ("orders_history" in table):
+                orders_history += 1
             if ("users" in table):
                 users += 1
             if ("service_order" in table):
@@ -86,6 +89,10 @@ def create_tables():
         if (bikes == 0):
             crsr.execute("CREATE TABLE bikes (ID int unsigned NOT NULL AUTO_INCREMENT, cust_id int NOT NULL, brand int NOT NULL, model varchar(55) NOT NULL, model_year int NOT NULL, PRIMARY KEY (ID))")
             print("Table bikes Created")
+            
+        if (orders_history == 0):
+            crsr.execute("CREATE TABLE orders_history (Service_ID int unsigned NOT NULL unique, Service_batch int unsigned, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, completed_datetime datetime, Service_status varchar(15) DEFAULT 'queued', PRIMARY KEY (Service_ID))")
+            print("Table orders_history Created")
         
         if (service_order == 0):
             crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Completed_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
@@ -560,14 +567,40 @@ def display_user_service_status(USER_ID):
     return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
 
 
-# Update service status to "Completed" for paied service
+# Update service status to "Completed" for paied service and move them to "orders_history" (history) table
 def update_completed(BIKE_ID):
     
     DT_LOCAL = time_UTC_to_IL()
-    DATA = [DT_LOCAL]    
-    crsr = db.cursor()
+    
+    # Chech "Service_batch" position in "orders_history" Table
+    crsr_service_order = db.cursor()
+    crsr_orders_history = db.cursor()
+    
+    crsr_orders_history.execute("SELECT COUNT(Service_batch) FROM orders_history")
+    read_batch = crsr_orders_history.fetchone()
+    crsr_orders_history.close()
+    BATCH_ID = read_batch[0] + 1
+    INFO = []
+    
+    # Read and update data from "service_order"
     for i in BIKE_ID:
-        DATA.append(i)
-        crsr.execute("UPDATE service_order SET Service_status = 'completed', Completed_datetime=%s WHERE Bike_ID=%s", DATA)
+        BIKE_ID = [i]
+        print(BIKE_ID)
+        crsr_service_order.execute("Select * FROM service_order WHERE Bike_ID=%s AND Service_status = 'ready' ORDER BY Bike_ID", BIKE_ID)
+        for service in crsr_service_order:
+            service_list = list(service)
+            service_list.insert(1, BATCH_ID)
+            service_list[11] = DT_LOCAL
+            service_list[12] = 'completed'
+            INFO.append(service_list)
+        crsr_service_order.execute("DELETE FROM service_order WHERE Bike_ID = %s", BIKE_ID)
         db.commit()
+
+    # Insert updated data into "orders_history"
+    crsr = db.cursor()
+    for i in range(len(INFO)):
+        crsr.execute("INSERT INTO orders_history (Service_ID, Service_batch, User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Completed_datetime, Service_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", INFO[i])
+        db.commit()
+        
+
     return
