@@ -483,11 +483,12 @@ def display_user_service_status(USER_ID):
     BIKES = []
     BIKES_READY = []
     BIKES_INSERVICE = []
-    BIKES_COMPLETED = []
+    
     
     # Find all distinct bikes per user in service_order
     crsr = db.cursor()
     crsr2 = db.cursor()
+    crsr3 = db.cursor()
     crsr.execute("SELECT distinct Bike_ID FROM service_order WHERE User_ID = %s", USER_ID)
     for Bike in crsr:
         BIKES.append(Bike)
@@ -504,10 +505,7 @@ def display_user_service_status(USER_ID):
         if counter == line[1]:
             BIKES_READY.append(BIKES[i])
         else:
-            if line[2] == 'completed':
-                BIKES_COMPLETED.append(BIKES[i])
-            else:
-                BIKES_INSERVICE.append(BIKES[i])
+            BIKES_INSERVICE.append(BIKES[i])
     crsr2.close()
     
     # Gather summarized info for every ready for pick-up bike from "service_order" table     
@@ -543,27 +541,48 @@ def display_user_service_status(USER_ID):
                 line = (line_tmp)
             BIKES_INSERVICE_DICT["SERVICES"].append(line)
         BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
+    
+    BIKES_COMPLETED = []
+    # Gather summarized info for every completed order batch from "orders_history" table
+    SERVICE_BATCH = []
+    
+    # Find all service batches/user
+    crsr.execute("SELECT DISTINCT Service_batch FROM orders_history WHERE User_ID = %s", USER_ID)
+    for batch in crsr:
         
-    # Gather summarized info for every completed bike from "service_order" table     
-    for i in range(len(BIKES_COMPLETED)):
+        SERVICE_BATCH.append(batch)
+        print("SERVICE_BATCH:", SERVICE_BATCH)
+        print("SERVICE_BATCH len:", len(SERVICE_BATCH))
+    
+    for item in range(len(SERVICE_BATCH)):
         BIKES_COMPLETED_DICT = {}
-        crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(service_order.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s", BIKES_COMPLETED[i])
-        for line in crsr:
-            BIKES_COMPLETED_DICT["BIKE_ID"] = line[0]
-            BIKES_COMPLETED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
-            BIKES_COMPLETED_DICT["TOTAL_PRICE"] = line[3]
-            BIKES_COMPLETED_DICT["SERVICES"] = []
+        print("item:", item)
+        crsr.execute("SELECT DISTINCT Bike_ID FROM orders_history WHERE Service_batch = %s", SERVICE_BATCH[item])
+        for BIKE_ID in crsr:
+            #HERE!!!
+            print("BIKE_ID", BIKE_ID)
+            crsr3.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(orders_history.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s", BIKE_ID)
+            for line in crsr3:
+                print("line", line)
+                BIKES_COMPLETED_DICT["BIKE_ID"] = line[0]
+                BIKES_COMPLETED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
+                BIKES_COMPLETED_DICT["TOTAL_PRICE"] = line[3]
+                BIKES_COMPLETED_DICT["SERVICES"] = []
         
-        crsr.execute("SELECT max(End_datetime), min(Start_datetime), Registration_datetime, Completed_datetime FROM service_order WHERE Bike_ID=%s", BIKES_COMPLETED[i])
-        for time in crsr:
-            time_spent = time[0] - time[1]
-            BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
-            BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
+            crsr3.execute("SELECT max(End_datetime), min(Start_datetime), Registration_datetime, Completed_datetime FROM orders_history WHERE Bike_ID=%s", BIKE_ID)
+            for time in crsr3:
+                time_spent = time[0] - time[1]
+                BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
+                BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
+    
+            crsr3.execute("SELECT orders_history.Service_ID, services.Service_description, orders_history.Service_price, orders_history.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKE_ID)
+            for line in crsr3:
+                BIKES_COMPLETED_DICT["SERVICES"].append(line)
+            BIKES_COMPLETED.append(BIKES_COMPLETED_DICT)
+            print(BIKES_COMPLETED)
         
-        crsr.execute("SELECT service_order.Service_ID, services.Service_description, service_order.Service_price, service_order.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKES_COMPLETED[i])
-        for line in crsr:
-            BIKES_COMPLETED_DICT["SERVICES"].append(line)
-        BIKES_COMPLETED[i] = BIKES_COMPLETED_DICT
+        
+    BIKES_COMPLETED2 = []
     return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
 
 
