@@ -488,7 +488,7 @@ def display_user_service_status(USER_ID):
     # Find all distinct bikes per user in service_order
     crsr = db.cursor()
     crsr2 = db.cursor()
-    crsr3 = db.cursor()
+    crsr_bike = db.cursor()
     crsr.execute("SELECT distinct Bike_ID FROM service_order WHERE User_ID = %s", USER_ID)
     for Bike in crsr:
         BIKES.append(Bike)
@@ -542,48 +542,82 @@ def display_user_service_status(USER_ID):
             BIKES_INSERVICE_DICT["SERVICES"].append(line)
         BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
     
-    BIKES_COMPLETED = []
-    # Gather summarized info for every completed order batch from "orders_history" table
-    SERVICE_BATCH = []
     
-    # Find all service batches/user
+    # Gather summarized info for every completed order batch from "orders_history" table
+    # Gather summarized info for every completed order batch from "orders_history" table
+    # Gather summarized info for every completed order batch from "orders_history" table
+
+    # Find amount of (Batches) per user
+    BATCHES = 0
+    
+    # Find all service dates (Batches) per user
+    
+    SERVICE_HISTORY = {}
+    batches = []
     crsr.execute("SELECT DISTINCT Service_batch FROM orders_history WHERE User_ID = %s", USER_ID)
     for batch in crsr:
-        
-        SERVICE_BATCH.append(batch)
-        print("SERVICE_BATCH:", SERVICE_BATCH)
-        print("SERVICE_BATCH len:", len(SERVICE_BATCH))
+        #print("1 - batch: ", batch)
+        batches.append(batch)
+        SERVICE_HISTORY[batch[0]] = []
+        BATCHES += 1
+    print()
     
-    for item in range(len(SERVICE_BATCH)):
-        BIKES_COMPLETED_DICT = {}
-        print("item:", item)
-        crsr.execute("SELECT DISTINCT Bike_ID FROM orders_history WHERE Service_batch = %s", SERVICE_BATCH[item])
-        for BIKE_ID in crsr:
-            #HERE!!!
-            print("BIKE_ID", BIKE_ID)
-            crsr3.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(orders_history.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s", BIKE_ID)
-            for line in crsr3:
-                print("line", line)
-                BIKES_COMPLETED_DICT["BIKE_ID"] = line[0]
-                BIKES_COMPLETED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
-                BIKES_COMPLETED_DICT["TOTAL_PRICE"] = line[3]
-                BIKES_COMPLETED_DICT["SERVICES"] = []
-        
-            crsr3.execute("SELECT max(End_datetime), min(Start_datetime), Registration_datetime, Completed_datetime FROM orders_history WHERE Bike_ID=%s", BIKE_ID)
-            for time in crsr3:
-                time_spent = time[0] - time[1]
-                BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
-                BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
     
-            crsr3.execute("SELECT orders_history.Service_ID, services.Service_description, orders_history.Service_price, orders_history.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s order by End_datetime", BIKE_ID)
-            for line in crsr3:
+    # Find all bikes in each batch for every Batch
+    for bike_ID in batches:
+        crsr.execute("SELECT COUNT(DISTINCT Bike_ID) FROM orders_history WHERE Service_batch = %s", bike_ID)
+        count_bikes = crsr.fetchone()
+        #print("2 - count_bikes: ", count_bikes[0])
+           
+    
+    # Insert bike info into SERVICE_HISTORY dict
+        data_tmp = []
+        crsr.execute("SELECT DISTINCT Bike_ID, Service_batch FROM orders_history WHERE Service_batch = %s", bike_ID)
+        for batch_bike in crsr:
+            #print("3 - batch, bike_ID: ", batch_bike[1], batch_bike[0])
+            
+            # Insert bike info into SERVICE_HISTORY dict
+            data_tmp.append(batch_bike[0])
+            SERVICE_HISTORY[batch_bike[1]] = data_tmp
+    
+    # Create and fill BIKES_COMPLETED array to store and display data @ pick_up.html
+    BIKES_COMPLETED = []
+    
+    for i in range(BATCHES):
+        tmparray = []
+        for y in range(len(SERVICE_HISTORY[i+1])):
+            BIKES_COMPLETED_DICT = {}
+
+            BIKE_ID = SERVICE_HISTORY[i+1][y]
+            crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(orders_history.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s", [BIKE_ID])
+            line = crsr.fetchone()
+            
+            BIKES_COMPLETED_DICT["BIKE_ID"] = line[0]
+            BIKES_COMPLETED_DICT["BIKE_NAME"] = line[1] + " " + line[2]
+            BIKES_COMPLETED_DICT["TOTAL_PRICE"] = line[3]
+            BIKES_COMPLETED_DICT["SERVICES"] = []
+            
+            crsr.execute("SELECT max(End_datetime), min(Start_datetime), Registration_datetime, Completed_datetime FROM orders_history WHERE Bike_ID=%s", [BIKE_ID])
+            time = crsr.fetchone()
+            time_spent = time[0] - time[1]
+            BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
+            BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
+            
+            crsr.execute("SELECT orders_history.Service_ID, services.Service_description, orders_history.Service_price, orders_history.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s order by End_datetime", [BIKE_ID])
+            for line in crsr:
                 BIKES_COMPLETED_DICT["SERVICES"].append(line)
-            BIKES_COMPLETED.append(BIKES_COMPLETED_DICT)
-            print(BIKES_COMPLETED)
+            
+            
+            
+            #print(BIKES_COMPLETED_DICT)
+            tmparray.append(BIKES_COMPLETED_DICT)
+        BIKES_COMPLETED.append(tmparray)
         
-        
-    BIKES_COMPLETED2 = []
+    print(BIKES_COMPLETED)
+    
     return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
+
+
 
 
 # Update service status to "Completed" for paied service and move them to "orders_history" (history) table

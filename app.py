@@ -372,7 +372,6 @@ def payment():
     
     # Show connected User Full Name
     FULLNAME = fullName()
-    USER_ID = [session["user_id"]]
     
     if request.method == "POST":
         

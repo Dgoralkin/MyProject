@@ -6,7 +6,6 @@ Pick up
 
 
 {% block Refresh %}
-http-equiv="refresh" content="120"
 {% endblock %}
 <!-- http-equiv="refresh" content="120" -->
 
@@ -229,67 +228,14 @@ if ({{serviceReady}} === 0) {
 
   {% if SERVICES[2] %}
 
-    <h1>Your Service History</h1>
-    <hr>
-    {% for bike in SERVICES[2] %}
-      <div class="accordion accordion-flush" style="font-size: small;" id="accordionFlushExample">
-        <div class="accordion-item">
-          <h2 class="accordion-header" style="text-decoration: none;" id="flush-heading_{{loop.index}}">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse_{{loop.index}}" aria-expanded="false" aria-controls="flush-collapseOne">
-            <strong>{{ bike.BIKE_NAME }}</strong> &nbsp &nbsp Service Date: {{ bike.IN_OUT_TIME[0] }}
-            </button>
-          </h2>
+    {% for item in SERVICES[2] %}
+      
+      {% for line in item %}
+        {{ line }}.
+        <br>
+      {% endfor %}
+      <hr>
 
-          <div id="flush-collapse_{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
-            <div class="accordion-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Bike #</th>
-                    <th scope="col">Service #</th>
-                    <th scope="col">Service</th>
-                    <th scope="col">Service end date</th>
-                    <th scope="col">Price</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {% for service in bike.SERVICES %}
-                    <tr>
-                      <th scope="row">{{loop.index}}</th>
-                      <td>{{ bike.BIKE_ID }}</td>
-                      <td>{{ service[0] }}</td>
-                      <td>{{ service[1] }}</td>
-                      <td>{{ service[3] }}</td>
-                      <td>{{ service[2] }}$</td>
-                    </tr>
-                  {% endfor %}
-
-                  <thead>
-                    <tr>
-                      <th scope="col"></th>
-                      <th scope="col"></th>
-                      <th scope="col"></th>
-                      <th scope="col">Total Service Time: (H:M:S)</th>
-                      <th scope="col">Pick up date</th>
-                      <th scope="col">Total Service Price</th>
-                    </tr>
-
-                    <tr>
-                      <th scope="row"></th>
-                      <th scope="row"></th>
-                      <th scope="row"></th>
-                      <th scope="row">{{ bike.TOTAL_TIME }}</th>
-                      <th scope="row">{{ bike.IN_OUT_TIME[1] }}</th>
-                      <th scope="row">{{ bike.TOTAL_PRICE }}$</th>
-                    </tr>
-                  </thead>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
     {% endfor %}
 
   {% else %}
