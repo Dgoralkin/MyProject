@@ -230,22 +230,21 @@ if ({{serviceReady}} === 0) {
 
     <h1>Your Service History</h1>
     {% for item in SERVICES[2] %}
-      {% for line in item %}
         <hr>
-        <div class="accordion accordion-flush" style="font-size: small;" id="accordionFlushExample{{ line.LOOP_INDEX }}">
+        <div class="accordion accordion-flush" style="font-size: small;" id="accordionFlushExample_{{item[0].LOOP_INDEX}}">
           <div class="accordion-item">
-            <h2 class="accordion-header" style="text-decoration: none;" id="flush-headingOne{{ line.LOOP_INDEX }}">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne{{ line.LOOP_INDEX }}" aria-expanded="false" aria-controls="flush-collapseOne{{ line.LOOP_INDEX }}">
-              <strong>Service Order Date:</strong> &nbsp {{ line.IN_OUT_TIME[0] }}
+            <h2 class="accordion-header" style="text-decoration: none;" id="flush-headingOne_{{item[0].LOOP_INDEX}}">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne_{{item[0].LOOP_INDEX}}" aria-expanded="false" aria-controls="flush-collapseOne_{{item[0].LOOP_INDEX}}">
+              <strong>Service Order Date:</strong> &nbsp  {{ item[0].IN_OUT_TIME[0] }} 
               </button>
             </h2>
-
-            <div id="flush-collapseOne{{ line.LOOP_INDEX }}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne{{ line.LOOP_INDEX }}" data-bs-parent="#accordionFlushExample{{ line.LOOP_INDEX }}">
+            {% for line in item %}
+            <div id="flush-collapseOne_{{item[0].LOOP_INDEX}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne_{{item[0].LOOP_INDEX}}" data-bs-parent="#accordionFlushExample_{{item[0].LOOP_INDEX}}">
               <div class="accordion-body">
                 <table class="table">
                   <thead>
                     <tr>
-                      <th scope="col" colspan="6">Bike: <strong> {{ line.BIKE_NAME }} </strong></th>
+                      <th scope="col" colspan="6">Bike: <span class="h1"> {{ line.BIKE_NAME }} </span></th>
                     </tr>
                     <tr>
                       <th scope="col"></th>
@@ -291,9 +290,25 @@ if ({{serviceReady}} === 0) {
                 </table>
               </div>
             </div>
+            <hr>
+            {% endfor %}
+
+            <div id="flush-collapseOne_{{item[0].LOOP_INDEX}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne_{{item[0].LOOP_INDEX}}" data-bs-parent="#accordionFlushExample_{{item[0].LOOP_INDEX}}">
+              <div class="accordion-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      {% for item in SERVICES[2] %}
+                        <th scope="col" colspan="6" class="gd_sum h1"><strong>Service Grand Total Price: {{ item[0].GRAND_TOTAL_PRICE[0] }}$ </strong></th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-      {% endfor %}
+      
     {% endfor %}
   {% else %}
   <div class="container-fluid center header">

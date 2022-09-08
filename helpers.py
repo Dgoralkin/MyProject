@@ -568,7 +568,7 @@ def display_user_service_status(USER_ID):
             # Insert bike info into SERVICE_HISTORY dict
             data_tmp.append(batch_bike[0])
             SERVICE_HISTORY[batch_bike[1]] = data_tmp
-    
+                
     # Create and fill BIKES_COMPLETED array to store and display data @ pick_up.html
     BIKES_COMPLETED = []
     
@@ -591,16 +591,21 @@ def display_user_service_status(USER_ID):
             time_spent = time[0] - time[1]
             BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
             BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
-            BIKES_COMPLETED_DICT["LOOP_INDEX"] = random.randint(100, 1000)
+            
             
             crsr.execute("SELECT orders_history.Service_ID, services.Service_description, orders_history.Service_price, orders_history.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s AND Service_batch = %s order by End_datetime", BIKE_ID)
             for line in crsr:
                 BIKES_COMPLETED_DICT["SERVICES"].append(line)
-                tmparray.append(BIKES_COMPLETED_DICT)
+                
+            crsr.execute("SELECT sum(Service_price) FROM orders_history WHERE Service_batch = %s", [BIKE_ID[1]])
+            sum_price = crsr.fetchone()
+            BIKES_COMPLETED_DICT["GRAND_TOTAL_PRICE"] = sum_price
+            BIKES_COMPLETED_DICT["LOOP_INDEX"] = random.randint(100, 1000)
+            
+            tmparray.append(BIKES_COMPLETED_DICT)
         BIKES_COMPLETED.append(tmparray)
-        
-    print(BIKES_COMPLETED)
-    
+ 
+    #print(BIKES_COMPLETED)
     return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
 
 
