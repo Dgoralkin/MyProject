@@ -2,6 +2,7 @@ import os
 import mysql.connector
 import csv
 import datetime as dt
+import random
 from datetime import datetime
 from datetime import timedelta
 from flask import redirect, render_template, request, session
@@ -542,40 +543,28 @@ def display_user_service_status(USER_ID):
             BIKES_INSERVICE_DICT["SERVICES"].append(line)
         BIKES_INSERVICE[i] = BIKES_INSERVICE_DICT
     
-    
     # Gather summarized info for every completed order batch from "orders_history" table
-    # Gather summarized info for every completed order batch from "orders_history" table
-    # Gather summarized info for every completed order batch from "orders_history" table
-
     # Find amount of (Batches) per user
     BATCHES = 0
     
     # Find all service dates (Batches) per user
-    
     SERVICE_HISTORY = {}
     batches = []
     crsr.execute("SELECT DISTINCT Service_batch FROM orders_history WHERE User_ID = %s", USER_ID)
     for batch in crsr:
-        #print("1 - batch: ", batch)
         batches.append(batch)
         SERVICE_HISTORY[batch[0]] = []
-        BATCHES += 1
-    print()
-    
+        BATCHES += 1    
     
     # Find all bikes in each batch for every Batch
     for bike_ID in batches:
         crsr.execute("SELECT COUNT(DISTINCT Bike_ID) FROM orders_history WHERE Service_batch = %s", bike_ID)
         count_bikes = crsr.fetchone()
-        #print("2 - count_bikes: ", count_bikes[0])
            
-    
     # Insert bike info into SERVICE_HISTORY dict
         data_tmp = []
         crsr.execute("SELECT DISTINCT Bike_ID, Service_batch FROM orders_history WHERE Service_batch = %s", bike_ID)
         for batch_bike in crsr:
-            #print("3 - batch, bike_ID: ", batch_bike[1], batch_bike[0])
-            
             # Insert bike info into SERVICE_HISTORY dict
             data_tmp.append(batch_bike[0])
             SERVICE_HISTORY[batch_bike[1]] = data_tmp
@@ -589,7 +578,6 @@ def display_user_service_status(USER_ID):
             BIKES_COMPLETED_DICT = {}
 
             BIKE_ID = [SERVICE_HISTORY[i+1][y], i + 1]
-            print(i + 1)
             crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(orders_history.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s AND Service_batch = %s", BIKE_ID)
             line = crsr.fetchone()
             
@@ -603,22 +591,17 @@ def display_user_service_status(USER_ID):
             time_spent = time[0] - time[1]
             BIKES_COMPLETED_DICT["TOTAL_TIME"] = time_spent
             BIKES_COMPLETED_DICT["IN_OUT_TIME"] = [time[2], time[3]]
+            BIKES_COMPLETED_DICT["LOOP_INDEX"] = random.randint(100, 1000)
             
             crsr.execute("SELECT orders_history.Service_ID, services.Service_description, orders_history.Service_price, orders_history.End_datetime FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s AND Service_batch = %s order by End_datetime", BIKE_ID)
             for line in crsr:
                 BIKES_COMPLETED_DICT["SERVICES"].append(line)
-            
-            
-            
-            #print(BIKES_COMPLETED_DICT)
-            tmparray.append(BIKES_COMPLETED_DICT)
+                tmparray.append(BIKES_COMPLETED_DICT)
         BIKES_COMPLETED.append(tmparray)
         
-    #print(BIKES_COMPLETED)
+    print(BIKES_COMPLETED)
     
     return BIKES_READY, BIKES_INSERVICE, BIKES_COMPLETED
-
-
 
 
 # Update service status to "Completed" for paied service and move them to "orders_history" (history) table
