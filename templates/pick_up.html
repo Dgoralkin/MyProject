@@ -231,7 +231,25 @@ if ({{serviceReady}} === 0) {
     {% for item in SERVICES[2] %}
       
       {% for line in item %}
-        {{ line }}.
+        {{ line.BIKE_ID }}
+        <br>
+        {{ line.BIKE_NAME }}
+        <br>
+        {{ line.TOTAL_PRICE }}
+        <br>
+        {% for service in line.SERVICES %}
+          Service_ID: {{ service[0] }}
+          Service_procedure: {{ service[1] }}
+          Service_price: {{ service[2] }}
+          End_datetime: {{ service[3] }}
+          <br>
+        {% endfor %}
+        <br>
+        Total Service Time (H:M:S) : {{ line.TOTAL_TIME }}
+        <br>
+        Start_datetime: {{ line.IN_OUT_TIME[0] }}
+        <br>
+        completed_datetime: {{ line.IN_OUT_TIME[1] }}
         <br>
       {% endfor %}
       <hr>
