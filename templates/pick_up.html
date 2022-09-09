@@ -6,6 +6,7 @@ Pick up
 
 
 {% block Refresh %}
+http-equiv="refresh" content="120"
 {% endblock %}
 <!-- http-equiv="refresh" content="120" -->
 
@@ -293,19 +294,10 @@ if ({{serviceReady}} === 0) {
             <hr>
             {% endfor %}
 
-            <div id="flush-collapseOne_{{item[0].LOOP_INDEX}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne_{{item[0].LOOP_INDEX}}" data-bs-parent="#accordionFlushExample_{{item[0].LOOP_INDEX}}">
-              <div class="accordion-body">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      {% for item in SERVICES[2] %}
-                        <th scope="col" colspan="6" class="gd_sum h1"><strong>Service Grand Total Price: {{ item[0].GRAND_TOTAL_PRICE[0] }}$ </strong></th>
-                      {% endfor %}
-                    </tr>
-                  </thead>
-                </table>
-              </div>
+            <div class="gd_sum h1">
+              <p><strong>Service Grand Total Price: {{ item[0].GRAND_TOTAL_PRICE[0] }}$ </strong></p>
             </div>
+
           </div>
         </div>
       

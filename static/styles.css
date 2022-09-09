@@ -192,6 +192,9 @@ span
     font-size: 120%;
     text-decoration: underline;
     text-align: right;
+    padding-bottom: 5px;
+    padding-right: 10px;
+
 }
 
 .table_space_bottom
