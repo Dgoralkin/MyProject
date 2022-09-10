@@ -555,6 +555,8 @@ def display_user_service_status(USER_ID):
         batches.append(batch)
         SERVICE_HISTORY[batch[0]] = []
         BATCHES += 1    
+        
+    
     
     # Find all bikes in each batch for every Batch
     for bike_ID in batches:
@@ -572,12 +574,12 @@ def display_user_service_status(USER_ID):
     # Create and fill BIKES_COMPLETED array to store and display data @ pick_up.html
     BIKES_COMPLETED = []
     
-    for i in range(BATCHES):
+    for i in SERVICE_HISTORY:
         tmparray = []
-        for y in range(len(SERVICE_HISTORY[i+1])):
+        for y in range(len(SERVICE_HISTORY[i])):
             BIKES_COMPLETED_DICT = {}
 
-            BIKE_ID = [SERVICE_HISTORY[i+1][y], i + 1]
+            BIKE_ID = [SERVICE_HISTORY[i][y], i]
             crsr.execute("SELECT bikes.ID, all_bikes.brand, bikes.model, sum(orders_history.Service_price) FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN orders_history ON bikes.ID = orders_history.Bike_ID JOIN services ON services.Service_ID = orders_history.Service_procedure WHERE Bike_ID=%s AND Service_batch = %s", BIKE_ID)
             line = crsr.fetchone()
             
