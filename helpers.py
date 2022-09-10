@@ -5,13 +5,19 @@ import datetime as dt
 import random
 from datetime import datetime
 from datetime import timedelta
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, session
 from functools import wraps
 from pytz import timezone
+from email.message import EmailMessage
+import smtplib
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
-open_hours = dt.time(9, 0, 0, 0)         # 09:00:00
-close_hours = dt.time(21, 00, 0, 0)       # 21:00:00
+open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
+close_hours = dt.time(23, 59, 0, 0)       # 21:00:00
+
+# Configure Email Address & Password for sending Emails
+EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
+EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
 
 
 # Udjust app's server timezone for GMT+3 (Israel)
@@ -96,7 +102,7 @@ def create_tables():
             print("Table orders_history Created")
         
         if (service_order == 0):
-            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Completed_datetime datetime, Service_status varchar(15) DEFAULT 'queued',PRIMARY KEY (Service_ID))")
+            crsr.execute("CREATE TABLE service_order (Service_ID int unsigned NOT NULL unique AUTO_INCREMENT, User_ID int unsigned NOT NULL, Bike_ID int unsigned NOT NULL, Service_procedure int unsigned NOT NULL, Service_notes varchar(511), Service_price float(10, 2) NOT NULL, Procedure_time int unsigned NOT NULL, Registration_datetime datetime, Start_datetime datetime, End_datetime datetime, Completed_datetime datetime, Service_status varchar(15) DEFAULT 'queued', Emailed tinyint DEFAULT 0, PRIMARY KEY (Service_ID))")
             print("Table service_order Created")
         
         if (services == 0):
@@ -459,7 +465,8 @@ def display_services():
     counter = count
     for i in range (counter):
         SERVICE_READY.append(SERVICE_READY_REV[counter - 1 - i])
-
+    
+    
     # Get info for SERVICE_IN_Q
     SERVICE_IN_Q = []
     crsr = db.cursor()
@@ -505,6 +512,10 @@ def display_user_service_status(USER_ID):
                     counter += 1
         if counter == line[1]:
             BIKES_READY.append(BIKES[i])
+                        
+            # Send Email update to client with list of ready for pick up bikes
+            UPDATE = Send_Status_update(BIKES[i])
+            
         else:
             BIKES_INSERVICE.append(BIKES[i])
     crsr2.close()
@@ -523,6 +534,7 @@ def display_user_service_status(USER_ID):
         for line in crsr:
             BIKES_READY_DICT["SERVICES"].append(line)
         BIKES_READY[i] = BIKES_READY_DICT
+    
     
     # Gather summarized info for every unready bike from "service_order" table 
     for i in range(len(BIKES_INSERVICE)):
@@ -634,10 +646,11 @@ def update_completed(BIKE_ID):
         crsr_service_order.execute("Select * FROM service_order WHERE Bike_ID=%s AND Service_status = 'ready' ORDER BY Bike_ID", BIKE_ID)
         for service in crsr_service_order:
             service_list = list(service)
+            service_list.pop()
             service_list.insert(1, BATCH_ID)
             service_list[11] = DT_LOCAL
             service_list[12] = 'completed'
-            INFO.append(service_list)
+            INFO.append(service_list)            
         crsr_service_order.execute("DELETE FROM service_order WHERE Bike_ID = %s", BIKE_ID)
         db.commit()
 
@@ -645,6 +658,42 @@ def update_completed(BIKE_ID):
     crsr = db.cursor()
     for i in range(len(INFO)):
         crsr.execute("INSERT INTO orders_history (Service_ID, Service_batch, User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Completed_datetime, Service_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", INFO[i])
-        db.commit()
+        db.commit()  
+    return
+
+
+
+# Send Email update to client with list of ready for pick up bikes
+def Send_Status_update(BIKES_READY):
+    
+    # Find customer's Email address and send "Ready" notification
+    CUSTOMERS_BIKE_ID = BIKES_READY[0]
+    
+    crsr = db.cursor()
+    crsr.execute("SELECT users.Email, bikes.model FROM users JOIN bikes ON bikes.cust_id = users.ID JOIN service_order ON bikes.cust_id = service_order.User_ID WHERE bikes.ID = %s AND service_order.Emailed = 0 LIMIT 1", [CUSTOMERS_BIKE_ID])
+    for line in crsr:
+        CUSTOMERS_EAMIL = line[0]
+        CUSTOMERS_BIKE = line[1]
+        #print(CUSTOMERS_EAMIL, CUSTOMERS_BIKE, BIKES_READY[0])
+    
+        # Send update Email to user
+        msg = EmailMessage()
+        msg['Subject'] = 'This is a service status update From G-bikes'
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = CUSTOMERS_EAMIL
+        msg.set_content('Your service status just updated to ready!')
+        txt = "We are happy to inform you that your service just finished and your bike <strong>" + str(CUSTOMERS_BIKE) + "</strong> is ready for pick up! <br><br> You can pay upfront by clicking the link: https://final-project-dany.herokuapp.com/pick_up"
+        msg.add_alternative(txt, subtype='html')
         
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
+            smtp.send_message(msg)
+        
+        # Update service Email status to send to prevent double email sending
+        crsr.execute("UPDATE service_order SET Emailed = 1 WHERE Bike_ID = %s", [CUSTOMERS_BIKE_ID])
+        db.commit()
+        print("Email update to:", CUSTOMERS_EAMIL, "Sent!")
+        return
+    
+    
     return

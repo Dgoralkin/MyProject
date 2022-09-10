@@ -4,7 +4,7 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed, Send_Status_update
 import smtplib
 import random
 from email.message import EmailMessage
@@ -23,6 +23,11 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+
+# Configure Email Address & Password for sending Emails
+EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
+EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
 
 @app.after_request
 def after_request(response):
@@ -140,9 +145,6 @@ def register():
         
         # Send verification Email to user
         
-        EMAIL_ADDRESS = os.environ.get('Gmail_smtp_username')
-        EMAIL_PSSWRD = os.environ.get('Gmail_smtp_psswrd')
-        
         msg = EmailMessage()
         msg['Subject'] = 'This is a verification Email From G-bikes'
         msg['From'] = EMAIL_ADDRESS
@@ -222,6 +224,27 @@ def main():
     
     # Send data to display_services function in helpers for sorting for display
     display_service_queue = display_services()
+    
+    # Send Email notification for customers with fully "ready" state bikes
+    db.reconnect()
+    crsr = db.cursor()
+    SERVICED_BIKES = []
+    crsr.execute("SELECT DISTINCT Bike_ID FROM service_order WHERE Service_status = 'ready' AND Emailed = 0")
+    for Bike_ID in crsr:
+        SERVICED_BIKES.append(Bike_ID)
+    print(SERVICED_BIKES)
+    
+    for i in SERVICED_BIKES:
+        print(i)
+        crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s", i)
+        count_services = crsr.fetchone()
+        print(count_services[0])
+        crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s AND Service_status = 'ready'", i)
+        count_ready = crsr.fetchone()
+        print(count_ready[0])
+        if count_services == count_ready:
+            print("Send_Status_update")
+            Send_Status_update(Bike_ID)
         
     # Sends user to main page
     return render_template("main.html", FULLNAME=FULLNAME, SERVICE_RUNNING=display_service_queue[0], SERVICE_READY=display_service_queue[1], SERVICE_IN_Q=display_service_queue[2], WORKING_HOURS=display_service_queue[3])
