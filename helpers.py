@@ -514,7 +514,7 @@ def display_user_service_status(USER_ID):
             BIKES_READY.append(BIKES[i])
                         
             # Send Email update to client with list of ready for pick up bikes
-            UPDATE = Send_Status_update(BIKES[i])
+            send_email_ready_update = validate_ready_for_email()
             
         else:
             BIKES_INSERVICE.append(BIKES[i])
@@ -661,6 +661,38 @@ def update_completed(BIKE_ID):
         db.commit()  
     return
 
+
+# Validate bike service is fully ready and forward to Send_Status_update()
+def validate_ready_for_email():
+    
+    # Send Email notification for customers with fully "ready" state bikes
+    db.reconnect()
+    crsr = db.cursor()
+    SERVICED_BIKES = []
+    # Find all unemailed ready services
+    crsr.execute("SELECT DISTINCT Bike_ID FROM service_order WHERE Service_status = 'ready' AND Emailed = 0")
+    for Bike_ID in crsr:
+        SERVICED_BIKES.append(Bike_ID)
+    print(SERVICED_BIKES)
+    
+    # Verify service is fully "ready"
+    for i in SERVICED_BIKES:
+        print(i)
+        
+        crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s", i)
+        count_procedures = crsr.fetchone()
+        print(count_procedures[0])
+        
+        crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s AND Service_status = 'ready'", i)
+        count_ready = crsr.fetchone()
+        print(count_ready[0])
+        
+        # If service is fully ready, send notification
+        if count_procedures == count_ready:
+            print("Send_Status_update")
+            Send_Status_update(Bike_ID)
+            
+    return
 
 
 # Send Email update to client with list of ready for pick up bikes
