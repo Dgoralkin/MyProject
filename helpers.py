@@ -677,15 +677,12 @@ def validate_ready_for_email():
     
     # Verify service is fully "ready"
     for i in SERVICED_BIKES:
-        print(i)
         
         crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s", i)
         count_procedures = crsr.fetchone()
-        print(count_procedures[0])
         
         crsr.execute("SELECT COUNT(Service_status) FROM service_order WHERE Bike_ID = %s AND Service_status = 'ready'", i)
         count_ready = crsr.fetchone()
-        print(count_ready[0])
         
         # If service is fully ready, send notification
         if count_procedures == count_ready:
