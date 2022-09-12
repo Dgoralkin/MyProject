@@ -378,14 +378,60 @@ def payment():
     FULLNAME = fullName()
     
     if request.method == "POST":
+        try:
+            crsr = db.cursor()
+        except:
+            db.reconnect()
+            crsr = db.cursor()
+            print("Except Block:")
+        finally:
+            PAY_FOR_SERVICES = []
+            PAY_FOR_SERVICES_ADDONS = [0, 0]
+            CUSTOMER_DETAILS = []
+            
+            pay_bike_id = request.form.getlist("pay_bike_id")
+            for id in pay_bike_id:
+                
+                # Get bike's name
+                crsr.execute("SELECT all_bikes.brand, bikes.model FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s limit 1", [id])
+                bike_name = crsr.fetchmany()
+                tmp_array = [id, bike_name[0][0] + " " + bike_name[0][1]]
+
+                # Get bike's service price
+                crsr.execute("SELECT SUM(Service_price) FROM service_order WHERE Bike_ID=%s", [id])
+                total_price = crsr.fetchone()
+                tmp_array.append(total_price[0])
+                
+                PAY_FOR_SERVICES.append(tmp_array)
+                PAY_FOR_SERVICES_ADDONS[1] += total_price[0]
+
+            PAY_FOR_SERVICES_ADDONS[0] = (len(pay_bike_id))
+            
+            # Get customer's details
+            crsr.execute("SELECT CONCAT(users.Fname, ' ', users.Lname) AS fullname, users.Email, users.Address, users.City FROM users JOIN service_order ON users.ID = service_order.User_ID WHERE Bike_ID=%s LIMIT 1", [id])
+            customers_details = crsr.fetchall()
+            CUSTOMER_DETAILS.append(customers_details[0])
+                        
+            return render_template("payment.html", FULLNAME=FULLNAME, PAY_FOR_SERVICES=PAY_FOR_SERVICES, PAY_FOR_SERVICES_ADDONS=PAY_FOR_SERVICES_ADDONS, CUSTOMER_DETAILS=CUSTOMER_DETAILS)
+
+    return redirect("/pick_up")
+
+
+#--------------------------------------------------------------------------------- paid
+@app.route("/paid", methods=["GET", "POST"])
+@login_required
+def paid():
+    
+    if request.method == "POST":
+        # Send list of "Paid services" to status update
+        PAID_SERVICE = request.form.getlist("pay")
+        print("PAID_SERVICE IN Paid: ", PAID_SERVICE)
         
-        # Send list of "Paied services" to status update
-        Bike_ID = request.form.getlist("pay")
-        COMPLETED = update_completed(Bike_ID)     
+        # To be activated later
+        # COMPLETED = update_completed(Bike_ID)
         return redirect("/pick_up")
-
-
-    return render_template("payment.html", FULLNAME=FULLNAME)
+    
+    return redirect("/pick_up")
 
 
 #--------------------------------------------------------------------------------- Account

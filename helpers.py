@@ -673,7 +673,6 @@ def validate_ready_for_email():
     crsr.execute("SELECT DISTINCT Bike_ID FROM service_order WHERE Service_status = 'ready' AND Emailed = 0")
     for Bike_ID in crsr:
         SERVICED_BIKES.append(Bike_ID)
-    print(SERVICED_BIKES)
     
     # Verify service is fully "ready"
     for i in SERVICED_BIKES:
