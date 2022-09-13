@@ -1,7 +1,7 @@
 import os
 import datetime
 import mysql.connector
-from flask import Flask, jsonify, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, session, flash
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed, Send_Status_update, validate_ready_for_email
@@ -349,6 +349,12 @@ def search():
         print("Error in search")
 
 
+# Container for ready for payment bikes passed to @app.route("/paid") if Payment Succeeded.
+Paid_bike_ids = []
+PAY_FOR_SERVICES = []
+PAY_FOR_SERVICES_ADDONS = [0, 0]
+CUSTOMER_DETAILS = []
+
 
 #--------------------------------------------------------------------------------- Pick_up Page
 @app.route("/pick_up", methods=["GET", "POST"])
@@ -376,18 +382,21 @@ def payment():
     
     # Show connected User Full Name
     FULLNAME = fullName()
+    Paid_bike_ids.clear()
     
     if request.method == "POST":
         try:
             crsr = db.cursor()
+            print("Try Block:")
         except:
             db.reconnect()
             crsr = db.cursor()
             print("Except Block:")
         finally:
-            PAY_FOR_SERVICES = []
-            PAY_FOR_SERVICES_ADDONS = [0, 0]
-            CUSTOMER_DETAILS = []
+            
+            PAY_FOR_SERVICES.clear()
+            PAY_FOR_SERVICES_ADDONS[0] = 0
+            PAY_FOR_SERVICES_ADDONS[1] = 0
             
             pay_bike_id = request.form.getlist("pay_bike_id")
             for id in pay_bike_id:
@@ -404,6 +413,9 @@ def payment():
                 
                 PAY_FOR_SERVICES.append(tmp_array)
                 PAY_FOR_SERVICES_ADDONS[1] += total_price[0]
+                
+                # Add bike ID to global container for storing
+                Paid_bike_ids.append(id)
 
             PAY_FOR_SERVICES_ADDONS[0] = (len(pay_bike_id))
             
@@ -422,15 +434,29 @@ def payment():
 @login_required
 def paid():
     
+    print(Paid_bike_ids)
+    
     if request.method == "POST":
         # Send list of "Paid services" to status update
-        PAID_SERVICE = request.form.getlist("pay")
-        print("PAID_SERVICE IN Paid: ", PAID_SERVICE)
+        CARDNUMBER = request.form.get("cardnumber")
+        EXPMONTH = request.form.get("expmonth")
+        EXPYEAR = request.form.get("expyear")
+        CVV = request.form.get("cvv")
+
+        print("Recieved Data: ", CARDNUMBER, EXPMONTH, EXPYEAR, CVV)
         
-        # To be activated later
-        # COMPLETED = update_completed(Bike_ID)
-        return redirect("/pick_up")
-    
+        if len(CARDNUMBER) == 16:
+            print("Payment Succeeded")
+
+            # Card Valid
+            #COMPLETED = update_completed(Paid_bike_ids)
+            flash('Payment Succeeded! You may pick your bike/s. Thank you!')
+            return redirect("/pick_up")
+        else:
+            # return to payment.html page with "Payment Rejected" alert
+            print("Payment Rejected")
+            ERROR_RES = [0]
+            return render_template("payment.html", PAY_FOR_SERVICES=PAY_FOR_SERVICES, PAY_FOR_SERVICES_ADDONS=PAY_FOR_SERVICES_ADDONS, CUSTOMER_DETAILS=CUSTOMER_DETAILS, ERROR_RES=ERROR_RES)
     return redirect("/pick_up")
 
 
