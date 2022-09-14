@@ -1,5 +1,6 @@
 import os
 import datetime
+from re import I
 import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session, flash
 from flask_session import Session
@@ -49,8 +50,8 @@ try:
     if (db):
         print("Connection with server established")
         create_tables()
-except error.OperationalError as err:
-    print("Something went wrong: {}".format(err))
+except:
+    print("ERROR! - Something went wrong!")
     
     
 #--------------------------------------------------------------------------------- /
@@ -132,7 +133,6 @@ def register():
             crsr = db.cursor()
             crsr.execute("SELECT Email FROM users")
             for x in crsr:
-                # print(x[0])
                 if EMAIL.lower() == x[0].lower():
                     print("USER EXIST IN DB")
                     return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
@@ -433,28 +433,42 @@ def payment():
 @app.route("/paid", methods=["GET", "POST"])
 @login_required
 def paid():
-    
-    print(Paid_bike_ids)
-    
+        
     if request.method == "POST":
         # Send list of "Paid services" to status update
         CARDNUMBER = request.form.get("cardnumber")
+        cardlen = len(CARDNUMBER)
         EXPMONTH = request.form.get("expmonth")
         EXPYEAR = request.form.get("expyear")
         CVV = request.form.get("cvv")
-
-        print("Recieved Data: ", CARDNUMBER, EXPMONTH, EXPYEAR, CVV)
         
-        if len(CARDNUMBER) == 16:
-            print("Payment Succeeded")
-
-            # Card Valid
-            #COMPLETED = update_completed(Paid_bike_ids)
-            flash('Payment Succeeded! You may pick your bike/s. Thank you!')
-            return redirect("/pick_up")
+        # Validate card number
+        if cardlen >= 13 and cardlen <= 16:
+            regular = 0
+            double = 0
+            x = cardlen - 1
+            while (x >= 0):
+                regular += int(CARDNUMBER[x])
+                x -= 1
+                if x >= 0:
+                    double_digit = int(CARDNUMBER[x]) * 2
+                    double += int(double_digit // 10)
+                    double += int(double_digit % 10)
+                    x -= 1
+                    
+            if (regular + double)%10 == 0:
+                print("Payment Succeeded")
+                # Card Valid
+                COMPLETED = update_completed(Paid_bike_ids)
+                flash('Payment Succeeded! You may pick your bike/s. Thank you!')
+                return redirect("/pick_up")
+            else:
+                print("Payment Rejected")
+                ERROR_RES = [0]
+                return render_template("payment.html", PAY_FOR_SERVICES=PAY_FOR_SERVICES, PAY_FOR_SERVICES_ADDONS=PAY_FOR_SERVICES_ADDONS, CUSTOMER_DETAILS=CUSTOMER_DETAILS, ERROR_RES=ERROR_RES)
         else:
             # return to payment.html page with "Payment Rejected" alert
-            print("Payment Rejected")
+            print("Invalid credit card number")
             ERROR_RES = [0]
             return render_template("payment.html", PAY_FOR_SERVICES=PAY_FOR_SERVICES, PAY_FOR_SERVICES_ADDONS=PAY_FOR_SERVICES_ADDONS, CUSTOMER_DETAILS=CUSTOMER_DETAILS, ERROR_RES=ERROR_RES)
     return redirect("/pick_up")

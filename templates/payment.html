@@ -162,21 +162,22 @@
                             <input type="text" id="cname" name="cardname" placeholder="John More Doe" pattern="(?=.*[A-Za-z]).{3,}" title="Must contain First name and Last name. letter characters ONLY!" required>
 
                             <label id="ccnumid" for="ccnum">Credit card number</label>
-                            <input type="number" min="4000000000000" step="1" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" pattern="(?=.*\d).{13,16}" title="Must contain 13-16 digits. Number characters ONLY!" required>
-
-                            <label id="expmonthid" for="expmonth">Exp Month</label>
-                            <input type="number" min="1" max="12" step="1" id="expmonth" name="expmonth" placeholder="September" pattern="(?=.*\d).{2}" title="Must contain 2 digits in format: 01 or 11" required>
+                            <input type="number" min="4000000000000" step="1" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444" pattern="(?=.*^\S+$)(?=.*\d).{13,16}" title="Must contain 13-16 digits. Number characters ONLY!" required>
 
                             <div class="row">
+                                <div class="col-50">
+                                    <label id="expmonthid" for="expmonth">Exp Month</label>
+                                    <input type="number" min="1" max="12" step="1" id="expmonth" name="expmonth" placeholder="01-12" pattern="(?=.*\d).{2}" title="Must contain 2 digits in format: 01 or 11" required>
+                                </div>
                                 <div class="col-50">
                                     <label id="expyearid" for="expyear">Exp Year</label>
                                     <input type="number" min="2022" max="9999" id="expyear" name="expyear" placeholder="2022" pattern="(?=.*\d).{4}" title="Must contain 4 digits in format: 2022" required>
                                 </div>
-                                <div class="col-50">
-                                    <label id="cvvid" for="cvv">CVV</label>
-                                    <input type="number" min="100" max="999" step="1" id="cvv" name="cvv" placeholder="352" pattern="(?=.*\d).{3}" title="Must contain 3 digits in format: 123" required >
-                                </div>
                             </div>
+
+                            <label id="cvvid" for="cvv">CVV</label>
+                            <input type="number" min="100" max="999" step="1" id="cvv" name="cvv" placeholder="123" pattern="(?=.*\d).{3}" title="Must contain 3 digits in format: 123" required>
+
                         </div>
                     </div>
                     <input type="submit" value="Continue to checkout" class="btn">
