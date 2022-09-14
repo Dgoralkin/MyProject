@@ -167,16 +167,16 @@
                             <div class="row">
                                 <div class="col-50">
                                     <label id="expmonthid" for="expmonth">Exp Month</label>
-                                    <input type="number" min="1" max="12" step="1" id="expmonth" name="expmonth" placeholder="01-12" pattern="(?=.*\d).{2}" title="Must contain 2 digits in format: 01 or 11" required>
+                                    <input type="number" min="1" max="12" step="1" id="expmonth" name="expmonth" placeholder="Month" pattern="(?=.*\d).{2}" title="Must contain 2 digits in format: 01 or 11" required>
                                 </div>
                                 <div class="col-50">
                                     <label id="expyearid" for="expyear">Exp Year</label>
-                                    <input type="number" min="2022" max="9999" id="expyear" name="expyear" placeholder="2022" pattern="(?=.*\d).{4}" title="Must contain 4 digits in format: 2022" required>
+                                    <input type="number" min="2022" max="9999" id="expyear" name="expyear" placeholder="Year" pattern="(?=.*\d).{4}" title="Must contain 4 digits in format: 2022" required>
                                 </div>
                             </div>
 
                             <label id="cvvid" for="cvv">CVV</label>
-                            <input type="number" min="100" max="999" step="1" id="cvv" name="cvv" placeholder="123" pattern="(?=.*\d).{3}" title="Must contain 3 digits in format: 123" required>
+                            <input type="number" min="0" max="999" step="1" id="cvv" name="cvv" placeholder="CVV" pattern="(?=.*\d).{3}" title="Must contain 3 digits in format: 123" required>
 
                         </div>
                     </div>
