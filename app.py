@@ -460,8 +460,10 @@ def paid():
                 print("Payment Succeeded")
                 # Card Valid
                 COMPLETED = update_completed(Paid_bike_ids)
-                flash('Payment Succeeded! You may pick your bike/s. Thank you!')
-                return redirect("/pick_up")
+                print("LINE 463: COMPLETED returns - ")
+                if COMPLETED == 1:
+                    flash('Payment Succeeded! You may pick your bike/s. Thank you!')
+                    return redirect("/pick_up")
             else:
                 print("Payment Rejected")
                 ERROR_RES = [0]

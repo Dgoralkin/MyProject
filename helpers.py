@@ -667,7 +667,7 @@ def update_completed(BIKE_ID):
         for i in range(len(INFO)):
             crsr.execute("INSERT INTO orders_history (Service_ID, Service_batch, User_ID, Bike_ID, Service_procedure, Service_notes, Service_price, Procedure_time, Registration_datetime, Start_datetime, End_datetime, Completed_datetime, Service_status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", INFO[i])
             db.commit()  
-        return
+        return 1
 
 
 # Validate bike service is fully ready and forward to Send_Status_update()
