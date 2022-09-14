@@ -562,14 +562,12 @@ def display_user_service_status(USER_ID):
     # Find all service dates (Batches) per user
     SERVICE_HISTORY = {}
     batches = []
-    crsr.execute("SELECT DISTINCT Service_batch FROM orders_history WHERE User_ID = %s", USER_ID)
+    crsr.execute("SELECT DISTINCT Service_batch FROM orders_history WHERE User_ID = %s ORDER BY Service_batch DESC", USER_ID)
     for batch in crsr:
         batches.append(batch)
         SERVICE_HISTORY[batch[0]] = []
         BATCHES += 1    
-        
-    
-    
+           
     # Find all bikes in each batch for every Batch
     for bike_ID in batches:
         crsr.execute("SELECT COUNT(DISTINCT Bike_ID) FROM orders_history WHERE Service_batch = %s", bike_ID)
