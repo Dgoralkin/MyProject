@@ -86,7 +86,9 @@ def create_tables():
                 print('Check all_bikes LEN: CSV vs DB', CSV_Count, DB_Count)
                 if DB_Count == CSV_Count:
                     print("Table all_bikes up to date")
-                else:
+                
+                # BECAUSE HEROKU'S DISABILITY TO WRITE TO EXTERNAL FILES FUNCTION REWRITEN TO: 'if DB_Count < CSV_Count' instead of 'else'
+                if DB_Count < CSV_Count:
                     crsr.execute("DROP TABLE all_bikes")
                     db.commit()
                     print("Table all_bikes Deleted")
@@ -208,14 +210,15 @@ def update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR):
         ID = maxID[0]
     add_bike_to_DB(ID, MODEL, YEAR)
     
-    # Update CSV file
+    # Update CSV file - OPERATION DISABLED DUE TO HEROKU'S DISABILITY TO WRITE TO EXTERNAL FILE
+    '''
     with open('Bikes.csv', 'a', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow([BIKE])
         csv_file.close()
         print("CSV file updated")
     return
-
+    '''
 
 # Insert user bike into bikes table
 def add_bike_to_DB(id, MODEL, YEAR):
