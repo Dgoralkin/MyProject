@@ -728,21 +728,11 @@ def Send_Status_update(BIKES_READY):
     for line in crsr:
         CUSTOMERS_EAMIL = line[0]
         CUSTOMERS_BIKE = line[1]
-        #print(CUSTOMERS_EAMIL, CUSTOMERS_BIKE, BIKES_READY[0])
-    
-        # Send update Email to user
-        msg = EmailMessage()
-        msg['Subject'] = 'This is a service status update From G-bikes'
-        msg['From'] = EMAIL_ADDRESS
-        msg['To'] = CUSTOMERS_EAMIL
-        msg.set_content('Your service status just updated to ready!')
-        txt = "We are happy to inform you that your service just finished and your bike <strong>" + str(CUSTOMERS_BIKE) + "</strong> is ready for pick up! <br><br> You can pay upfront by clicking the link: https://final-project-dany.herokuapp.com/pick_up"
-        msg.add_alternative(txt, subtype='html')
         
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
-            smtp.send_message(msg)
-        
+        # Send Email to inform customer about finished service
+        TXT = "We are happy to inform you that your service just finished and your bike <strong>" + str(CUSTOMERS_BIKE) + "</strong> is ready for pick up! <br><br> You can pay upfront by clicking the link: https://final-project-dany.herokuapp.com/pick_up"
+        send_status = send_email(CUSTOMERS_EAMIL, 'This is a service status update From G-bikes', 'Your service status just updated to ready!', TXT)
+
         # Update service Email status to send to prevent double email sending
         crsr.execute("UPDATE service_order SET Emailed = 1 WHERE Bike_ID = %s", [CUSTOMERS_BIKE_ID])
         db.commit()
