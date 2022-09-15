@@ -39,6 +39,23 @@ db = mysql.connector.connect(
 )
 
 
+# Send emails to customers template
+def send_email(EMAIL, SUBJECT, SETCONTENT, TXT):
+    msg = EmailMessage()
+    msg['Subject'] = SUBJECT
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = EMAIL
+    msg.set_content(SETCONTENT)
+    txt = TXT
+    msg.add_alternative(txt, subtype='html')
+    
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
+        smtp.send_message(msg)
+    print('email sent to: ', EMAIL) 
+    return 'sent'
+
+
 # Create required tables as program starts if not exist
 def create_tables():
         # Check if TABLES exist in DB
@@ -88,6 +105,7 @@ def create_tables():
                     print("Table all_bikes up to date")
                 
                 # BECAUSE HEROKU'S DISABILITY TO WRITE TO EXTERNAL FILES FUNCTION REWRITEN TO: 'if DB_Count < CSV_Count' instead of 'else'
+                # To enable correct bi-directional communication change 'if DB_Count < CSV_Count' TO 'else'
                 if DB_Count < CSV_Count:
                     crsr.execute("DROP TABLE all_bikes")
                     db.commit()
@@ -219,6 +237,7 @@ def update_all_bikes_table(db, crsr, BIKE, MODEL, YEAR):
         print("CSV file updated")
     return
     '''
+
 
 # Insert user bike into bikes table
 def add_bike_to_DB(id, MODEL, YEAR):
@@ -495,11 +514,9 @@ def display_user_service_status(USER_ID):
     BIKES_READY = []
     BIKES_INSERVICE = []
     
-    
     # Find all distinct bikes per user in service_order
     crsr = db.cursor()
     crsr2 = db.cursor()
-    crsr_bike = db.cursor()
     crsr.execute("SELECT distinct Bike_ID FROM service_order WHERE User_ID = %s", USER_ID)
     for Bike in crsr:
         BIKES.append(Bike)

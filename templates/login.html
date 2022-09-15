@@ -4,11 +4,12 @@
     Log In
 {% endblock %}
 
-
-{% block header %}
-    <h1>This app allows you to book an appointment for our top rated service</h1>
+{% block head %}
 {% endblock %}
 
+{% block header %}
+    <h1>This app allows you to book service & pick your bike from service at our workshop</h1>
+{% endblock %}
 
 
 {% block main %}
@@ -23,7 +24,7 @@
         </div>
     </div>
 
-    <div class="row align-items-start" style="margin-top: 7%;">
+    <div class="row align-items-start" style="margin-top: 3%;">
         <!-- Main -->
         <div class="col text-center">
             <form action="/login" method="post">
@@ -46,8 +47,28 @@
             <p><h4><strong>Not a member yet?  Register now!</h4></strong></p>
             <button class="btn btn-danger" type="button"><a href="/register">Register now</a></button>
             <br><br>
-            <p><h4><strong>Forgot your user name or password?  Recover it now!</h4></strong></p>
-            <button class="btn btn-warning" type="button"><a href="/">Recover password</a></button>
+            {% set colorswitch = 0 %}
+            {% if loginError %}
+                {% set colorswitch = 1 %}
+            {% endif %}
+            <div id="recover_p" class="">
+                <p><h4><strong>Forgot your user name or password?  Recover it now!</h4></strong></p>
+            </div>
+            <button id="recover_btn" class="btn btn-warning" type="button">Recover your account</button>
+
+            <div id="recover_div" class="row service_check" style="margin-top: 10px;">
+                <form action="/recover" method="post">
+                    <div class="col-50">
+                        <label id="forgot_email_lbl" for="forgot_email">Forgot Your Email? &nbsp; &nbsp; &nbsp; &nbsp;</label>
+                        <input type="number" id="forgot_email" name="Recover_Email" placeholder="Enter Your Phone" pattern="(?=.*\d)" title="Enter Your Phone Number" required>
+                    </div>
+                    <div class="col-50">
+                        <label id="forgot_pswrd_lbl" for="forgot_pswrd">Forgot Your Password? &nbsp;</label>
+                        <input type="email" id="forgot_pswrd" name="Recover_Pswrd" placeholder="Enter Your Email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,4}$" title="Enter Your Email">
+                    </div>
+                    <button class="btn btn-success" style="margin-top: 10px;" type="submit">Recover Now!</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -61,6 +82,19 @@ var iframe = document.getElementById("myIframe");
 iframe.onload = function(){
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 }
+
+// Show Recover form
+$(document).ready(function(){
+    $("#recover_btn").click(function(){
+      $("#recover_div").slideToggle("slow");
+    });
+  });
+
+// Change contrast color enable blinking
+if ({{colorswitch}} === 1){
+    $("#recover_p").addClass("blink-text");
+}
 </script>
+
 
 {% endblock %}

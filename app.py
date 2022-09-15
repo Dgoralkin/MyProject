@@ -5,7 +5,7 @@ import mysql.connector
 from flask import Flask, jsonify, redirect, render_template, request, session, flash
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed, Send_Status_update, validate_ready_for_email
+from helpers import fullName, login_required, error, create_tables, add_bike_to_DB, update_all_bikes_table, load_services, service_order, time_UTC_to_IL, display_services, display_user_service_status, update_completed, Send_Status_update, validate_ready_for_email, send_email
 import smtplib
 import random
 from email.message import EmailMessage
@@ -73,7 +73,7 @@ def login():
     if request.method == "POST":
         
         # Check if user is registered and verified
-        EMAIL = request.form.get("email").lower()
+        EMAIL = request.form.get("email").lower().strip()
         PSSWD = request.form.get("password")
         USER = [EMAIL]
         
@@ -93,7 +93,7 @@ def login():
                     USER.clear()
                     USER = user
                     return render_template("verification.html", user=USER)
-            
+            flash("* Username OR Password is incorrect.")
             return render_template("login.html", loginError="* Username OR Password is incorrect.")
         except NameError:
             return error("Cannot Connect to Database Server !!!", 500)
@@ -112,7 +112,7 @@ def register():
         ID = 0
         FNAME = request.form.get("Fname")
         LNAME = request.form.get("Lname")
-        EMAIL = request.form.get("email").lower()
+        EMAIL = request.form.get("email").lower().strip()
         PSSWD = request.form.get("password")
         PSSWD2 = request.form.get("password2")
         PHONE = request.form.get("phone")
@@ -133,7 +133,7 @@ def register():
             crsr = db.cursor()
             crsr.execute("SELECT Email FROM users")
             for x in crsr:
-                if EMAIL.lower() == x[0].lower():
+                if EMAIL.lower().strip() == x[0].lower().strip():
                     print("USER EXIST IN DB")
                     return render_template("register.html", response2="User already registered. Try to recover your password or enter other credentials.", recover="Recover password")
             crsr.close()
@@ -144,18 +144,11 @@ def register():
         TWOSTEPCODE = random.randint(1000,9999)
         
         # Send verification Email to user
-        
-        msg = EmailMessage()
-        msg['Subject'] = 'This is a verification Email From G-bikes'
-        msg['From'] = EMAIL_ADDRESS
-        msg['To'] = EMAIL
-        msg.set_content('Your 2-Step verification code just arrived')
-        txt = "Your code is: " + str(TWOSTEPCODE)
-        msg.add_alternative(txt, subtype='html')
-        
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
-            smtp.send_message(msg)
+        SUBJECT = 'This is a verification Email From G-bikes'
+        SETCONTENT = 'Your 2-Step verification code just arrived'
+        TXT = "Your code is: " + str(TWOSTEPCODE)
+        send_status = send_email(EMAIL, SUBJECT, SETCONTENT, TXT)
+        print(send_status)
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL, generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
@@ -295,7 +288,7 @@ def add_bike():
         bike_exist = False
         db.reconnect()
         crsr = db.cursor()
-        crsr.execute("SELECT ID FROM all_bikes WHERE brand = %s ", bike)
+        crsr.execute("SELECT ID FROM all_bikes WHERE brand = %s", bike)
         for id in crsr:
             if len(id) > 0:
                 bike_exist = add_bike_to_DB(id[0], MODEL, YEAR)
@@ -460,7 +453,6 @@ def paid():
                 print("Payment Succeeded")
                 # Card Valid
                 COMPLETED = update_completed(Paid_bike_ids)
-                print("LINE 463: COMPLETED returns - ", COMPLETED)
                 if COMPLETED == 1:
                     flash('Payment Succeeded! You may pick your bike/s. Thank you!')
                     return redirect("/pick_up")
@@ -483,9 +475,107 @@ def account():
     
     # Show connected User Full Name
     FULLNAME = fullName()
+    
+    if request.method == "POST":
+        
+        EMAIL = request.form.get("Recover_Email")
+        PSWRD = request.form.get("Recover_Pswrd")
+        TMPARRAY = [EMAIL, PSWRD]
+        print(TMPARRAY)
+        return render_template("account.html",  FULLNAME=FULLNAME)
 
     # Redirect user to account page
     return render_template("account.html",  FULLNAME=FULLNAME)
+
+
+#--------------------------------------------------------------------------------- Recover account
+@app.route("/recover", methods=["GET", "POST"])
+
+def Recover():
+    
+    if request.method == "POST":
+        # Get required info from user @ login page VIA recover form
+        PHONE = request.form.get("Recover_Email").lower().strip()
+        EMAIL = request.form.get("Recover_Pswrd").lower().strip()
+        # Get required verification code from user @ recover page VIA recover form
+        VERIFICATION = request.form.get("Ver_Code")
+        
+        TMPARRAY = [EMAIL, PHONE, VERIFICATION]
+        print(TMPARRAY)
+        
+        # Check if user is registered
+        if EMAIL:
+            try:
+                crsr = db.cursor()
+            except:
+                db.reconnect()
+                crsr = db.cursor()
+            finally:
+                crsr.execute("SELECT Email FROM users WHERE Email = %s", [EMAIL])
+                USERS_EMAIL = crsr.fetchone()
+                print("USERS_EMAIL1: ", USERS_EMAIL)
+                
+                # If user exist find him by Email
+                if USERS_EMAIL != None:
+                    print("USERS_EMAIL2: ", USERS_EMAIL)
+                    
+                    # Generate 2-step Psswd for Email verification
+                    TWOSTEPCODE = random.randint(1000,9999)
+                    
+                    # Send verification Email to user
+                    EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', "Your code is: " + str(TWOSTEPCODE)]
+                    send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
+                    print(send_status)
+                else:
+                    # Find User's Email by Phone number
+                    crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
+                    USERS_EMAIL_BY_PHONE = crsr.fetchone()
+                    print("USERS_EMAIL_BY_PHONE1:", USERS_EMAIL_BY_PHONE)
+                    
+                    # If User's Phone number exist
+                    if USERS_EMAIL_BY_PHONE != None:
+                        print("USERS_EMAIL_BY_PHONE2: ", USERS_EMAIL_BY_PHONE)
+                    
+                        TWOSTEPCODE = random.randint(1000,9999)
+                        TXT = "Your code is: " + str(TWOSTEPCODE)
+                        EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
+                        send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                        print(send_status)
+                    else:
+                        # If user or Phone does not exist.
+                        TMPARRAY.append(None)
+                        print(TMPARRAY)
+                        return render_template("recover.html", TMPARRAY=TMPARRAY)
+                    
+        else:
+            try:
+                crsr = db.cursor()
+            except:
+                db.reconnect()
+                crsr = db.cursor()
+            finally:
+                # Find User's Email by Phone number
+                crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
+                USERS_EMAIL_BY_PHONE = crsr.fetchone()
+                print("USERS_EMAIL_BY_PHONE1:", USERS_EMAIL_BY_PHONE)
+                
+                # If User's Phone number exist
+                if USERS_EMAIL_BY_PHONE != None:
+                    print("USERS_EMAIL_BY_PHONE2: ", USERS_EMAIL_BY_PHONE)
+                
+                    TWOSTEPCODE = random.randint(1000,9999)
+                    TXT = "Your code is: " + str(TWOSTEPCODE)
+                    EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
+                    send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                    print(send_status)
+                else:
+                    # If user or Phone does not exist.
+                    TMPARRAY.append(None)
+                    print(TMPARRAY)
+                    return render_template("recover.html", TMPARRAY=TMPARRAY)
+        return render_template("recover.html", TMPARRAY=TMPARRAY)
+    
+    return redirect("/login")
 
 
 #--------------------------------------------------------------------------------- Cart

@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    recover_account
+{% endblock %}
+
+{% block user %}
+
+{% endblock %}
+
+{% block header %}
+<h1>Recover your account</h1>
+{% endblock %}
+
+{% block main %}
+{% if TMPARRAY[3] == None %}
+
+<h2>We can't find any account that corresponds to email <span style="color:black;"><strong> {{ TMPARRAY[0] }} </strong></span> or to the Email
+    that corresponds to phone number <span style="color:black;"> {{ TMPARRAY[1] }} </span></h2>
+<hr>
+<h3>But, you can allways join us...</h3>
+<p><h4><strong>Not a member yet?  Register now!</h4></strong></p>
+<button class="btn btn-success" type="button"><a href="/register">Register now</a></button>
+
+{% elif TMPARRAY[2] == None %}
+<h2>We sent an Email with a verification code to <span style="color:black;"><strong> {{ TMPARRAY[0] }} </strong></span> or to the Email
+    that corresponds to phone number <span style="color:black;"> {{ TMPARRAY[1] }} </span></h2>
+<h3>Please check your mailbox and enter the received verification code</h3>
+<h3>***if you didn't receive your code you might check your spam folder***</h3>
+
+<div class="col text-center">
+   <form action="/recover" method="post">
+
+       <div class="mb-3" style="padding-top: 2rem;">
+           <label for="Ver_Code" class="form-label"><strong><h3>Enter your verification code</h3></strong></label>
+           <input type="text" class="form-control mx-auto w-auto" name="Ver_Code" placeholder="Received Code" required>
+       </div>
+
+       <button class="btn btn-success" type="submit">Confirm</button>
+   </form>
+</div>
+{% else %}
+
+{{ TMPARRAY }}
+
+{% endif %}
+{% endblock %}
