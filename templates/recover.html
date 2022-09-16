@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block main %}
+{{ TMPARRAY }}
 {% if TMPARRAY[3] == None %}
 
 <h2>We can't find any account that corresponds to email <span style="color:black;"><strong> {{ TMPARRAY[0] }} </strong></span> or to the Email
@@ -29,14 +30,14 @@
 <h3>***if you didn't receive your code you might check your spam folder***</h3>
 
 <div class="col text-center">
-   <form action="/recover" method="post">
+   <form id="TWOSTEPCODE" action="/recover" method="post">
 
        <div class="mb-3" style="padding-top: 2rem;">
            <label for="Ver_Code" class="form-label"><strong><h3>Enter your verification code</h3></strong></label>
-           <input type="text" class="form-control mx-auto w-auto" name="Ver_Code" placeholder="Received Code" required>
+           <input type="text" id="Ver_Code" class="form-control mx-auto w-auto" name="Ver_Code" placeholder="Received Code" required>
        </div>
 
-       <button class="btn btn-success" type="submit">Confirm</button>
+       <button id="TWOSTEPCODE_BTN" class="btn btn-success" type="button">Confirm</button>
    </form>
 </div>
 {% else %}
@@ -44,4 +45,19 @@
 {{ TMPARRAY }}
 
 {% endif %}
+
+<script>
+var form = document.getElementById("TWOSTEPCODE");
+var code = {{ TMPARRAY[3] }};
+var inputCode = document.getElementById("Ver_Code");
+
+document.getElementById("TWOSTEPCODE_BTN").addEventListener("click", function () {
+    if (code === parseInt(inputCode.value)) {
+        form.submit();
+    } else {
+        alert("Verification code is incorrect. Please recheck your input!");
+    }
+});
+</script>
+
 {% endblock %}

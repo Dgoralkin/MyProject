@@ -494,87 +494,79 @@ def account():
 def Recover():
     
     if request.method == "POST":
-        # Get required info from user @ login page VIA recover form
-        PHONE = request.form.get("Recover_Email").lower().strip()
-        EMAIL = request.form.get("Recover_Pswrd").lower().strip()
-        # Get required verification code from user @ recover page VIA recover form
-        VERIFICATION = request.form.get("Ver_Code")
-        
-        TMPARRAY = [EMAIL, PHONE, VERIFICATION]
-        print(TMPARRAY)
-        
-        # Check if user is registered
-        if EMAIL:
-            try:
-                crsr = db.cursor()
-            except:
-                db.reconnect()
-                crsr = db.cursor()
-            finally:
-                crsr.execute("SELECT Email FROM users WHERE Email = %s", [EMAIL])
-                USERS_EMAIL = crsr.fetchone()
-                print("USERS_EMAIL1: ", USERS_EMAIL)
-                
-                # If user exist find him by Email
-                if USERS_EMAIL != None:
-                    print("USERS_EMAIL2: ", USERS_EMAIL)
+        if request.form.get("empty_input") == 'None':
+            
+            print("From login")
+            
+            # Get required info from user @ login page VIA recover form
+            PHONE = request.form.get("Recover_Email").lower().strip()
+            EMAIL = request.form.get("Recover_Pswrd").lower().strip()
+            VERIFICATION = request.form.get("Ver_Code")
+            
+            TMPARRAY = [EMAIL, PHONE, VERIFICATION]
+            
+            # Check if user is registered
+            if EMAIL:
+                try:
+                    crsr = db.cursor()
+                except:
+                    db.reconnect()
+                    crsr = db.cursor()
+                finally:
+                    crsr.execute("SELECT Email FROM users WHERE Email = %s", [EMAIL])
+                    USERS_EMAIL = crsr.fetchone()
                     
-                    # Generate 2-step Psswd for Email verification
-                    TWOSTEPCODE = random.randint(1000,9999)
-                    
-                    # Send verification Email to user
-                    EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', "Your code is: " + str(TWOSTEPCODE)]
-                    send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
-                    print(send_status)
-                else:
+                    # If user exist, find him by Email
+                    if USERS_EMAIL != None:                        
+                        # Generate 2-step Psswd for Email verification
+                        TWOSTEPCODE = random.randint(1000,9999)
+                        TMPARRAY.append(TWOSTEPCODE)
+                        # Send verification Email to user
+                        EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', "Your code is: " + str(TWOSTEPCODE)]
+                        send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
+                    else:
+                        # Find User's Email by Phone number
+                        crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
+                        USERS_EMAIL_BY_PHONE = crsr.fetchone()
+                        
+                        # If User's Phone number exist
+                        if USERS_EMAIL_BY_PHONE != None:                        
+                            TWOSTEPCODE = random.randint(1000,9999)
+                            TMPARRAY.append(TWOSTEPCODE)
+                            TXT = "Your code is: " + str(TWOSTEPCODE)
+                            EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
+                            send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                        else:
+                            # If user or Phone does not exist.
+                            TMPARRAY.append(None)
+                            return render_template("recover.html", TMPARRAY=TMPARRAY)
+            
+            else:
+                try:
+                    crsr = db.cursor()
+                except:
+                    db.reconnect()
+                    crsr = db.cursor()
+                finally:
                     # Find User's Email by Phone number
                     crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
                     USERS_EMAIL_BY_PHONE = crsr.fetchone()
-                    print("USERS_EMAIL_BY_PHONE1:", USERS_EMAIL_BY_PHONE)
                     
                     # If User's Phone number exist
                     if USERS_EMAIL_BY_PHONE != None:
-                        print("USERS_EMAIL_BY_PHONE2: ", USERS_EMAIL_BY_PHONE)
-                    
                         TWOSTEPCODE = random.randint(1000,9999)
+                        TMPARRAY.append(TWOSTEPCODE)
                         TXT = "Your code is: " + str(TWOSTEPCODE)
                         EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
                         send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
-                        print(send_status)
                     else:
                         # If user or Phone does not exist.
                         TMPARRAY.append(None)
-                        print(TMPARRAY)
                         return render_template("recover.html", TMPARRAY=TMPARRAY)
-                    
+            return render_template("recover.html", TMPARRAY=TMPARRAY)
         else:
-            try:
-                crsr = db.cursor()
-            except:
-                db.reconnect()
-                crsr = db.cursor()
-            finally:
-                # Find User's Email by Phone number
-                crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
-                USERS_EMAIL_BY_PHONE = crsr.fetchone()
-                print("USERS_EMAIL_BY_PHONE1:", USERS_EMAIL_BY_PHONE)
-                
-                # If User's Phone number exist
-                if USERS_EMAIL_BY_PHONE != None:
-                    print("USERS_EMAIL_BY_PHONE2: ", USERS_EMAIL_BY_PHONE)
-                
-                    TWOSTEPCODE = random.randint(1000,9999)
-                    TXT = "Your code is: " + str(TWOSTEPCODE)
-                    EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
-                    send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
-                    print(send_status)
-                else:
-                    # If user or Phone does not exist.
-                    TMPARRAY.append(None)
-                    print(TMPARRAY)
-                    return render_template("recover.html", TMPARRAY=TMPARRAY)
-        return render_template("recover.html", TMPARRAY=TMPARRAY)
-    
+            ccc = request.form.get('Ver_Code')
+            print("From recover", ccc)
     return redirect("/login")
 
 
