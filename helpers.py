@@ -51,8 +51,12 @@ def send_email(EMAIL, SUBJECT, SETCONTENT, TXT):
     
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
-        smtp.send_message(msg)
-    print('email sent to: ', EMAIL) 
+        try:
+            smtp.send_message(msg)
+        except smtplib.SMTPRecipientsRefused:
+            print("smtplib.SMTPRecipientsRefused", EMAIL)
+            smtp.send_message(msg)
+    print('email sent to:', EMAIL) 
     return 'sent'
 
 
@@ -135,7 +139,7 @@ def create_tables():
             validate_services_table(crsr, db)
             
         if (users == 0):
-            crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone int NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
+            crsr.execute("CREATE TABLE users (ID int unsigned NOT NULL AUTO_INCREMENT, Fname varchar(55) NOT NULL, Lname varchar(55) NOT NULL, Email varchar(55) NOT NULL, Psswd varchar(128) NOT NULL, Phone bigint NOT NULL, City varchar(55) NOT NULL, Address varchar(128) NOT NULL, Verified INT NOT NULL, Registered datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY (ID))")
             print("Table users Created")
 
 

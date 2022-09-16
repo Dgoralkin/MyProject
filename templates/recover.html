@@ -13,21 +13,25 @@
 {% endblock %}
 
 {% block main %}
-{{ TMPARRAY }}
-{% if TMPARRAY[3] == None %}
 
-<h2>We can't find any account that corresponds to email <span style="color:black;"><strong> {{ TMPARRAY[0] }} </strong></span> or to the Email
-    that corresponds to phone number <span style="color:black;"> {{ TMPARRAY[1] }} </span></h2>
-<hr>
-<h3>But, you can allways join us...</h3>
-<p><h4><strong>Not a member yet?  Register now!</h4></strong></p>
-<button class="btn btn-success" type="button"><a href="/register">Register now</a></button>
+{% if TMPARRAY[3] == None %}
+<div class="container-fluid  text-center" style="width: 90%;">
+    <h3>We can't find any activated account that corresponds to email <strong><u> {{ TMPARRAY[0] }} </u></strong> or to the Email
+        that corresponds to phone number <strong><u> {{ TMPARRAY[1] }} </u></strong></h3>
+    <hr>
+    <h3>But, you can allways join us...</h3>
+    <p><h4><strong><u>Not a member yet?  Register now!</u></h4></strong></p>
+    <button class="btn btn-success" type="button"><a href="/register">Register now</a></button>
+</div>
 
 {% elif TMPARRAY[2] == None %}
-<h2>We sent an Email with a verification code to <span style="color:black;"><strong> {{ TMPARRAY[0] }} </strong></span> or to the Email
-    that corresponds to phone number <span style="color:black;"> {{ TMPARRAY[1] }} </span></h2>
-<h3>Please check your mailbox and enter the received verification code</h3>
-<h3>***if you didn't receive your code you might check your spam folder***</h3>
+<div class="container-fluid  text-center" style="width: 90%;">
+    <h3>We sent an Email with a verification code to <strong><u> {{ TMPARRAY[0] }} </u></strong> or to the Email
+        that corresponds to phone number <strong><u> {{ TMPARRAY[1] }} </u></strong></h3>
+    <hr><br>
+    <h3>Please check your mailbox and enter the received verification code</h3>
+    <h3>***if you didn't receive your code you might check your spam folder***</h3>
+</div>
 
 <div class="col text-center">
    <form id="TWOSTEPCODE" action="/recover" method="post">
@@ -35,6 +39,7 @@
        <div class="mb-3" style="padding-top: 2rem;">
            <label for="Ver_Code" class="form-label"><strong><h3>Enter your verification code</h3></strong></label>
            <input type="text" id="Ver_Code" class="form-control mx-auto w-auto" name="Ver_Code" placeholder="Received Code" required>
+           <input type="hidden" class="form-control mx-auto w-auto" name="EMAIL" value="{{ TMPARRAY[0] }}">
        </div>
 
        <button id="TWOSTEPCODE_BTN" class="btn btn-success" type="button">Confirm</button>
@@ -42,20 +47,20 @@
 </div>
 {% else %}
 
-{{ TMPARRAY }}
-
 {% endif %}
 
 <script>
 var form = document.getElementById("TWOSTEPCODE");
-var code = {{ TMPARRAY[3] }};
+var messege = 'YesIKnowYouCanSee{{TMPARRAY[3]}}AndWeShouldDoItOtherwiseThroughPostSending J';
+var messegestr = messege.substring(17, 21);
 var inputCode = document.getElementById("Ver_Code");
 
 document.getElementById("TWOSTEPCODE_BTN").addEventListener("click", function () {
-    if (code === parseInt(inputCode.value)) {
+    if (messegestr === inputCode.value) {
+        alert("Please check your MailBox once again. We sent new temporary Password to your Mailbox");
         form.submit();
     } else {
-        alert("Verification code is incorrect. Please recheck your input!");
+        alert("Verification code is incorrect. Please recheck your input or MailBox!");
     }
 });
 </script>

@@ -27,7 +27,7 @@ function showPsswrd(id) {
       w.type = "password";
     }
   }
-}
+};
 
 
 
@@ -59,7 +59,7 @@ function remove_bike(bike_id) {
     let item = '#' + bike_id
     $(item).fadeOut("slow");
     return;
-}
+};
 
 
 // Hide bike from cart page while DB updates
@@ -69,13 +69,4 @@ function remove_bike_from_cart(bike_name, service) {
   $(item).fadeOut("slow");
   location.reload();
   return;
-}
-
-
-
-
-
-
-
-
-
+};

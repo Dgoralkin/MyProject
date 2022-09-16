@@ -9,6 +9,8 @@ from helpers import fullName, login_required, error, create_tables, add_bike_to_
 import smtplib
 import random
 from email.message import EmailMessage
+import secrets
+import string
 
 
 
@@ -93,7 +95,7 @@ def login():
                     USER.clear()
                     USER = user
                     return render_template("verification.html", user=USER)
-            flash("* Username OR Password is incorrect.")
+            flash('* Username OR Password is incorrect.')
             return render_template("login.html", loginError="* Username OR Password is incorrect.")
         except NameError:
             return error("Cannot Connect to Database Server !!!", 500)
@@ -148,7 +150,6 @@ def register():
         SETCONTENT = 'Your 2-Step verification code just arrived'
         TXT = "Your code is: " + str(TWOSTEPCODE)
         send_status = send_email(EMAIL, SUBJECT, SETCONTENT, TXT)
-        print(send_status)
             
         # Add username and Hashed password into db.
         user_info = (FNAME, LNAME, EMAIL, generate_password_hash(PSSWD), PHONE, CITY, ADDRESS, TWOSTEPCODE)
@@ -159,6 +160,12 @@ def register():
         crsr.close()
 
         print("New User Inserted into DB")
+        
+        # Inform owner about new customer registration
+        SUBJECT = 'New user just signed in to G-bikes Service'
+        SETCONTENT = 'This is an update Email From G-bikes'
+        TXT = 'User details: ' + str(USER[1]) + ' ' + str(USER[2]) + ' Email: ' + str(USER[3])
+        send_status = send_email(EMAIL_ADDRESS, SUBJECT, SETCONTENT, TXT)
 
         return render_template("verification.html", user=USER, EMAIL=EMAIL)
     return render_template("register.html")
@@ -192,6 +199,7 @@ def verifify():
             db.commit()
             crsr.close()
             return redirect("/")
+        flash('* Your Verification code is incorrect! please try again')
         return render_template("verification.html", user=USER, RESPONSE="* Your Verification code is incorrect! please try again")
     
     # return from GET response
@@ -495,9 +503,7 @@ def Recover():
     
     if request.method == "POST":
         if request.form.get("empty_input") == 'None':
-            
-            print("From login")
-            
+                       
             # Get required info from user @ login page VIA recover form
             PHONE = request.form.get("Recover_Email").lower().strip()
             EMAIL = request.form.get("Recover_Pswrd").lower().strip()
@@ -506,67 +512,64 @@ def Recover():
             TMPARRAY = [EMAIL, PHONE, VERIFICATION]
             
             # Check if user is registered
-            if EMAIL:
-                try:
-                    crsr = db.cursor()
-                except:
-                    db.reconnect()
-                    crsr = db.cursor()
-                finally:
-                    crsr.execute("SELECT Email FROM users WHERE Email = %s", [EMAIL])
-                    USERS_EMAIL = crsr.fetchone()
-                    
-                    # If user exist, find him by Email
-                    if USERS_EMAIL != None:                        
-                        # Generate 2-step Psswd for Email verification
-                        TWOSTEPCODE = random.randint(1000,9999)
-                        TMPARRAY.append(TWOSTEPCODE)
-                        # Send verification Email to user
-                        EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', "Your code is: " + str(TWOSTEPCODE)]
-                        send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
-                    else:
-                        # Find User's Email by Phone number
-                        crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
-                        USERS_EMAIL_BY_PHONE = crsr.fetchone()
-                        
-                        # If User's Phone number exist
-                        if USERS_EMAIL_BY_PHONE != None:                        
-                            TWOSTEPCODE = random.randint(1000,9999)
-                            TMPARRAY.append(TWOSTEPCODE)
-                            TXT = "Your code is: " + str(TWOSTEPCODE)
-                            EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
-                            send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
-                        else:
-                            # If user or Phone does not exist.
-                            TMPARRAY.append(None)
-                            return render_template("recover.html", TMPARRAY=TMPARRAY)
-            
-            else:
-                try:
-                    crsr = db.cursor()
-                except:
-                    db.reconnect()
-                    crsr = db.cursor()
-                finally:
+            try:
+                crsr = db.cursor()
+            except:
+                db.reconnect()
+                crsr = db.cursor()
+            finally:
+                crsr.execute("SELECT Email FROM users WHERE Email = %s", [EMAIL])
+                USERS_EMAIL = crsr.fetchone()
+                
+                # If user exist, find him by Email
+                if USERS_EMAIL != None:                        
+                    # Generate 2-step Psswd for Email verification
+                    TWOSTEPCODE = random.randint(1000,9999)
+                    TMPARRAY.append(TWOSTEPCODE)
+                    # Send verification Email to user
+                    EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', "Your code is: " + str(TWOSTEPCODE)]
+                    send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
+                    return render_template("recover.html", TMPARRAY=TMPARRAY)
+                else:
                     # Find User's Email by Phone number
                     crsr.execute("SELECT Email FROM users WHERE Phone = %s limit 1", [PHONE])
                     USERS_EMAIL_BY_PHONE = crsr.fetchone()
                     
                     # If User's Phone number exist
-                    if USERS_EMAIL_BY_PHONE != None:
+                    if USERS_EMAIL_BY_PHONE != None:                        
                         TWOSTEPCODE = random.randint(1000,9999)
                         TMPARRAY.append(TWOSTEPCODE)
                         TXT = "Your code is: " + str(TWOSTEPCODE)
                         EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
                         send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                        return render_template("recover.html", TMPARRAY=TMPARRAY)
                     else:
                         # If user or Phone does not exist.
                         TMPARRAY.append(None)
                         return render_template("recover.html", TMPARRAY=TMPARRAY)
-            return render_template("recover.html", TMPARRAY=TMPARRAY)
         else:
-            ccc = request.form.get('Ver_Code')
-            print("From recover", ccc)
+            EMAIL = request.form.get("EMAIL")
+            # Generate new temporary password
+            RAND_PSWRD = ''.join(secrets.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits)
+              for i in range(10))
+                       
+            # Send the new temporary password to user
+            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your new password just arrived', "Your password is: " + str(RAND_PSWRD)]
+            send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
+            
+            # Send new password for hashing
+            HASHED_PSWRD = generate_password_hash(RAND_PSWRD)
+            parameters = [HASHED_PSWRD, EMAIL]
+            
+            # Update the password in user's profile
+            try:
+                crsr = db.cursor()
+            except:
+                db.reconnect()
+                crsr = db.cursor()
+            finally:
+                crsr.execute("UPDATE users SET Psswd = %s WHERE Email = %s", parameters)
+                db.commit()
     return redirect("/login")
 
 
