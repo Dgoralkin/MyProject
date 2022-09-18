@@ -27,6 +27,17 @@ function showPsswrd(id) {
       w.type = "password";
     }
   }
+  else if (id == 4){
+    var xx = document.getElementById("Password1");
+    var yy = document.getElementById("Password2");
+    if (xx.type === "password") {
+      xx.type = "text";
+      yy.type = "text";
+    } else {
+      xx.type = "password";
+      yy.type = "password";
+    }
+  }
 };
 
 
@@ -56,7 +67,7 @@ $(document).ready(function(){
 // Hide bike from page while DB updates
 function remove_bike(bike_id) {
     fetch('/remove_bike?q=' + bike_id);
-    let item = '#' + bike_id
+    let item = '#' + bike_id;
     $(item).fadeOut("slow");
     return;
 };

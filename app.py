@@ -54,6 +54,7 @@ try:
         create_tables()
 except:
     print("ERROR! - Something went wrong!")
+    error("Something went wrong!", 400)
     
     
 #--------------------------------------------------------------------------------- /
@@ -462,7 +463,7 @@ def paid():
                 # Card Valid
                 COMPLETED = update_completed(Paid_bike_ids)
                 if COMPLETED == 1:
-                    flash('Payment Succeeded! You may pick your bike/s. Thank you!')
+                    #flash('Payment Succeeded! You may pick your bike/s. Thank you!')
                     return redirect("/pick_up")
             else:
                 print("Payment Rejected")
@@ -481,19 +482,69 @@ def paid():
 @login_required
 def account():
     
+    ID = [session["user_id"]]
+
+    if request.method == "POST":
+        FNAME = request.form.get("Fname").strip().capitalize()
+        LNAME = request.form.get("Lname").strip().capitalize()
+        PHONE = request.form.get("Phone")
+        PSSWD = request.form.get("Password1").strip()
+        CITY = request.form.get("City").strip().capitalize()
+        ADDRESS = request.form.get("Address").strip().capitalize()
+        USER = [FNAME, LNAME, PSSWD, PHONE, CITY, ADDRESS, ID[0]]
+        try:
+            crsr = db.cursor()
+        except:
+            db.reconnect()
+            crsr = db.cursor()
+        finally:
+            # Set easch User's detail if updated
+            if FNAME:
+                SET = [FNAME, ID[0]]
+                crsr.execute("UPDATE users SET Fname = %s WHERE ID = %s", SET)
+                db.commit()
+            if LNAME:
+                SET = [LNAME, ID[0]]
+                crsr.execute("UPDATE users SET Lname = %s WHERE ID = %s", SET)
+                db.commit()
+            if PHONE:
+                SET = [PHONE, ID[0]]
+                crsr.execute("UPDATE users SET Phone = %s WHERE ID = %s", SET)
+                db.commit()
+            if PSSWD:
+                HASHED_PSWRD = generate_password_hash(PSSWD)
+                SET = [HASHED_PSWRD, ID[0]]
+                crsr.execute("UPDATE users SET Psswd = %s WHERE ID = %s", SET)
+                db.commit()
+            if CITY:
+                SET = [CITY, ID[0]]
+                crsr.execute("UPDATE users SET City = %s WHERE ID = %s", SET)
+                db.commit()
+            if ADDRESS:
+                SET = [ADDRESS, ID[0]]
+                crsr.execute("UPDATE users SET Address = %s WHERE ID = %s", SET)
+                db.commit()
+            
+            # If some details updated:
+            if FNAME or LNAME or PHONE or PSSWD or CITY or ADDRESS:
+                print("User's profile updated!")
+                flash("Your details were updated !")
+    
+    # Get fresh record of User's details        
+    try:
+        crsr = db.cursor()
+    except:
+        db.reconnect()
+        crsr = db.cursor()
+    finally:
+        crsr.execute("SELECT Fname, Lname, Phone, Psswd, City, Address FROM users WHERE ID = %s", ID)
+        USER_INFO = crsr.fetchmany()
+
     # Show connected User Full Name
     FULLNAME = fullName()
     
-    if request.method == "POST":
-        
-        EMAIL = request.form.get("Recover_Email")
-        PSWRD = request.form.get("Recover_Pswrd")
-        TMPARRAY = [EMAIL, PSWRD]
-        print(TMPARRAY)
-        return render_template("account.html",  FULLNAME=FULLNAME)
-
     # Redirect user to account page
-    return render_template("account.html",  FULLNAME=FULLNAME)
+    return render_template("account.html", FULLNAME=FULLNAME, USER = USER_INFO[0])
 
 
 #--------------------------------------------------------------------------------- Recover account

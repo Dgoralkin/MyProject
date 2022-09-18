@@ -9,10 +9,142 @@
 {% endblock %}
 
 {% block header %}
-<h1>Welcome To your account</h1>
+<h1>Hi {{ FULLNAME }}. Welcome To your account</h1>
 {% endblock %}
 
 {% block main %}
-<h2>Welcome To account</h2>
-{{ PSWRD }}
+<h2>Your Details:</h2>
+
+<div class="container-fluid text-center" style="width: 90%;">
+    <form id="user_account_details_form" action="/account" method="post">
+        <div>
+            <hr>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="Fname" class="col-sm-6 col-form-label"><strong>First Name: </strong>{{ USER[0] }}</label>
+                    <button id="edit_Fname" name="DIV_Fname" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_Fname" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="Fname" value="" name="Fname" placeholder="New first name">
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="Lname" class="col-sm-6 col-form-label"><strong>Last Name: </strong>{{ USER[1] }}</label>
+                    <button id="edit_Lname" name="DIV_Lname" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_Lname" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="Lname" value="" name="Lname" placeholder="New last name">
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="Phone" class="col-sm-6 col-form-label"><strong>Phone number: </strong>{{ USER[2] }}</label>
+                    <button id="edit_Phone" name="DIV_Phone" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_Phone" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <input type="number" class="form-control" id="Phone" value="" name="Phone" pattern="(?=.*\d).{2}" placeholder="New phone number">
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="Password" class="col-sm-6 col-form-label"><strong>Password: </strong>********</label>
+                    <button id="edit_Password" name="DIV_Password" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_Password" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <p id="pswrd1">New Password</p>
+                    <input type="password" class="form-control" id="Password1" value="" name="Password1" placeholder="One number, one uppercase and lowercase letter, 8 or more characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
+                    <p id="pswrd2">Repeat Password</p>
+                    <input type="password" class="form-control" id="Password2" value="" name="Password2" placeholder="One number, one uppercase and lowercase letter, 8 or more characters" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
+                    <input type="checkbox" onclick="showPsswrd('4')">Show Passwords
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="City" class="col-sm-6 col-form-label"><strong>City: </strong>{{ USER[4] }}</label>
+                    <button id="edit_City" name="DIV_City" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_City" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="City" value="" name="City" placeholder="New city name">
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <div class="row mb-3 account_center">
+                <div class="col-sm-6">
+                    <label for="Address" class="col-sm-6 col-form-label"><strong>Address: </strong>{{ USER[5] }}</label>
+                    <button id="edit_Address" name="DIV_Address" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
+                </div>  
+            </div>
+            <div id="DIV_Address" class="row mb-3 account_center" style="display: none;">
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="Address" value="" name="Address" placeholder="New address">
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <button type="button" class="btn btn-info" id="send_button"> Save Changes </button>
+        <button id="sub_form" type="submit" style="display: none;"></button>
+    </form>
+</div>
+
+<script>
+    // Script for displaying input line
+    function edit_user(field_id){
+        console.log(field_id);
+        let item = '#' +field_id;
+        $(item).slideToggle("slow");
+        return;
+
+    };
+
+    // Script verifying passwords correctness
+    var pswrd1 = document.getElementById("Password1");
+    var pswrd2 = document.getElementById("Password2");
+    var form = document.getElementById("user_account_details_form");
+
+    document.getElementById("send_button").addEventListener("click", function () {
+        if (pswrd1.value){
+            if (pswrd1.value === pswrd2.value){
+                console.log(pswrd1.value, pswrd2.value);
+                document.getElementById("sub_form").click();
+            } else {
+                alert("Password does not match!");
+                $("#pswrd1").css('color', 'red');
+                $("#pswrd2").css('color', 'red');
+            };
+        } else {
+            form.submit();
+        };
+    });
+</script>
 {% endblock %}
