@@ -10,6 +10,7 @@ from functools import wraps
 from pytz import timezone
 from email.message import EmailMessage
 import smtplib
+from smtplib import SMTPRecipientsRefused
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
 open_hours = dt.time(9, 0, 0, 0)         # 09:00:00
@@ -53,10 +54,13 @@ def send_email(EMAIL, SUBJECT, SETCONTENT, TXT):
         smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
         try:
             smtp.send_message(msg)
-        except smtplib.SMTPRecipientsRefused:
+        except smtplib.RecipientsRefused:
             print("smtplib.SMTPRecipientsRefused", EMAIL)
-            smtp.send_message(msg)
-    print('email sent to:', EMAIL) 
+            error("smtplib.SMTPRecipientsRefused", 553)
+        except SMTPRecipientsRefused:
+            print("SMTPRecipientsRefused", EMAIL)
+            error("sSMTPRecipientsRefused", 553)
+    print('Email sent to:', EMAIL) 
     return 'sent'
 
 
