@@ -606,7 +606,7 @@ def Recover():
               for i in range(10))
                        
             # Send the new temporary password to user
-            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your new password just arrived', "Your password is: " + str(RAND_PSWRD)]
+            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your temporary password just arrived <br> After login with the temporary password we strongly recommend to change the password on you account page.', "Your password is: " + str(RAND_PSWRD)]
             send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
             
             # Send new password for hashing
