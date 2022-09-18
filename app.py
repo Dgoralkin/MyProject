@@ -113,14 +113,14 @@ def register():
     # Register user
     if request.method == "POST":
         ID = 0
-        FNAME = request.form.get("Fname")
-        LNAME = request.form.get("Lname")
+        FNAME = request.form.get("Fname").strip().capitalize()
+        LNAME = request.form.get("Lname").strip().capitalize()
         EMAIL = request.form.get("email").lower().strip()
         PSSWD = request.form.get("password")
         PSSWD2 = request.form.get("password2")
         PHONE = request.form.get("phone")
-        CITY = request.form.get("city")
-        ADDRESS = request.form.get("address")
+        CITY = request.form.get("city").strip().capitalize()
+        ADDRESS = request.form.get("address").strip().capitalize()
         VERIFIED = 0
         USER = [ID, FNAME, LNAME, EMAIL, PSSWD, PHONE, CITY, ADDRESS, VERIFIED]
         
@@ -537,7 +537,7 @@ def account():
         db.reconnect()
         crsr = db.cursor()
     finally:
-        crsr.execute("SELECT Fname, Lname, Phone, Psswd, City, Address FROM users WHERE ID = %s", ID)
+        crsr.execute("SELECT Fname, Lname, Email, Phone, Psswd, City, Address FROM users WHERE ID = %s", ID)
         USER_INFO = crsr.fetchmany()
 
     # Show connected User Full Name
@@ -592,7 +592,8 @@ def Recover():
                         TMPARRAY.append(TWOSTEPCODE)
                         TXT = "Your code is: " + str(TWOSTEPCODE)
                         EMAIL_CONTENT = ['This is a verification Email From G-bikes', 'Your verification code just arrived', TXT]
-                        send_status = send_email(USERS_EMAIL_BY_PHONE, EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                        send_status = send_email(USERS_EMAIL_BY_PHONE[0], EMAIL_CONTENT[0], EMAIL_CONTENT[1], TXT)
+                        TMPARRAY[0] = USERS_EMAIL_BY_PHONE[0]
                         return render_template("recover.html", TMPARRAY=TMPARRAY)
                     else:
                         # If user or Phone does not exist.
@@ -621,6 +622,7 @@ def Recover():
             finally:
                 crsr.execute("UPDATE users SET Psswd = %s WHERE Email = %s", parameters)
                 db.commit()
+    flash("We sent an Email with a verification code to your Mailbox")
     return redirect("/login")
 
 

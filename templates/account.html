@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block main %}
-<h2>Your Details:</h2>
+<h2>Your Details for: <span style="color:black;"><strong>{{ USER[2] }}</strong></span></h2>
 
 <div class="container-fluid text-center" style="width: 90%;">
     <form id="user_account_details_form" action="/account" method="post">
@@ -51,7 +51,7 @@
         <div>
             <div class="row mb-3 account_center">
                 <div class="col-sm-6">
-                    <label for="Phone" class="col-sm-6 col-form-label"><strong>Phone number: </strong>{{ USER[2] }}</label>
+                    <label for="Phone" class="col-sm-6 col-form-label"><strong>Phone number: </strong>{{ USER[3] }}</label>
                     <button id="edit_Phone" name="DIV_Phone" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
                 </div>  
             </div>
@@ -85,7 +85,7 @@
         <div>
             <div class="row mb-3 account_center">
                 <div class="col-sm-6">
-                    <label for="City" class="col-sm-6 col-form-label"><strong>City: </strong>{{ USER[4] }}</label>
+                    <label for="City" class="col-sm-6 col-form-label"><strong>City: </strong>{{ USER[5] }}</label>
                     <button id="edit_City" name="DIV_City" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
                 </div>  
             </div>
@@ -100,7 +100,7 @@
         <div>
             <div class="row mb-3 account_center">
                 <div class="col-sm-6">
-                    <label for="Address" class="col-sm-6 col-form-label"><strong>Address: </strong>{{ USER[5] }}</label>
+                    <label for="Address" class="col-sm-6 col-form-label"><strong>Address: </strong>{{ USER[6] }}</label>
                     <button id="edit_Address" name="DIV_Address" class="btn btn-warning" type="button" onclick="edit_user(this.name)">edit</button>
                 </div>  
             </div>
