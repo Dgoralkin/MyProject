@@ -54,9 +54,6 @@ def send_email(EMAIL, SUBJECT, SETCONTENT, TXT):
         smtp.login(EMAIL_ADDRESS, EMAIL_PSSWRD)
         try:
             smtp.send_message(msg)
-        except smtplib.RecipientsRefused:
-            print("smtplib.SMTPRecipientsRefused", EMAIL)
-            error("smtplib.SMTPRecipientsRefused", 553)
         except SMTPRecipientsRefused:
             print("SMTPRecipientsRefused", EMAIL)
             error("sSMTPRecipientsRefused", 553)
