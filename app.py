@@ -406,6 +406,7 @@ def payment():
             
             pay_bike_id = request.form.getlist("pay_bike_id")
             for id in pay_bike_id:
+                print("3- ", id)
                 
                 # Get bike's name
                 crsr.execute("SELECT all_bikes.brand, bikes.model FROM all_bikes JOIN bikes ON all_bikes.ID = bikes.brand JOIN service_order ON bikes.ID = service_order.Bike_ID JOIN services ON services.Service_ID = service_order.Service_procedure WHERE Bike_ID=%s limit 1", [id])
@@ -416,12 +417,13 @@ def payment():
                 crsr.execute("SELECT SUM(Service_price) FROM service_order WHERE Bike_ID=%s", [id])
                 total_price = crsr.fetchone()
                 tmp_array.append(total_price[0])
-                
+                print("tmp_array", tmp_array)
                 PAY_FOR_SERVICES.append(tmp_array)
                 PAY_FOR_SERVICES_ADDONS[1] += total_price[0]
                 
                 # Add bike ID to global container for storing
                 Paid_bike_ids.append(id)
+                print("4- ", Paid_bike_ids)
 
             PAY_FOR_SERVICES_ADDONS[0] = (len(pay_bike_id))
             
