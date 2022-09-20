@@ -199,6 +199,7 @@ def verifify():
             crsr.execute("UPDATE users SET Verified = 1 WHERE Email=%s", email)
             db.commit()
             crsr.close()
+            flash("Wellcome to G-bikes. You may now login with your details.")
             return redirect("/")
         flash('* Your Verification code is incorrect! please try again')
         return render_template("verification.html", user=USER, RESPONSE="* Your Verification code is incorrect! please try again")
@@ -223,6 +224,9 @@ def logout():
 def main():
     
     FULLNAME = fullName()
+    if request.method == "POST":
+        flash("We on it! You will get notified by Email as your bike will be ready!")
+        return redirect("/main")
     
     # Send data to display_services function in helpers for sorting for display
     display_service_queue = display_services()
@@ -490,7 +494,7 @@ def payment_accepted():
         return redirect("/pick_up")
     
     # Send to payment_accepted.html to show dummy payment show
-    flash("Your credit card is being checked")
+    flash("Please wait while our credit card is being checked")
     return render_template("payment_accepted.html", FULLNAME = FULLNAME)
 
 
@@ -566,7 +570,6 @@ def account():
 
 #--------------------------------------------------------------------------------- Recover account
 @app.route("/recover", methods=["GET", "POST"])
-
 def Recover():
     
     if request.method == "POST":
@@ -623,7 +626,7 @@ def Recover():
               for i in range(10))
                        
             # Send the new temporary password to user
-            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your temporary password just arrived', "Your password is: " + str(RAND_PSWRD) + "<br> After login with the temporary password we strongly recommend to change the password on you account page."]
+            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your temporary password just arrived', "Your temporary password is: <strong>" + str(RAND_PSWRD) + "</strong><br> After login with the temporary password we strongly recommend to change the password on you account page."]
             send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
             
             # Send new password for hashing
