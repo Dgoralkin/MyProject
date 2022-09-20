@@ -464,7 +464,9 @@ def paid():
                 COMPLETED = update_completed(Paid_bike_ids)
                 if COMPLETED == 1:
                     #flash('Payment Succeeded! You may pick your bike/s. Thank you!')
-                    return redirect("/pick_up")
+                    #return redirect("/pick_up")
+                    return redirect("/payment_accepted")
+                    
             else:
                 print("Payment Rejected")
                 ERROR_RES = [0]
@@ -475,6 +477,21 @@ def paid():
             ERROR_RES = [0]
             return render_template("payment.html", PAY_FOR_SERVICES=PAY_FOR_SERVICES, PAY_FOR_SERVICES_ADDONS=PAY_FOR_SERVICES_ADDONS, CUSTOMER_DETAILS=CUSTOMER_DETAILS, ERROR_RES=ERROR_RES)
     return redirect("/pick_up")
+
+
+#--------------------------------------------------------------------------------- payment_accepted
+@app.route("/payment_accepted", methods=["GET", "POST"])
+@login_required
+def payment_accepted():
+    FULLNAME = fullName()
+    
+    # Reroute after payment approved
+    if request.method == "POST":
+        return redirect("/pick_up")
+    
+    # Send to payment_accepted.html to show dummy payment show
+    flash("Your credit card is being checked")
+    return render_template("payment_accepted.html", FULLNAME = FULLNAME)
 
 
 #--------------------------------------------------------------------------------- Account
@@ -606,7 +623,7 @@ def Recover():
               for i in range(10))
                        
             # Send the new temporary password to user
-            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your temporary password just arrived <br> After login with the temporary password we strongly recommend to change the password on you account page.', "Your password is: " + str(RAND_PSWRD)]
+            EMAIL_CONTENT = ['Grab your new password From G-bikes', 'Your temporary password just arrived', "Your password is: " + str(RAND_PSWRD) + "<br> After login with the temporary password we strongly recommend to change the password on you account page."]
             send_status = send_email(EMAIL, EMAIL_CONTENT[0], EMAIL_CONTENT[1], EMAIL_CONTENT[2])
             
             # Send new password for hashing
