@@ -219,7 +219,7 @@ def logout():
 
 
 #--------------------------------------------------------------------------------- Main Page
-@app.route("/main", methods=["GET"])
+@app.route("/main", methods=["GET", "POST"])
 @login_required
 def main():
     
