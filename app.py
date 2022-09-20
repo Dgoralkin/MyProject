@@ -225,7 +225,7 @@ def main():
     
     FULLNAME = fullName()
     if request.method == "POST":
-        flash("We on it! You will get notified by Email as your bike will be ready!")
+        flash('We on it! You will get notified by Email as your bike will be ready! Meanwhile, you can check your service status at - "Pick up & Status" page')
         return redirect("/main")
     
     # Send data to display_services function in helpers for sorting for display

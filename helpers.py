@@ -13,7 +13,7 @@ import smtplib
 from smtplib import SMTPRecipientsRefused
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
-open_hours = dt.time(9, 0, 0, 0)         # 09:00:00
+open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
 close_hours = dt.time(23, 59, 0, 0)       # 21:00:00
 
 # Configure Email Address & Password for sending Emails
@@ -650,6 +650,7 @@ def display_user_service_status(USER_ID):
 
 # Update service status to "Completed" for paied service and move them to "orders_history" (history) table
 def update_completed(BIKE_ID):
+    print("0-", BIKE_ID)
     
     DT_LOCAL = time_UTC_to_IL()
     INFO = []
@@ -675,8 +676,9 @@ def update_completed(BIKE_ID):
         
         # Read and update data from "service_order" & delete completed service from "service_order" table
         for i in BIKE_ID:
-            BIKE_ID = [i]
-            crsr_service_order.execute("Select * FROM service_order WHERE Bike_ID=%s AND Service_status = 'ready' ORDER BY Bike_ID", BIKE_ID)
+            UPDATE_BIKE_ID = [i]
+            print("1-", UPDATE_BIKE_ID)
+            crsr_service_order.execute("Select * FROM service_order WHERE Bike_ID=%s AND Service_status = 'ready' ORDER BY Bike_ID", UPDATE_BIKE_ID)
             for service in crsr_service_order:
                 service_list = list(service)
                 service_list.pop()
@@ -684,7 +686,7 @@ def update_completed(BIKE_ID):
                 service_list[11] = DT_LOCAL
                 service_list[12] = 'completed'
                 INFO.append(service_list)            
-            crsr_service_order.execute("DELETE FROM service_order WHERE Bike_ID = %s", BIKE_ID)
+            crsr_service_order.execute("DELETE FROM service_order WHERE Bike_ID = %s", UPDATE_BIKE_ID)
             db.commit()
 
         # Insert updated data into "orders_history"
@@ -743,8 +745,5 @@ def Send_Status_update(BIKES_READY):
         # Update service Email status to send to prevent double email sending
         crsr.execute("UPDATE service_order SET Emailed = 1 WHERE Bike_ID = %s", [CUSTOMERS_BIKE_ID])
         db.commit()
-        print("Email update to:", CUSTOMERS_EAMIL, "Sent!")
         return
-    
-    
     return
