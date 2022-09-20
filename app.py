@@ -200,7 +200,7 @@ def verifify():
             db.commit()
             crsr.close()
             flash("Wellcome to G-bikes. You may now login with your details.")
-            return redirect("/")
+            return redirect("/login")
         flash('* Your Verification code is incorrect! please try again')
         return render_template("verification.html", user=USER, RESPONSE="* Your Verification code is incorrect! please try again")
     
