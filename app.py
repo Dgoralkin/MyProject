@@ -321,14 +321,25 @@ def add_bike():
 @login_required
 def Remove_bike():
     
-    # Delete bike from bikes table
-    Q = [request.args.get("q")]
-    query = 'DELETE FROM bikes WHERE ID=%s'
+    USER_ID = session["user_id"]
+    BIKE_ID = request.args.get("q")
+    PARAMETERS = [USER_ID, BIKE_ID]
+    
     db.reconnect()
     crsr = db.cursor()
-    crsr.execute(query, Q)
+    # Delete bike from table oredrs_history
+    crsr.execute("DELETE FROM orders_history WHERE User_ID = %s AND Bike_ID = %s", PARAMETERS)
     db.commit()
-    print("Bike", Q[0], "removed from Table bikes")
+    
+    # Delete bike from table service_order
+    crsr.execute("DELETE FROM service_order WHERE User_ID = %s AND Bike_ID = %s", PARAMETERS)
+    db.commit()
+    
+    # Delete bike from bikes table
+    query = 'DELETE FROM bikes WHERE ID=%s'
+    crsr.execute(query, [BIKE_ID])
+    db.commit()
+    print("Bike", BIKE_ID, "removed from Tables: orders_history, service_order, bikes")
     return render_template("service.html")
 
 

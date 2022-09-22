@@ -70,8 +70,8 @@
 {% block header %}
 <body onload="myFunction()" style="margin:0;">
 
-<div id="loader"><br><br><h2>Your payment is being processed.</h2><br><br></div>
 <div id="header"><br><br><h1>Your payment is being processed.</h1><br><br></div>
+<div id="loader"><br><br><h2>Your payment is being processed.</h2><br><br></div>
 
 <div style="display:none;" id="myDiv" class="animate-bottom">
     <h2>Thank you {{ FULLNAME }}!</h2>
@@ -90,7 +90,7 @@
 <script>
 function myFunction() {
     myVar = setTimeout(showPage, 4000);
-    myVar2 = setTimeout(sendPage, 7000);
+    myVar2 = setTimeout(sendPage, 6000);
 }
 
 function showPage() {
