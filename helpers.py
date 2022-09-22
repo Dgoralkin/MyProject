@@ -13,7 +13,7 @@ import smtplib
 from smtplib import SMTPRecipientsRefused
 
 # Configure business working hours (workshop business hours: 09:00=>21:00)
-open_hours = dt.time(9, 0, 0, 0)         # 09:00:00
+open_hours = dt.time(0, 1, 0, 0)         # 09:00:00
 close_hours = dt.time(21, 0, 0, 0)       # 21:00:00
 
 # Configure Email Address & Password for sending Emails
