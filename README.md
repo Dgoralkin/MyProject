@@ -1,6 +1,6 @@
-# Workshop Service book for B-bike
+# Workshop Service book for G-bikeS
 
-## Video Demo:  [Link to YouTube demo](https://video.com/)
+## Video to Demo:  [Link to YouTube demo](https://video.com/)
 
 ### Link to App:  This site stored on [Heroku](https://final-project-dany.herokuapp.com/)
 
@@ -19,11 +19,11 @@ The main idea (use flow) of the app:
 7. On the "Pick up" page logged user can choose what bike or bikes to pick from service and redirects user for payment.
 8. "Payment page" displays chosen pickup bikes and user info and verifies user's credit-card number that is valid. As paid, the app stores fully finished services per user in the service history database in MySql and displays that history on the "Pick up" page.
 
-The Dir contains two Python files, app.py and helpers.py. The "app.py" controls app's traffic and usage flow. "helpers.py", contains most calculation functions.
+The main Dir contains two Python files, app.py and helpers.py. The "app.py" controls app's traffic and usage flow. "helpers.py", contains most calculation functions.
 "Workshop Service book" can handle multi users at once and keep track of the service orders in specific workshop considering it's adjustable working hours (Example: from 9am to 21pm) and scheduled prior services. It reads all workshop's offered services from an attached csv "Services" file that could be edited in Excel by the app owner. In that file service name, service cost and service time should be defined by the workshop owner.
 Another helpful CSV file is the "Bikes" list, it contains a list of all bike brands witch being updated dynamically to and from the app. Every time app is being loaded it compares the amount of bikes in that file VS the app's MySql database. If new bikes were added in the app by the end user or in the csv file by the owner it being repopulated in both locations. *Because Heroku's disability to write to an external file, writing to a csv file disabled in the code and could be easily switched on.
 Workshop Service book is connected to a MySql database to handle and keep track of the service order in the workshop. The app recalculating and displaying the correct time and date for a workshop's location considering (IL) time zone (+3 GMT).
-The Dir folder contains two subfolders, "static" and "templates". "static" folder contains all page HTML templates as well as "static" folder contains the JavaScript, CSS and graphic files.
+The main Dir folder contains two subfolders, "static" and "templates". "static" folder contains all page HTML templates as well as "static" folder contains the JavaScript, CSS and graphic files.
 The app connected to MySQL database. It can fully establish required tables in the connected MySQL’s database if does not exist on the first run cycle. From there on it stores and manages all required app's information through six different tables:
 
 1. users table: stores user info.
