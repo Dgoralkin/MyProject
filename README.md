@@ -1,4 +1,4 @@
-# Workshop Service book for G-bikeS
+# Workshop Service book for G-bikes
 
 ## Video to Demo:  [Link to YouTube demo](https://video.com/)
 
