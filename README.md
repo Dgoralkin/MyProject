@@ -1,6 +1,6 @@
 # Workshop Service book for G-bikes
 
-## Video to Demo:  [[Link to YouTube demo](https://youtu.be/PUhuCBd2DTQ)](https://www.youtube.com/watch?v=_b9vFSvlR_8)
+## Video to Demo: (https://www.youtube.com/watch?v=_b9vFSvlR_8)
 
 ### Link to App:  This site is stored on [Heroku](https://final-project-dany.herokuapp.com/)
 
