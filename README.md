@@ -2,8 +2,6 @@
 
 ## Video to Demo: (https://www.youtube.com/watch?v=_b9vFSvlR_8)
 
-### Link to App:  This site is stored on [Heroku](https://final-project-dany.herokuapp.com/)
-
 #### Description
 
 Workshop Service book is an end-user web application available for use on the web on a large screen or mobile device.
